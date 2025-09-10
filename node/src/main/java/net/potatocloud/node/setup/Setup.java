@@ -32,12 +32,9 @@ public abstract class Setup {
 
     protected abstract void onFinish(Map<String, String> answers);
 
-    protected void addQuestion(String name, String question, String defaultAnswer, List<String> possibleChoices, SetupAnswerValidator validator, SetupQuestionSkipCondition skipCondition) {
-        questions.add(new SetupQuestion(name, question, defaultAnswer, possibleChoices, validator, skipCondition));
-    }
 
-    protected void addQuestion(String name, String question, String defaultAnswer, List<String> possibleChoices, SetupAnswerValidator validator) {
-        questions.add(new SetupQuestion(name, question, defaultAnswer, possibleChoices, validator, null));
+    public SetupQuestionBuilder question(String name) {
+        return new SetupQuestionBuilder(name, this);
     }
 
     public void start() {
@@ -186,7 +183,7 @@ public abstract class Setup {
             commandsText.add("&aEnter&7 = default");
         }
 
-        if (question.getPossibleChoices() != null && !question.getPossibleChoices().isEmpty()) {
+        if (question.getPossibleChoices(answers) != null && !question.getPossibleChoices(answers).isEmpty()) {
             commandsText.add("&aTab&7 = show options");
         }
 

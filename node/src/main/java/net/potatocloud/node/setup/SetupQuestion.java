@@ -11,7 +11,7 @@ public class SetupQuestion {
     private final String name;
     private final String question;
     private final String defaultAnswer;
-    private final List<String> possibleChoices;
+    private final SetupChoicesProvider choicesProvider;
     private final SetupAnswerValidator validator;
     private final SetupQuestionSkipCondition skipCondition;
 
@@ -20,5 +20,12 @@ public class SetupQuestion {
             return false;
         }
         return skipCondition.skip(answers);
+    }
+
+    public List<String> getPossibleChoices(Map<String, String> answers) {
+        if (choicesProvider == null) {
+            return List.of();
+        }
+        return choicesProvider.getChoices(answers);
     }
 }
