@@ -2,6 +2,10 @@ package net.potatocloud.core.networking.netty;
 
 import io.netty.buffer.ByteBuf;
 import lombok.RequiredArgsConstructor;
+import net.potatocloud.api.platform.Platform;
+import net.potatocloud.api.platform.PlatformVersion;
+import net.potatocloud.api.platform.impl.PlatformImpl;
+import net.potatocloud.api.platform.impl.PlatformVersionImpl;
 import net.potatocloud.api.property.Property;
 
 import java.nio.charset.StandardCharsets;
@@ -134,4 +138,55 @@ public class PacketBuffer {
     public long readLong() {
         return buf.readLong();
     }
+
+    public void writePlatform(Platform platform) {
+        writeString(platform.getName());
+        writeString(platform.getDownloadUrl());
+        writeBoolean(platform.isCustom());
+        writeBoolean(platform.isProxy());
+        writeString(platform.getBase());
+
+        writeInt(platform.getVersions().size());
+        for (PlatformVersion version : platform.getVersions()) {
+            writeString(version.getPlatformName());
+            writeString(version.getName());
+            writeString(version.getDownloadUrl());
+            writeString(version.getParser());
+            writeString(version.getHashType());
+            writeString(version.getFileHash());
+            writeBoolean(version.isLegacy());
+        }
+
+        writeStringList(platform.getPrepareSteps());
+    }
+
+    public Platform readPlatform() {
+        final String name = readString();
+        final String downloadUrl = readString();
+        final boolean custom = readBoolean();
+        final boolean isProxy = readBoolean();
+        final String base = readString();
+
+        final PlatformImpl platform = new PlatformImpl(name, downloadUrl, custom, isProxy, base);
+
+        final int versionCount = readInt();
+        for (int i = 0; i < versionCount; i++) {
+            final String platformName = readString();
+            final String versionName = readString();
+            final String versionDownloadUrl = readString();
+            final String parser = readString();
+            final String hashType = readString();
+            final String fileHash = readString();
+            final boolean legacy = readBoolean();
+
+
+            final PlatformVersion version = new PlatformVersionImpl(
+                    platformName, versionName, versionDownloadUrl, parser, hashType, fileHash, legacy);
+            platform.getVersions().add(version);
+        }
+
+        platform.getPrepareSteps().addAll(readStringList());
+        return platform;
+    }
+
 }
