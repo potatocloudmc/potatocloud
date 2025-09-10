@@ -2,6 +2,7 @@ package net.potatocloud.api.group;
 
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.platform.Platform;
+import net.potatocloud.api.platform.PlatformVersion;
 import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.property.PropertyHolder;
 import net.potatocloud.api.service.Service;
@@ -15,7 +16,15 @@ public interface ServiceGroup extends PropertyHolder {
 
     String getPlatformName();
 
-    Platform getPlatform();
+    default Platform getPlatform() {
+        return CloudAPI.getInstance().getPlatformManager().getPlatform(getPlatformName());
+    }
+
+    String getPlatformVersionName();
+
+    default PlatformVersion getPlatformVersion() {
+        return getPlatform().getVersion(getPlatformVersionName());
+    }
 
     List<String> getServiceTemplates();
 
@@ -75,8 +84,11 @@ public interface ServiceGroup extends PropertyHolder {
         return CloudAPI.getInstance().getServiceManager().getOnlineServices(getName());
     }
 
-    int getOnlineServiceCount();
+    default int getOnlineServiceCount() {
+        return getOnlineServices().size();
+    }
 
-    void update();
-
+    default void update() {
+        CloudAPI.getInstance().getServiceGroupManager().updateServiceGroup(this);
+    }
 }

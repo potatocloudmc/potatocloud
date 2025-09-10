@@ -16,6 +16,7 @@ public interface ServiceGroupManager {
     default void createServiceGroup(
             String name,
             String platformName,
+            String platformVersionName,
             int minOnlineCount,
             int maxOnlineCount,
             int maxPlayers,
@@ -28,6 +29,7 @@ public interface ServiceGroupManager {
         createServiceGroup(
                 name,
                 platformName,
+                platformVersionName,
                 minOnlineCount,
                 maxOnlineCount,
                 maxPlayers,
@@ -45,6 +47,7 @@ public interface ServiceGroupManager {
     void createServiceGroup(
             String name,
             String platformName,
+            String platformVersionName,
             int minOnlineCount,
             int maxOnlineCount,
             int maxPlayers,

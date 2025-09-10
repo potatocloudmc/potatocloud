@@ -4,20 +4,32 @@ import java.util.List;
 
 public interface Platform {
 
-    String getPlatformName();
-
-    String getVersion();
+    String getName();
 
     String getDownloadUrl();
 
-    default String getFullName() {
-        return getPlatformName() + "-" + getVersion();
-    }
+    boolean isCustom();
 
     boolean isProxy();
 
-    String getFileHash();
+    List<PlatformVersion> getVersions();
 
-    List<String> getRecommendedFlags();
+    List<String> getPrepareSteps();
 
+    String getBase();
+
+    default PlatformVersion getVersion(String name) {
+        return getVersions().stream()
+                .filter(version -> version.getName().equalsIgnoreCase(name))
+                .findFirst()
+                .orElse(null);
+    }
+
+    default boolean isBukkit() {
+        return getBase().equalsIgnoreCase("bukkit");
+    }
+
+    default boolean isVelocity() {
+        return getBase().equalsIgnoreCase("velocity");
+    }
 }

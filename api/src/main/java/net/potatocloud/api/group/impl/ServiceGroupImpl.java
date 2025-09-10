@@ -6,7 +6,6 @@ import lombok.Setter;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.platform.Platform;
-import net.potatocloud.api.platform.PlatformVersions;
 import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 
@@ -21,6 +20,7 @@ public class ServiceGroupImpl implements ServiceGroup {
 
     private final String name;
     private final String platformName;
+    private final String platformVersionName;
     private final List<String> serviceTemplates;
     private int minOnlineCount;
     private int maxOnlineCount;
@@ -34,9 +34,10 @@ public class ServiceGroupImpl implements ServiceGroup {
     private List<String> customJvmFlags;
     private final Set<Property> properties;
 
-    public ServiceGroupImpl(String name, String platformName, int minOnlineCount, int maxOnlineCount, int maxPlayers, int maxMemory, boolean fallback, boolean isStatic, int startPriority, int startPercentage, String javaCommand, List<String> customJvmFlags, Set<Property> properties) {
+    public ServiceGroupImpl(String name, String platformName, String platformVersionName, int minOnlineCount, int maxOnlineCount, int maxPlayers, int maxMemory, boolean fallback, boolean isStatic, int startPriority, int startPercentage, String javaCommand, List<String> customJvmFlags, Set<Property> properties) {
         this.name = name;
         this.platformName = platformName;
+        this.platformVersionName = platformVersionName;
         this.minOnlineCount = minOnlineCount;
         this.maxOnlineCount = maxOnlineCount;
         this.maxPlayers = maxPlayers;
@@ -53,7 +54,7 @@ public class ServiceGroupImpl implements ServiceGroup {
         addServiceTemplate("every");
         addServiceTemplate(name);
 
-        final Platform platform = PlatformVersions.getPlatformByName(platformName);
+        final Platform platform = getPlatform();
         if (platform == null) {
             return;
         }
@@ -84,11 +85,6 @@ public class ServiceGroupImpl implements ServiceGroup {
     }
 
     @Override
-    public Platform getPlatform() {
-        return PlatformVersions.getPlatformByName(platformName);
-    }
-
-    @Override
     public void addCustomJvmFlag(String flag) {
         customJvmFlags.add(flag);
     }
@@ -107,15 +103,5 @@ public class ServiceGroupImpl implements ServiceGroup {
             return;
         }
         serviceTemplates.remove(template);
-    }
-
-    @Override
-    public int getOnlineServiceCount() {
-        return getOnlineServices().size();
-    }
-
-    @Override
-    public void update() {
-        CloudAPI.getInstance().getServiceGroupManager().updateServiceGroup(this);
     }
 }
