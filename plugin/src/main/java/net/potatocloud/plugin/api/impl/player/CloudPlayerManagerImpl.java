@@ -1,4 +1,4 @@
-package net.potatocloud.plugin.impl.player;
+package net.potatocloud.plugin.api.impl.player;
 
 import lombok.Getter;
 import net.potatocloud.api.CloudAPI;
@@ -10,10 +10,10 @@ import net.potatocloud.core.networking.packets.player.CloudPlayerAddPacket;
 import net.potatocloud.core.networking.packets.player.CloudPlayerRemovePacket;
 import net.potatocloud.core.networking.packets.player.CloudPlayerUpdatePacket;
 import net.potatocloud.core.networking.packets.player.RequestCloudPlayersPacket;
-import net.potatocloud.plugin.impl.event.ConnectPlayerWithServiceEvent;
-import net.potatocloud.plugin.impl.player.listeners.CloudPlayerAddListener;
-import net.potatocloud.plugin.impl.player.listeners.CloudPlayerRemoveListener;
-import net.potatocloud.plugin.impl.player.listeners.CloudPlayerUpdateListener;
+import net.potatocloud.plugin.api.impl.event.ConnectPlayerWithServiceEvent;
+import net.potatocloud.plugin.api.impl.player.listeners.CloudPlayerAddListener;
+import net.potatocloud.plugin.api.impl.player.listeners.CloudPlayerRemoveListener;
+import net.potatocloud.plugin.api.impl.player.listeners.CloudPlayerUpdateListener;
 
 import java.util.Collections;
 import java.util.HashSet;

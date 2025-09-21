@@ -1,17 +1,16 @@
 package net.potatocloud.plugin.paper;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.service.Service;
-import net.potatocloud.core.networking.packets.service.ServiceStartedPacket;
-import net.potatocloud.plugin.impl.PluginCloudAPI;
+import net.potatocloud.plugin.PlatformPlugin;
+import net.potatocloud.plugin.api.impl.PluginCloudAPI;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class PaperPlugin extends JavaPlugin implements Listener {
+public class PaperPlugin extends JavaPlugin implements Listener, PlatformPlugin {
 
     private PluginCloudAPI api;
     private Service currentService;
@@ -24,20 +23,12 @@ public class PaperPlugin extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         initCurrentService();
-
         getServer().getPluginManager().registerEvents(this, this);
     }
 
-    private void initCurrentService() {
-        currentService = CloudAPI.getInstance().getServiceManager().getCurrentService();
-        // service manager is still null or the services have not finished loading
-        if (currentService == null) {
-            // retry after 1 second
-            getServer().getScheduler().runTaskLater(this, this::initCurrentService, 20L);
-            return;
-        }
-
-        api.getClient().send(new ServiceStartedPacket(currentService.getName()));
+    @Override
+    public void onServiceReady(Service service) {
+        currentService = service;
     }
 
     @EventHandler
@@ -60,6 +51,11 @@ public class PaperPlugin extends JavaPlugin implements Listener {
             return;
         }
         event.disallow(PlayerLoginEvent.Result.KICK_FULL, MiniMessage.miniMessage().deserialize("<red>The server has reached its maximum players!"));
+    }
+
+    @Override
+    public void runTaskLater(Runnable task, int delaySeconds) {
+        getServer().getScheduler().runTaskLater(this, task, delaySeconds * 20L);
     }
 
     @Override

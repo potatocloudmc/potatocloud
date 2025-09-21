@@ -1,4 +1,4 @@
-package net.potatocloud.plugin.impl.service.listeners;
+package net.potatocloud.plugin.api.impl.service.listeners;
 
 import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.CloudAPI;
@@ -7,8 +7,8 @@ import net.potatocloud.api.service.ServiceStatus;
 import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketListener;
 import net.potatocloud.core.networking.packets.service.ServiceAddPacket;
-import net.potatocloud.plugin.impl.service.ServiceImpl;
-import net.potatocloud.plugin.impl.service.ServiceManagerImpl;
+import net.potatocloud.plugin.api.impl.service.ServiceImpl;
+import net.potatocloud.plugin.api.impl.service.ServiceManagerImpl;
 
 @RequiredArgsConstructor
 public class ServiceAddListener implements PacketListener<ServiceAddPacket> {

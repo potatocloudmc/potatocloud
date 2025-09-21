@@ -1,4 +1,4 @@
-package net.potatocloud.plugin.impl.service;
+package net.potatocloud.plugin.api.impl.service;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import net.potatocloud.core.networking.NetworkClient;
 import net.potatocloud.core.networking.packets.service.ServiceCopyPacket;
 import net.potatocloud.core.networking.packets.service.ServiceExecuteCommandPacket;
 import net.potatocloud.core.networking.packets.service.StopServicePacket;
-import net.potatocloud.plugin.impl.PluginCloudAPI;
+import net.potatocloud.plugin.api.impl.PluginCloudAPI;
 
 import java.util.Set;
 

@@ -1,4 +1,4 @@
-package net.potatocloud.plugin.impl.event;
+package net.potatocloud.plugin.api.impl.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

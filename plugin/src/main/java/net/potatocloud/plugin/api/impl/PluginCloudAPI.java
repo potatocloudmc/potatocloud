@@ -1,4 +1,4 @@
-package net.potatocloud.plugin.impl;
+package net.potatocloud.plugin.api.impl;
 
 import lombok.Getter;
 import net.potatocloud.api.CloudAPI;
@@ -11,13 +11,16 @@ import net.potatocloud.core.event.ClientEventManager;
 import net.potatocloud.core.networking.NetworkClient;
 import net.potatocloud.core.networking.PacketManager;
 import net.potatocloud.core.networking.netty.NettyNetworkClient;
-import net.potatocloud.plugin.impl.group.ServiceGroupManagerImpl;
-import net.potatocloud.plugin.impl.platform.PlatformManagerImpl;
-import net.potatocloud.plugin.impl.player.CloudPlayerManagerImpl;
-import net.potatocloud.plugin.impl.service.ServiceManagerImpl;
+import net.potatocloud.plugin.api.impl.group.ServiceGroupManagerImpl;
+import net.potatocloud.plugin.api.impl.platform.PlatformManagerImpl;
+import net.potatocloud.plugin.api.impl.player.CloudPlayerManagerImpl;
+import net.potatocloud.plugin.api.impl.service.ServiceManagerImpl;
 
 @Getter
 public class PluginCloudAPI extends CloudAPI {
+
+    private static final String NODE_HOST = "127.0.0.1";
+    private static final int NODE_PORT = Integer.parseInt(System.getProperty("potatocloud.node.port"));
 
     private final PacketManager packetManager;
     private final NetworkClient client;
@@ -29,8 +32,10 @@ public class PluginCloudAPI extends CloudAPI {
 
     public PluginCloudAPI() {
         packetManager = new PacketManager();
+
         client = new NettyNetworkClient(packetManager);
-        client.connect("127.0.0.1", Integer.parseInt(System.getProperty("potatocloud.node.port")));
+        client.connect(NODE_HOST, NODE_PORT);
+
         groupManager = new ServiceGroupManagerImpl(client);
         serviceManager = new ServiceManagerImpl(client);
         platformManager = new PlatformManagerImpl(client);
@@ -42,32 +47,12 @@ public class PluginCloudAPI extends CloudAPI {
         return (PluginCloudAPI) CloudAPI.getInstance();
     }
 
-    public void shutdown() {
-        client.disconnect();
-    }
-
     @Override
     public ServiceGroupManager getServiceGroupManager() {
         return groupManager;
     }
 
-    @Override
-    public ServiceManager getServiceManager() {
-        return serviceManager;
-    }
-
-    @Override
-    public PlatformManager getPlatformManager() {
-        return platformManager;
-    }
-
-    @Override
-    public EventManager getEventManager() {
-        return eventManager;
-    }
-
-    @Override
-    public CloudPlayerManager getPlayerManager() {
-        return playerManager;
+    public void shutdown() {
+        client.disconnect();
     }
 }

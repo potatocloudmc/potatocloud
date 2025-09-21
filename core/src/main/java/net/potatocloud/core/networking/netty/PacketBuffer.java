@@ -167,7 +167,8 @@ public class PacketBuffer {
         final boolean isProxy = readBoolean();
         final String base = readString();
 
-        final PlatformImpl platform = new PlatformImpl(name, downloadUrl, custom, isProxy, base);
+        //todo
+        final PlatformImpl platform = new PlatformImpl(name, downloadUrl, custom, isProxy, base, "");
 
         final int versionCount = readInt();
         for (int i = 0; i < versionCount; i++) {

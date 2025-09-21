@@ -23,24 +23,23 @@ import net.potatocloud.api.event.events.service.ServiceStartedEvent;
 import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.player.impl.CloudPlayerImpl;
 import net.potatocloud.api.service.Service;
-import net.potatocloud.api.service.ServiceStatus;
 import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketIds;
 import net.potatocloud.core.networking.packets.player.CloudPlayerConnectPacket;
 import net.potatocloud.core.networking.packets.service.ServiceRemovePacket;
-import net.potatocloud.core.networking.packets.service.ServiceStartedPacket;
-import net.potatocloud.plugin.impl.PluginCloudAPI;
-import net.potatocloud.plugin.impl.event.ConnectPlayerWithServiceEvent;
-import net.potatocloud.plugin.impl.player.CloudPlayerManagerImpl;
+import net.potatocloud.plugin.PlatformPlugin;
+import net.potatocloud.plugin.PluginUtils;
+import net.potatocloud.plugin.api.impl.PluginCloudAPI;
+import net.potatocloud.plugin.api.impl.event.ConnectPlayerWithServiceEvent;
+import net.potatocloud.plugin.api.impl.player.CloudPlayerManagerImpl;
 
 import java.net.InetSocketAddress;
-import java.util.Comparator;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-public class VelocityPlugin {
+public class VelocityPlugin implements PlatformPlugin {
 
     private final PluginCloudAPI api;
     private final ProxyServer server;
@@ -57,11 +56,20 @@ public class VelocityPlugin {
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
         initCurrentService();
+    }
+
+    @Override
+    public void onServiceReady(Service service) {
+        currentService = service;
+
+        // register already online services
+        for (Service ser : api.getServiceManager().getAllServices()) {
+            registerServer(ser);
+        }
 
         api.getEventManager().on(ServiceStartedEvent.class, startedEvent -> {
-            // service manager should be initialized by now
-            final Service service = api.getServiceManager().getService(startedEvent.getServiceName());
-            registerServer(service);
+            final Service startedService = api.getServiceManager().getService(startedEvent.getServiceName());
+            registerServer(startedService);
         });
 
         api.getEventManager().on(ConnectPlayerWithServiceEvent.class, connectEvent -> {
@@ -91,27 +99,6 @@ public class VelocityPlugin {
         player.get().createConnectionRequest(serverToConnectTo.get()).fireAndForget();
     }
 
-    private void initCurrentService() {
-        currentService = CloudAPI.getInstance().getServiceManager().getCurrentService();
-        // service manager is still null or the services have not finished loading
-        if (currentService == null) {
-            // retry after 1 second
-            server.getScheduler().buildTask(this, this::initCurrentService).delay(1, TimeUnit.SECONDS).schedule();
-            return;
-        }
-
-        api.getClient().send(new ServiceStartedPacket(currentService.getName()));
-
-        for (Service service : api.getServiceManager().getAllServices()) {
-            registerServer(service);
-        }
-    }
-
-    @Subscribe
-    public void onShutdown(ProxyShutdownEvent event) {
-        api.shutdown();
-    }
-
     private void registerServer(Service service) {
         if (service.getServiceGroup().getPlatform().isProxy()) {
             return;
@@ -121,7 +108,7 @@ public class VelocityPlugin {
 
     @Subscribe
     public void onPlayerChooseInitialServer(PlayerChooseInitialServerEvent event) {
-        final Optional<RegisteredServer> bestFallbackServer = getBestFallbackServer();
+        final Optional<RegisteredServer> bestFallbackServer = server.getServer(PluginUtils.getBestFallback().getName());
         if (bestFallbackServer.isEmpty()) {
             return;
         }
@@ -189,7 +176,7 @@ public class VelocityPlugin {
     @Subscribe
     public void onKicked(KickedFromServerEvent event) {
         final RegisteredServer kickedFrom = event.getServer();
-        final Optional<RegisteredServer> fallback = getBestFallbackServer();
+        final Optional<RegisteredServer> fallback = server.getServer(PluginUtils.getBestFallback().getName());
         if (fallback.isEmpty()) {
             return;
         }
@@ -201,14 +188,13 @@ public class VelocityPlugin {
         event.setResult(KickedFromServerEvent.RedirectPlayer.create(fallback.get()));
     }
 
-    private Optional<RegisteredServer> getBestFallbackServer() {
-        return api.getServiceManager().getAllServices().stream()
-                .filter(service -> service.getServiceGroup().isFallback())
-                .filter(service -> service.getStatus() == ServiceStatus.RUNNING)
-                .sorted(Comparator.comparingInt(Service::getOnlinePlayerCount))
-                .map(service -> server.getServer(service.getName()))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .findFirst();
+    @Override
+    public void runTaskLater(Runnable task, int delaySeconds) {
+        server.getScheduler().buildTask(this, task).delay(delaySeconds, TimeUnit.SECONDS).schedule();
+    }
+
+    @Subscribe
+    public void onShutdown(ProxyShutdownEvent event) {
+        api.shutdown();
     }
 }
