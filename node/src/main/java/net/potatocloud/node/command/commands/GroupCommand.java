@@ -265,7 +265,7 @@ public class GroupCommand implements Command, TabCompleter {
     }
 
     private void sendHelp() {
-        logger.info("group create &8[&aname&8] [&aplatformName&8] [&aminOnlineCount&8] [&amaxOnlineCount&8] [&amaxPlayers&8] [&amaxMemory&8] [&afallback&8] [&astatic&8] - &7Create a new service group");
+        logger.info("group create &8- &7Create a new service group");
         logger.info("group delete &8[&aname&8] - &7Delete the group");
         logger.info("group list &8- &7List all groups");
         logger.info("group info &8[&aname&8] - &7Show details of the group");
