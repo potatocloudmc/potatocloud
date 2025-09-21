@@ -26,10 +26,10 @@ public class CacheManager {
         final Platform platform = group.getPlatform();
         final PlatformVersion version = group.getPlatformVersion();
 
-        final PlatformPreCacheBuilder preCacher = getPreCacher(platform.getPreCacher());
+        final PlatformPreCacheBuilder builder = getPreCacher(platform.getPreCacheBuilder());
 
         // legacy versions are not supported by the paper pre cacher
-        if (version.isLegacy() && preCacher instanceof PaperPlatformPreCacheBuilder) {
+        if (version.isLegacy() && builder instanceof PaperPlatformPreCacheBuilder) {
             return null;
         }
 
@@ -59,13 +59,13 @@ public class CacheManager {
         cacheFolder.toFile().mkdirs();
 
         // start the pre cacher implementation of the platform
-        preCacher.buildCache(platform, version, group, cacheFolder);
+        builder.buildCache(platform, version, group, cacheFolder);
         logger.info("Finished caching for " + platform.getName() + " version " + version.getName());
         return cacheFolder;
     }
 
     public void copyCacheToService(ServiceGroup group, Path cacheFolder, Path serviceDir) {
-        getPreCacher(group.getPlatform().getPreCacher()).copyCacheToService(cacheFolder, serviceDir);
+        getPreCacher(group.getPlatform().getPreCacheBuilder()).copyCacheToService(cacheFolder, serviceDir);
     }
 
     private PlatformPreCacheBuilder getPreCacher(String name) {

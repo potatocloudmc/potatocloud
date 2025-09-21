@@ -18,7 +18,7 @@ public interface Platform {
 
     String getBase();
 
-    String getPreCacher();
+    String getPreCacheBuilder();
 
     default PlatformVersion getVersion(String name) {
         return getVersions().stream()

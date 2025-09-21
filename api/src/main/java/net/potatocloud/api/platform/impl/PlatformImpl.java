@@ -19,7 +19,7 @@ public class PlatformImpl implements Platform {
     private final boolean custom;
     private final boolean isProxy;
     private final String base;
-    private final String preCacher;
+    private final String preCacheBuilder;
 
     private final List<PlatformVersion> versions = new ArrayList<>();
     private final List<String> prepareSteps = new ArrayList<>();
