@@ -1,7 +1,6 @@
 package net.potatocloud.node.platform.cache;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformVersion;
@@ -12,7 +11,10 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class CacheManager {
@@ -21,12 +23,16 @@ public class CacheManager {
 
     private final Map<String, PlatformPreCacheBuilder> cacheBuilderMap = Map.of("paper", new PaperPlatformPreCacheBuilder());
 
-    @SneakyThrows
+    private final Set<String> runningCacheBuilders = Collections.synchronizedSet(new HashSet<>());
+
     public Path preCachePlatform(ServiceGroup group) {
         final Platform platform = group.getPlatform();
         final PlatformVersion version = group.getPlatformVersion();
 
-        final PlatformPreCacheBuilder builder = getPreCacher(platform.getPreCacheBuilder());
+        final PlatformPreCacheBuilder builder = getPreCacheBuilder(platform.getPreCacheBuilder());
+        if (builder == null) {
+            return null;
+        }
 
         // legacy versions are not supported by the paper pre cacher
         if (version.isLegacy() && builder instanceof PaperPlatformPreCacheBuilder) {
@@ -43,32 +49,48 @@ public class CacheManager {
         final String jarHash = HashUtils.sha256(platformJarFile);
         final Path cacheFolder = platformFolder.resolve("cache-" + jarHash);
 
+        final String key = platform.getName() + "-" + version.getName() + "-" + jarHash;
+        if (!runningCacheBuilders.add(key)) {
+            return null;
+        }
+
         if (cacheFolder.toFile().exists()) {
             // cache was already created and is up to date
             return cacheFolder;
         }
 
-        // remove old cache folders
-        for (File file : platformFolder.toFile().listFiles()) {
-            if (file.isDirectory() && file.getName().startsWith("cache-")) {
-                FileUtils.deleteDirectory(file);
+        try {
+            // remove old cache folders
+            for (File file : platformFolder.toFile().listFiles()) {
+                if (file.isDirectory() && file.getName().startsWith("cache-")) {
+                    FileUtils.deleteDirectory(file);
+                }
             }
+
+            logger.info("Started caching for &a" + platform.getName() + "&7 version &a" + version.getName());
+            cacheFolder.toFile().mkdirs();
+
+            // start the pre cacher implementation of the platform
+            builder.buildCache(platform, version, group, cacheFolder);
+            logger.info("Finished caching for " + platform.getName() + " version " + version.getName());
+
+        } catch (Exception e) {
+            logger.error("Caching failed for version " + version.getFullName());
+        } finally {
+            // make the builder free again even if it fails
+            runningCacheBuilders.remove(key);
         }
-
-        logger.info("Starting caching for " + platform.getName() + " version " + version.getName());
-        cacheFolder.toFile().mkdirs();
-
-        // start the pre cacher implementation of the platform
-        builder.buildCache(platform, version, group, cacheFolder);
-        logger.info("Finished caching for " + platform.getName() + " version " + version.getName());
         return cacheFolder;
     }
 
     public void copyCacheToService(ServiceGroup group, Path cacheFolder, Path serviceDir) {
-        getPreCacher(group.getPlatform().getPreCacheBuilder()).copyCacheToService(cacheFolder, serviceDir);
+        final PlatformPreCacheBuilder builder = getPreCacheBuilder(group.getPlatform().getPreCacheBuilder());
+        if (builder != null) {
+            builder.copyCacheToService(cacheFolder, serviceDir);
+        }
     }
 
-    private PlatformPreCacheBuilder getPreCacher(String name) {
+    private PlatformPreCacheBuilder getPreCacheBuilder(String name) {
         if (name == null) {
             return null;
         }
