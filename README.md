@@ -34,7 +34,7 @@ A simple "cloud" system for Minecraft servers that is performant, customizable a
         <dependency>
             <groupId>com.github.potatocloudmc.potatocloud</groupId>
             <artifactId>api</artifactId>
-            <version>1.2.0</version>
+            <version>1.3.0-BETA</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -48,7 +48,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("com.github.potatocloudmc.potatocloud:api:v1.2.0")
+    compileOnly("com.github.potatocloudmc.potatocloud:api:v1.3.0-BETA")
 }
 ```
 

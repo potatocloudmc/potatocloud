@@ -14,7 +14,7 @@ public abstract class CloudAPI {
     @Getter
     private static CloudAPI instance;
 
-    public static final String VERSION = "1.2.0";
+    public static final String VERSION = "1.3.0-BETA";
 
     public CloudAPI() {
         instance = this;
