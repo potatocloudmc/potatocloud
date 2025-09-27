@@ -1,4 +1,4 @@
-package net.potatocloud.node.utils;
+package net.potatocloud.node.version;
 
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;

@@ -1,4 +1,4 @@
-package net.potatocloud.node.update;
+package net.potatocloud.node.version;
 
 import com.google.gson.JsonObject;
 import lombok.SneakyThrows;
