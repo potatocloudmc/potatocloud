@@ -145,6 +145,7 @@ public class PacketBuffer {
         writeBoolean(platform.isCustom());
         writeBoolean(platform.isProxy());
         writeString(platform.getBase());
+        writeString(platform.getPreCacheBuilder());
 
         writeInt(platform.getVersions().size());
         for (PlatformVersion version : platform.getVersions()) {
@@ -166,9 +167,9 @@ public class PacketBuffer {
         final boolean custom = readBoolean();
         final boolean isProxy = readBoolean();
         final String base = readString();
-
-        //todo
-        final PlatformImpl platform = new PlatformImpl(name, downloadUrl, custom, isProxy, base, "");
+        final String preCacheBuilder = readString();
+        
+        final PlatformImpl platform = new PlatformImpl(name, downloadUrl, custom, isProxy, base, preCacheBuilder);
 
         final int versionCount = readInt();
         for (int i = 0; i < versionCount; i++) {
