@@ -334,7 +334,6 @@ public class ServiceCommand implements Command, TabCompleter {
             filter = "";
         }
 
-
         if (filter.isEmpty()) {
             service.copy(template);
         } else {
@@ -343,7 +342,6 @@ public class ServiceCommand implements Command, TabCompleter {
 
         logger.info("Copied &a" + (filter.isEmpty() ? "all service files" : filter) + " &7to template: &a" + template);
     }
-
 
     private void sendHelp() {
         logger.info("service list &8- &7List all running services");

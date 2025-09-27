@@ -1,6 +1,7 @@
 package net.potatocloud.node.platform.cache;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformVersion;
@@ -50,13 +51,14 @@ public class CacheManager {
         final Path cacheFolder = platformFolder.resolve("cache-" + jarHash);
 
         final String key = platform.getName() + "-" + version.getName() + "-" + jarHash;
-        if (!runningCacheBuilders.add(key)) {
-            return null;
-        }
 
         if (cacheFolder.toFile().exists()) {
             // cache was already created and is up to date
             return cacheFolder;
+        }
+
+        if (!runningCacheBuilders.add(key)) {
+            return null;
         }
 
         try {
