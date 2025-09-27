@@ -74,7 +74,7 @@ public class CacheManager {
 
             // start the pre cacher implementation of the platform
             builder.buildCache(platform, version, group, cacheFolder);
-            logger.info("Finished caching for " + platform.getName() + " version " + version.getName());
+            logger.info("Finished caching for &a" + platform.getName() + "&7 version &a" + version.getName());
 
         } catch (Exception e) {
             logger.error("Caching failed for version " + version.getFullName());
