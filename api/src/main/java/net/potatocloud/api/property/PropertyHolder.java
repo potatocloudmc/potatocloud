@@ -50,6 +50,10 @@ public interface PropertyHolder {
         setProperty(property, property.getValue());
     }
 
+    default boolean hasProperty(String property) {
+        return getProperty(property) != null;
+    }
+
     default boolean hasProperty(Property property) {
         return getProperties().contains(property);
     }
