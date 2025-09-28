@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
-@SubCommandInfo(name = "edit", description = "Edit the given service", usage = "service edit [&akey&8] [&avalue&8]")
+@SubCommandInfo(name = "edit", description = "Edit the given service", usage = "service edit &8[&akey&8] [&avalue&8]")
 public class ServiceEditSubCommand extends SubCommand implements TabCompleter {
 
     private final ServiceManager serviceManager;

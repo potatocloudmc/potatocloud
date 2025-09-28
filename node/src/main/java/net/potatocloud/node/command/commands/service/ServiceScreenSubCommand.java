@@ -14,7 +14,7 @@ import net.potatocloud.node.service.ServiceImpl;
 import java.util.List;
 
 @RequiredArgsConstructor
-@SubCommandInfo(name = "screen", description = "Switch to the screen of the given service", usage = "service screen &8[&aservice8]")
+@SubCommandInfo(name = "screen", description = "Switch to the screen of the given service", usage = "service screen &8[&aservice&8]")
 public class ServiceScreenSubCommand extends SubCommand implements TabCompleter {
 
     private final ServiceManager serviceManager;

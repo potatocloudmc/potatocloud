@@ -11,7 +11,7 @@ import net.potatocloud.node.console.Logger;
 import java.util.List;
 
 @RequiredArgsConstructor
-@SubCommandInfo(name = "copy", description = "Copy files from the given service to the given template", usage = "service copy &8[&aservice8] &8[&atemplate8]")
+@SubCommandInfo(name = "copy", description = "Copy files from the given service to the given template", usage = "service copy &8[&aservice&8] &8[&atemplate8]")
 public class ServiceCopySubCommand extends SubCommand implements TabCompleter {
 
     private final ServiceManager serviceManager;

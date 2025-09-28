@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @RequiredArgsConstructor
-@SubCommandInfo(name = "execute", description = "Execute a command on the given service", usage = "service execute &8[&aservice8]")
+@SubCommandInfo(name = "execute", description = "Execute a command on the given service", usage = "service execute &8[&aservice&8]")
 public class ServiceExecuteSubCommand extends SubCommand implements TabCompleter {
 
     private final ServiceManager serviceManager;

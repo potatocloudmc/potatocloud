@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 @SubCommandInfo(
         name = "property",
-        description = "Manager properties of the given service",
+        description = "Manage properties of the given service",
         usage = "service property &8[&alist&8|&aset&8|&aremove&8] [&aservice&8] [&akey&8] [&avalue&8]"
 )
 public class ServicePropertySubCommand extends SubCommand implements TabCompleter {

@@ -13,7 +13,7 @@ import net.potatocloud.node.console.Logger;
 import java.util.List;
 
 @RequiredArgsConstructor
-@SubCommandInfo(name = "stop", description = "Shutdown the given service", usage = "service stop &8[&aservice8]")
+@SubCommandInfo(name = "stop", description = "Shutdown the given service", usage = "service stop &8[&aservice&8]")
 public class ServiceStopSubCommand extends SubCommand implements TabCompleter {
 
     private final ServiceManager serviceManager;

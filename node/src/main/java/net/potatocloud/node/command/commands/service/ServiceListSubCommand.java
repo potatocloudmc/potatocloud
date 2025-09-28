@@ -10,7 +10,7 @@ import net.potatocloud.node.console.Logger;
 import java.util.List;
 
 @RequiredArgsConstructor
-@SubCommandInfo(name = "info", description = "List all services", usage = "service list")
+@SubCommandInfo(name = "list", description = "List all services", usage = "service list")
 public class ServiceListSubCommand extends SubCommand {
 
     private final ServiceManager serviceManager;
