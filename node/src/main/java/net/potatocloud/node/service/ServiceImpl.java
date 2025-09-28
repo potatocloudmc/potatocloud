@@ -222,6 +222,10 @@ public class ServiceImpl implements Service {
             args.add("-nogui");
         }
 
+        if (platform.isLimboBased()) {
+            args.add("--nogui");
+        }
+
         // create and start the service process
         final ProcessBuilder processBuilder = new ProcessBuilder(args).directory(directory.toFile());
         serverProcess = processBuilder.start();
