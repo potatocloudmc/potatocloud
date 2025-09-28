@@ -5,6 +5,7 @@ import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PrepareStep;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.node.platform.VelocityForwardingSecret;
+import net.potatocloud.node.utils.PropertiesUtils;
 import net.potatocloud.node.utils.ProxyUtils;
 import org.simpleyaml.configuration.file.YamlFile;
 
@@ -40,26 +41,17 @@ public class SetupProxyStep implements PrepareStep {
 
         if (platform.isLimboBased()) {
             final Path propertiesPath = serverDirectory.resolve("server.properties");
-            final Properties properties = new Properties();
-
-            try (FileInputStream in = new FileInputStream(propertiesPath.toFile())) {
-                properties.load(in);
-            }
+            final Properties properties = PropertiesUtils.loadProperties(propertiesPath);
 
             properties.setProperty("forwarding-secrets", VelocityForwardingSecret.FORWARDING_SECRET);
             properties.setProperty("velocity-modern", "true");
 
-            try (OutputStream out = Files.newOutputStream(propertiesPath)) {
-                properties.store(out, null);
-            }
+            PropertiesUtils.saveProperties(properties, propertiesPath);
         }
-
-
     }
 
     @Override
     public String getName() {
         return "setup-proxy";
     }
-
 }

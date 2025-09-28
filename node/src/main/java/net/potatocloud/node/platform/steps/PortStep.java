@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PrepareStep;
 import net.potatocloud.api.service.Service;
+import net.potatocloud.node.utils.PropertiesUtils;
 
 import java.io.FileInputStream;
 import java.io.OutputStream;
@@ -18,18 +19,12 @@ public class PortStep implements PrepareStep {
     public void execute(Service service, Platform platform, Path serverDirectory) {
         if (platform.isBukkitBased()) {
             final Path propertiesPath = serverDirectory.resolve("server.properties");
-            final Properties properties = new Properties();
-
-            try (FileInputStream in = new FileInputStream(propertiesPath.toFile())) {
-                properties.load(in);
-            }
+            final Properties properties = PropertiesUtils.loadProperties(propertiesPath);
 
             properties.setProperty("server-port", String.valueOf(service.getPort()));
             properties.setProperty("query.port", String.valueOf(service.getPort()));
 
-            try (OutputStream out = Files.newOutputStream(propertiesPath)) {
-                properties.store(out, null);
-            }
+            PropertiesUtils.saveProperties(properties, propertiesPath);
             return;
         }
 
@@ -47,17 +42,11 @@ public class PortStep implements PrepareStep {
 
         if (platform.isLimboBased()) {
             final Path propertiesPath = serverDirectory.resolve("server.properties");
-            final Properties properties = new Properties();
-
-            try (FileInputStream in = new FileInputStream(propertiesPath.toFile())) {
-                properties.load(in);
-            }
+            final Properties properties = PropertiesUtils.loadProperties(propertiesPath);
 
             properties.setProperty("server-port", String.valueOf(service.getPort()));
 
-            try (OutputStream out = Files.newOutputStream(propertiesPath)) {
-                properties.store(out, null);
-            }
+            PropertiesUtils.saveProperties(properties, propertiesPath);
         }
     }
 
