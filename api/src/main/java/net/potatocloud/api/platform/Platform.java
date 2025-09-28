@@ -38,4 +38,8 @@ public interface Platform {
     default boolean isVelocityBased() {
         return getBase().equalsIgnoreCase("velocity");
     }
+
+    default boolean isLimboBased() {
+        return getBase().equalsIgnoreCase("limbo");
+    }
 }

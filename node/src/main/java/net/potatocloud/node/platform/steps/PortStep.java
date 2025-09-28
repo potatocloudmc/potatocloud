@@ -44,6 +44,21 @@ public class PortStep implements PrepareStep {
 
             Files.writeString(velocityToml, fileContent);
         }
+
+        if (platform.isLimboBased()) {
+            final Path propertiesPath = serverDirectory.resolve("server.properties");
+            final Properties properties = new Properties();
+
+            try (FileInputStream in = new FileInputStream(propertiesPath.toFile())) {
+                properties.load(in);
+            }
+
+            properties.setProperty("server-port", String.valueOf(service.getPort()));
+
+            try (OutputStream out = Files.newOutputStream(propertiesPath)) {
+                properties.store(out, null);
+            }
+        }
     }
 
     @Override

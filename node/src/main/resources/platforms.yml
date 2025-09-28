@@ -88,3 +88,15 @@ pufferfish:
       download: https://ci.pufferfish.host/job/Pufferfish-1.21/32/artifact/pufferfish-server/build/libs/pufferfish-paperclip-1.21.8-R0.1-SNAPSHOT-mojmap.jar
     - version: 1.20.4
       download: https://ci.pufferfish.host/job/Pufferfish-1.20/52/artifact/build/libs/pufferfish-paperclip-1.20.4-R0.1-SNAPSHOT-reobf.jar
+limbo:
+  base: limbo
+  custom: false
+  proxy: false
+  prepare-steps:
+    - default-files
+    - eula
+    - port
+    - setup-proxy
+  versions:
+    - version: latest
+      download: https://ci.loohpjames.com/job/Limbo/lastSuccessfulBuild/artifact/target/Limbo-0.7.16-ALPHA-1.21.8.jar

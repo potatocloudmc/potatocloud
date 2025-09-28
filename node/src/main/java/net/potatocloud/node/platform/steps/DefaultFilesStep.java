@@ -41,12 +41,21 @@ public class DefaultFilesStep implements PrepareStep {
                     Files.copy(Path.of(config.getDataFolder(), "paper-global.yml"), paperYml);
                 }
             }
+            return;
         }
 
         if (platform.isVelocityBased()) {
             final Path velocityToml = serverDirectory.resolve("velocity.toml");
             if (!Files.exists(velocityToml)) {
                 Files.copy(Path.of(config.getDataFolder(), "velocity.toml"), velocityToml);
+                return;
+            }
+        }
+
+        if (platform.isLimboBased()) {
+            final Path serverProperties = serverDirectory.resolve("server.properties");
+            if (!Files.exists(serverProperties)) {
+                Files.copy(Path.of(config.getDataFolder(), "limbo-server.properties"), serverProperties);
             }
         }
     }
