@@ -45,10 +45,9 @@ public class PlatformManagerImpl implements PlatformManager {
     public void loadPlatformsFile() {
         if (!platformsFile.exists()) {
             try (InputStream stream = getClass().getClassLoader().getResourceAsStream("platforms.yml")) {
-                if (stream == null) {
-                    return;
+                if (stream != null) {
+                    FileUtils.copyInputStreamToFile(stream, platformsFile);
                 }
-                FileUtils.copyInputStreamToFile(stream, platformsFile);
             } catch (IOException e) {
                 logger.error("Failed to copy platforms.yml file");
             }

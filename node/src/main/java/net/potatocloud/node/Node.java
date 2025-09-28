@@ -179,7 +179,7 @@ public class Node extends CloudAPI {
         commandManager.registerCommand(new GroupCommand(logger, groupManager));
         commandManager.registerCommand(new ServiceCommand(logger, serviceManager, groupManager));
         commandManager.registerCommand(new ShutdownCommand(this));
-        commandManager.registerCommand(new PlatformCommand(logger, Path.of(config.getPlatformsFolder()), platformManager, downloadManager));
+        commandManager.registerCommand(new PlatformCommand(logger, platformManager, downloadManager));
         commandManager.registerCommand(new ClearCommand(console));
         commandManager.registerCommand(new HelpCommand(logger, commandManager));
         commandManager.registerCommand(new PlayerCommand(logger, playerManager, serviceManager));
