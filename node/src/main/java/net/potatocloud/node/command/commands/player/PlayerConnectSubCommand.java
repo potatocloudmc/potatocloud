@@ -13,7 +13,7 @@ import net.potatocloud.node.console.Logger;
 import java.util.List;
 
 @RequiredArgsConstructor
-@SubCommandInfo(name = "connect", description = "Connect the given player to the given service", usage = "player connect [&aplayer&8] [&aservice&8]")
+@SubCommandInfo(name = "connect", description = "Connect the given player to the given service", usage = "player connect &8[&aplayer&8] [&aservice&8]")
 public class PlayerConnectSubCommand extends SubCommand implements TabCompleter {
 
     private final CloudPlayerManager playerManager;
