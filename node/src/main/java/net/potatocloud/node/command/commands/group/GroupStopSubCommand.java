@@ -12,8 +12,8 @@ import net.potatocloud.node.console.Logger;
 import java.util.List;
 
 @RequiredArgsConstructor
-@SubCommandInfo(name = "shutdown", description = "Shutdown all services of the given service group", usage = "group shutdown &8[&agroup&8]")
-public class GroupShutdownSubCommand extends SubCommand implements TabCompleter {
+@SubCommandInfo(name = "stop", description = "Stop all services of the given service group", usage = "group stop &8[&agroup&8]")
+public class GroupStopSubCommand extends SubCommand implements TabCompleter {
 
     private final ServiceGroupManager groupManager;
     private final Logger logger;
