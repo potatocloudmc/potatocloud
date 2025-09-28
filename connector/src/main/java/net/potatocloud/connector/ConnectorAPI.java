@@ -1,4 +1,4 @@
-package net.potatocloud.plugin.api.impl;
+package net.potatocloud.connector;
 
 import lombok.Getter;
 import net.potatocloud.api.CloudAPI;
@@ -10,13 +10,13 @@ import net.potatocloud.core.event.ClientEventManager;
 import net.potatocloud.core.networking.NetworkClient;
 import net.potatocloud.core.networking.PacketManager;
 import net.potatocloud.core.networking.netty.NettyNetworkClient;
-import net.potatocloud.plugin.api.impl.group.ServiceGroupManagerImpl;
-import net.potatocloud.plugin.api.impl.platform.PlatformManagerImpl;
-import net.potatocloud.plugin.api.impl.player.CloudPlayerManagerImpl;
-import net.potatocloud.plugin.api.impl.service.ServiceManagerImpl;
+import net.potatocloud.connector.group.ServiceGroupManagerImpl;
+import net.potatocloud.connector.platform.PlatformManagerImpl;
+import net.potatocloud.connector.player.CloudPlayerManagerImpl;
+import net.potatocloud.connector.service.ServiceManagerImpl;
 
 @Getter
-public class PluginCloudAPI extends CloudAPI {
+public class ConnectorAPI extends CloudAPI {
 
     private static final String NODE_HOST = "127.0.0.1";
     private static final int NODE_PORT = Integer.parseInt(System.getProperty("potatocloud.node.port"));
@@ -29,7 +29,7 @@ public class PluginCloudAPI extends CloudAPI {
     private final CloudPlayerManager playerManager;
     private final ClientEventManager eventManager;
 
-    public PluginCloudAPI() {
+    public ConnectorAPI() {
         packetManager = new PacketManager();
 
         client = new NettyNetworkClient(packetManager);
@@ -42,8 +42,8 @@ public class PluginCloudAPI extends CloudAPI {
         eventManager = new ClientEventManager(client);
     }
 
-    public static PluginCloudAPI getInstance() {
-        return (PluginCloudAPI) CloudAPI.getInstance();
+    public static ConnectorAPI getInstance() {
+        return (ConnectorAPI) CloudAPI.getInstance();
     }
 
     @Override

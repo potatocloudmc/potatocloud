@@ -1,4 +1,4 @@
-package net.potatocloud.plugin.api.impl.platform;
+package net.potatocloud.connector.platform;
 
 import lombok.Getter;
 import net.potatocloud.api.platform.Platform;

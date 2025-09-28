@@ -1,4 +1,4 @@
-package net.potatocloud.plugin.api.impl.service;
+package net.potatocloud.connector.service;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import net.potatocloud.core.networking.NetworkClient;
 import net.potatocloud.core.networking.packets.service.ServiceCopyPacket;
 import net.potatocloud.core.networking.packets.service.ServiceExecuteCommandPacket;
 import net.potatocloud.core.networking.packets.service.StopServicePacket;
-import net.potatocloud.plugin.api.impl.PluginCloudAPI;
+import net.potatocloud.connector.ConnectorAPI;
 
 import java.util.Set;
 
@@ -29,7 +29,7 @@ public class ServiceImpl implements Service {
     private ServiceStatus status;
     private int maxPlayers;
 
-    private final NetworkClient client = PluginCloudAPI.getInstance().getClient();
+    private final NetworkClient client = ConnectorAPI.getInstance().getClient();
 
     @Override
     public int getUsedMemory() {

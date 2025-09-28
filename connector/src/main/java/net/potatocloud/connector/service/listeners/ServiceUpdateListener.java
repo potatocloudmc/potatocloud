@@ -1,4 +1,4 @@
-package net.potatocloud.plugin.api.impl.service.listeners;
+package net.potatocloud.connector.service.listeners;
 
 import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.property.Property;

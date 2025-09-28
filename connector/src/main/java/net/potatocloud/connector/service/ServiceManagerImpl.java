@@ -1,4 +1,4 @@
-package net.potatocloud.plugin.api.impl.service;
+package net.potatocloud.connector.service;
 
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
@@ -9,8 +9,8 @@ import net.potatocloud.core.networking.packets.service.RequestServicesPacket;
 import net.potatocloud.core.networking.packets.service.ServiceRemovePacket;
 import net.potatocloud.core.networking.packets.service.ServiceUpdatePacket;
 import net.potatocloud.core.networking.packets.service.StartServicePacket;
-import net.potatocloud.plugin.api.impl.service.listeners.ServiceAddListener;
-import net.potatocloud.plugin.api.impl.service.listeners.ServiceUpdateListener;
+import net.potatocloud.connector.service.listeners.ServiceAddListener;
+import net.potatocloud.connector.service.listeners.ServiceUpdateListener;
 
 import java.util.Collections;
 import java.util.List;

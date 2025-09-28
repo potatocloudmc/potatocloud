@@ -1,4 +1,4 @@
-package net.potatocloud.plugin.api.impl.group;
+package net.potatocloud.connector.group;
 
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
@@ -10,9 +10,9 @@ import net.potatocloud.core.networking.packets.group.GroupAddPacket;
 import net.potatocloud.core.networking.packets.group.GroupDeletePacket;
 import net.potatocloud.core.networking.packets.group.GroupUpdatePacket;
 import net.potatocloud.core.networking.packets.group.RequestGroupsPacket;
-import net.potatocloud.plugin.api.impl.group.listeners.GroupAddListener;
-import net.potatocloud.plugin.api.impl.group.listeners.GroupDeleteListener;
-import net.potatocloud.plugin.api.impl.group.listeners.GroupUpdateListener;
+import net.potatocloud.connector.group.listeners.GroupAddListener;
+import net.potatocloud.connector.group.listeners.GroupDeleteListener;
+import net.potatocloud.connector.group.listeners.GroupUpdateListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
