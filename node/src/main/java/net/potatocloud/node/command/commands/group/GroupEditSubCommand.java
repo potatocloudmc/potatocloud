@@ -25,7 +25,7 @@ public class GroupEditSubCommand extends SubCommand implements TabCompleter {
 
     @Override
     public void execute(String[] args) {
-        if (args.length < 4) {
+        if (args.length < 3) {
             sendUsage();
             return;
         }
@@ -37,8 +37,8 @@ public class GroupEditSubCommand extends SubCommand implements TabCompleter {
             return;
         }
 
-        final String key = args[2].toLowerCase();
-        final String value = args[3];
+        final String key = args[1].toLowerCase();
+        final String value = args[2];
 
         try {
             switch (key) {
