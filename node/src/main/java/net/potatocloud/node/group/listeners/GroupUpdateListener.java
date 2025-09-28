@@ -19,7 +19,7 @@ public class GroupUpdateListener implements PacketListener<GroupUpdatePacket> {
     @Override
     public void onPacket(NetworkConnection connection, GroupUpdatePacket packet) {
         final ServiceGroup group = groupManager.getServiceGroup(packet.getGroupName());
-        if (group == null)  {
+        if (group == null) {
             return;
         }
 

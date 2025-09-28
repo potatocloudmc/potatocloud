@@ -1,7 +1,6 @@
 package net.potatocloud.node.command.commands.service;
 
 import lombok.RequiredArgsConstructor;
-import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.node.command.SubCommand;

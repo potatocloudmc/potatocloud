@@ -2,7 +2,6 @@ package net.potatocloud.plugin.api.impl;
 
 import lombok.Getter;
 import net.potatocloud.api.CloudAPI;
-import net.potatocloud.api.event.EventManager;
 import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.api.platform.PlatformManager;
 import net.potatocloud.api.player.CloudPlayerManager;

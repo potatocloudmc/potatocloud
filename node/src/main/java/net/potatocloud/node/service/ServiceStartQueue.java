@@ -82,7 +82,7 @@ public class ServiceStartQueue extends Thread {
                     }
 
                     final int groupStartPercentage = group.getStartPercentage();
-                    if(groupStartPercentage == -1) { // if this is on -1 no server will be started
+                    if (groupStartPercentage == -1) { // if this is on -1 no server will be started
                         continue;
                     }
 

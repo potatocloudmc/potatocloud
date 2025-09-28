@@ -5,10 +5,7 @@ import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.command.SubCommand;
 import net.potatocloud.node.command.SubCommandInfo;
-import net.potatocloud.node.command.TabCompleter;
 import net.potatocloud.node.setup.setups.GroupConfigurationSetup;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @SubCommandInfo(name = "create", description = "Create a new service group", usage = "group create")
