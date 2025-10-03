@@ -149,7 +149,14 @@ public class GroupConfigurationSetup extends Setup {
 
     @Override
     protected void onFinish(Map<String, String> answers) {
-        if (ProxyUtils.getProxyGroups() != null && ProxyUtils.getProxyGroups().size() > 1) {
+        final String platformName = answers.get("platform");
+        if (platformName == null) {
+            return;
+        }
+
+        final Platform platform = platformManager.getPlatform(platformName);
+
+        if (platform.isProxy() && ProxyUtils.getProxyGroups() != null && ProxyUtils.getProxyGroups().size() > 1) {
             Node.getInstance().getLogger().warn("You have more than one proxy group! This may cause issues");
         }
 
