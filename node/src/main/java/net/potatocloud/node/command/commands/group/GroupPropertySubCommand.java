@@ -5,6 +5,7 @@ import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.api.property.DefaultProperties;
 import net.potatocloud.api.property.Property;
+import net.potatocloud.core.utils.PropertyUtil;
 import net.potatocloud.node.command.SubCommand;
 import net.potatocloud.node.command.SubCommandInfo;
 import net.potatocloud.node.command.TabCompleter;
@@ -71,14 +72,14 @@ public class GroupPropertySubCommand extends SubCommand implements TabCompleter 
                     return;
                 }
 
-                final String key = args[2].toLowerCase();
+                final String key = args[2];
                 final Property<?> property = group.getProperty(key);
                 if (property == null) {
                     logger.info("Property &a" + key + "&7 was &cnot found &7in group &a" + name);
                     return;
                 }
 
-                group.getProperties().remove(property);
+                group.getPropertyMap().remove(property.getName());
                 group.update();
                 logger.info("Property &a" + key + " &7was removed in group &a" + name);
             }
@@ -95,11 +96,12 @@ public class GroupPropertySubCommand extends SubCommand implements TabCompleter 
                     return;
                 }
 
-                final String key = args[2].toLowerCase();
+                final String key = args[2];
                 final String value = args[3];
 
                 try {
-                    group.setProperty(Property.of(key, value, value));
+                    final Property<?> property = PropertyUtil.stringToProperty(key, value);
+                    group.setProperty(property);
                     group.update();
                     logger.info("Property &a" + key + " &7was set to &a" + value + " &7in group &a" + name);
                 } catch (Exception e) {

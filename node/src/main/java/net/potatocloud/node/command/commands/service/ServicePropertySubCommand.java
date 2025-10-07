@@ -5,6 +5,7 @@ import net.potatocloud.api.property.DefaultProperties;
 import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
+import net.potatocloud.core.utils.PropertyUtil;
 import net.potatocloud.node.command.SubCommand;
 import net.potatocloud.node.command.SubCommandInfo;
 import net.potatocloud.node.command.TabCompleter;
@@ -71,14 +72,14 @@ public class ServicePropertySubCommand extends SubCommand implements TabComplete
                     return;
                 }
 
-                final String key = args[2].toLowerCase();
+                final String key = args[2];
                 final Property<?> property = service.getProperty(key);
                 if (property == null) {
                     logger.info("Property &a" + key + "&7 was &cnot found &7in service &a" + name);
                     return;
                 }
 
-                service.getProperties().remove(property);
+                service.getPropertyMap().remove(property.getName());
                 service.update();
                 logger.info("Property &a" + key + " &7was removed in service &a" + name);
             }
@@ -95,11 +96,12 @@ public class ServicePropertySubCommand extends SubCommand implements TabComplete
                     return;
                 }
 
-                final String key = args[2].toLowerCase();
+                final String key = args[2];
                 final String value = args[3];
 
                 try {
-                    service.setProperty(Property.of(key, value, value));
+                    final Property<?> property = PropertyUtil.stringToProperty(key, value);
+                    service.setProperty(property);
                     service.update();
                     logger.info("Property &a" + key + " &7was set to &a" + value + " &7in service &a" + name);
                 } catch (Exception e) {

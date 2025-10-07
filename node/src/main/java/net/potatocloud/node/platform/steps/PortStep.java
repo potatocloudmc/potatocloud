@@ -4,7 +4,7 @@ import lombok.SneakyThrows;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PrepareStep;
 import net.potatocloud.api.service.Service;
-import net.potatocloud.node.utils.PropertiesUtils;
+import net.potatocloud.node.utils.PropertiesFileUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,12 +17,12 @@ public class PortStep implements PrepareStep {
     public void execute(Service service, Platform platform, Path serverDirectory) {
         if (platform.isBukkitBased()) {
             final Path propertiesPath = serverDirectory.resolve("server.properties");
-            final Properties properties = PropertiesUtils.loadProperties(propertiesPath);
+            final Properties properties = PropertiesFileUtils.loadProperties(propertiesPath);
 
             properties.setProperty("server-port", String.valueOf(service.getPort()));
             properties.setProperty("query.port", String.valueOf(service.getPort()));
 
-            PropertiesUtils.saveProperties(properties, propertiesPath);
+            PropertiesFileUtils.saveProperties(properties, propertiesPath);
             return;
         }
 
@@ -40,11 +40,11 @@ public class PortStep implements PrepareStep {
 
         if (platform.isLimboBased()) {
             final Path propertiesPath = serverDirectory.resolve("server.properties");
-            final Properties properties = PropertiesUtils.loadProperties(propertiesPath);
+            final Properties properties = PropertiesFileUtils.loadProperties(propertiesPath);
 
             properties.setProperty("server-port", String.valueOf(service.getPort()));
 
-            PropertiesUtils.saveProperties(properties, propertiesPath);
+            PropertiesFileUtils.saveProperties(properties, propertiesPath);
         }
     }
 

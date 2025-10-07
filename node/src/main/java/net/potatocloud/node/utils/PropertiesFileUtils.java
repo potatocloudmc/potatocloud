@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.util.Properties;
 
 @UtilityClass
-public class PropertiesUtils {
+public class PropertiesFileUtils {
 
     @SneakyThrows
     public Properties loadProperties(Path file) {

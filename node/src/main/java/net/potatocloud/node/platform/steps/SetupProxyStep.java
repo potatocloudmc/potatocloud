@@ -5,7 +5,7 @@ import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PrepareStep;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.node.platform.VelocityForwardingSecret;
-import net.potatocloud.node.utils.PropertiesUtils;
+import net.potatocloud.node.utils.PropertiesFileUtils;
 import net.potatocloud.node.utils.ProxyUtils;
 import org.simpleyaml.configuration.file.YamlFile;
 
@@ -36,7 +36,7 @@ public class SetupProxyStep implements PrepareStep {
 
         if (platform.isLimboBased()) {
             final Path propertiesPath = serverDirectory.resolve("server.properties");
-            final Properties properties = PropertiesUtils.loadProperties(propertiesPath);
+            final Properties properties = PropertiesFileUtils.loadProperties(propertiesPath);
 
             if (!ProxyUtils.isProxyModernForwarding()) {
                 properties.setProperty("bungeecord", "true");
@@ -45,7 +45,7 @@ public class SetupProxyStep implements PrepareStep {
                 properties.setProperty("velocity-modern", "true");
             }
 
-            PropertiesUtils.saveProperties(properties, propertiesPath);
+            PropertiesFileUtils.saveProperties(properties, propertiesPath);
         }
     }
 

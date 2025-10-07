@@ -8,6 +8,7 @@ import net.potatocloud.api.property.DefaultProperties;
 import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
+import net.potatocloud.core.utils.PropertyUtil;
 import net.potatocloud.plugins.cloudcommand.MessagesConfig;
 
 import java.util.ArrayList;
@@ -186,16 +187,16 @@ public class ServiceSubCommand {
                     return;
                 }
 
-                final String key = args[4].toLowerCase();
-                final Property<?> prop = service.getProperty(key);
+                final String key = args[4];
+                final Property<?> property = service.getProperty(key);
 
-                if (prop == null) {
+                if (property == null) {
                     player.sendMessage(messages.get("service.property.not-found")
                             .replaceText(text -> text.match("%key%").replacement(key)));
                     return;
                 }
 
-                service.getProperties().remove(prop);
+                service.getPropertyMap().remove(property.getName());
                 service.update();
 
                 player.sendMessage(messages.get("service.property.remove.success")
@@ -213,7 +214,8 @@ public class ServiceSubCommand {
                 final String value = args[5];
 
                 try {
-                    service.setProperty(Property.of(key, value, value));
+                    final Property<?> property = PropertyUtil.stringToProperty(key, value);
+                    service.setProperty(property);
                     service.update();
 
                     player.sendMessage(messages.get("service.property.set.success")
