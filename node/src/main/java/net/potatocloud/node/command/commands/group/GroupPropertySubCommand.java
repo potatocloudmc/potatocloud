@@ -54,7 +54,7 @@ public class GroupPropertySubCommand extends SubCommand implements TabCompleter 
                 }
 
                 logger.info("Properties of group &a" + name + "&8:");
-                for (Property property : properties) {
+                for (Property<?> property : properties) {
                     logger.info("&8» &a" + property.getName() + " &7- " + property.getValue());
                 }
             }
@@ -72,7 +72,7 @@ public class GroupPropertySubCommand extends SubCommand implements TabCompleter 
                 }
 
                 final String key = args[2].toLowerCase();
-                final Property property = group.getProperty(key);
+                final Property<?> property = group.getProperty(key);
                 if (property == null) {
                     logger.info("Property &a" + key + "&7 was &cnot found &7in group &a" + name);
                     return;

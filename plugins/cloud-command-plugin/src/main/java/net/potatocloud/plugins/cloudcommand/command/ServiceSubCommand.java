@@ -173,7 +173,7 @@ public class ServiceSubCommand {
                 player.sendMessage(messages.get("service.property.list.header")
                         .replaceText(text -> text.match("%name%").replacement(name)));
 
-                for (Property property : props) {
+                for (Property<?> property : props) {
                     player.sendMessage(messages.get("service.property.list.entry")
                             .replaceText(text -> text.match("%key%").replacement(property.getName()))
                             .replaceText(text -> text.match("%value%").replacement(String.valueOf(property.getValue()))));
@@ -187,7 +187,7 @@ public class ServiceSubCommand {
                 }
 
                 final String key = args[4].toLowerCase();
-                final Property prop = service.getProperty(key);
+                final Property<?> prop = service.getProperty(key);
 
                 if (prop == null) {
                     player.sendMessage(messages.get("service.property.not-found")

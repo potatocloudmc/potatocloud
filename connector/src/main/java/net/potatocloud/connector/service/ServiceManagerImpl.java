@@ -28,9 +28,8 @@ public class ServiceManagerImpl implements ServiceManager {
 
         client.registerPacketListener(PacketIds.SERVICE_ADD, new ServiceAddListener(this));
 
-        client.registerPacketListener(PacketIds.SERVICE_REMOVE, (NetworkConnection connection, ServiceRemovePacket packet) -> {
-            services.remove(getService(packet.getServiceName()));
-        });
+        client.registerPacketListener(PacketIds.SERVICE_REMOVE, (NetworkConnection connection, ServiceRemovePacket packet) ->
+                services.remove(getService(packet.getServiceName())));
 
         client.registerPacketListener(PacketIds.SERVICE_UPDATE, new ServiceUpdateListener(this));
     }

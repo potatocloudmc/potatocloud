@@ -120,7 +120,7 @@ public class GroupSubCommand {
                 player.sendMessage(messages.get("group.property.list.header")
                         .replaceText(text -> text.match("%name%").replacement(name)));
 
-                for (Property property : props) {
+                for (Property<?> property : props) {
                     player.sendMessage(messages.get("group.property.list.entry")
                             .replaceText(text -> text.match("%key%").replacement(property.getName()))
                             .replaceText(text -> text.match("%value%").replacement(String.valueOf(property.getValue()))));
@@ -134,7 +134,7 @@ public class GroupSubCommand {
                 }
 
                 final String key = args[4].toLowerCase();
-                final Property prop = group.getProperty(key);
+                final Property<?> prop = group.getProperty(key);
 
                 if (prop == null) {
                     player.sendMessage(messages.get("group.property.not-found")

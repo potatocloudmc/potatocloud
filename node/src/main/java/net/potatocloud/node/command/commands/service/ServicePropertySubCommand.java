@@ -54,7 +54,7 @@ public class ServicePropertySubCommand extends SubCommand implements TabComplete
                 }
 
                 logger.info("Properties of service &a" + name + "&8:");
-                for (Property property : properties) {
+                for (Property<?> property : properties) {
                     logger.info("&8» &a" + property.getName() + " &7- " + property.getValue());
                 }
             }
@@ -72,7 +72,7 @@ public class ServicePropertySubCommand extends SubCommand implements TabComplete
                 }
 
                 final String key = args[2].toLowerCase();
-                final Property property = service.getProperty(key);
+                final Property<?> property = service.getProperty(key);
                 if (property == null) {
                     logger.info("Property &a" + key + "&7 was &cnot found &7in service &a" + name);
                     return;
