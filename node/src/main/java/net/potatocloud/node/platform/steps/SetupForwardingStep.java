@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PrepareStep;
 import net.potatocloud.api.property.DefaultProperties;
+import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.node.platform.VelocityForwardingSecret;
 import net.potatocloud.node.utils.ProxyUtils;
@@ -46,7 +47,9 @@ public class SetupForwardingStep implements PrepareStep {
             Files.writeString(velocityToml, fileContent);
         }
 
-        final boolean alwaysOverride = service.getServiceGroup().getProperty(DefaultProperties.ALWAYS_OVERRIDE_FORWARDING_SECRET).getValue();
+        // if the group does not have the property, use the properties default
+        final Property<Boolean> property = service.getServiceGroup().getProperty(DefaultProperties.ALWAYS_OVERRIDE_FORWARDING_SECRET);
+        final boolean alwaysOverride = property != null ? property.getValue() : DefaultProperties.ALWAYS_OVERRIDE_FORWARDING_SECRET.getDefaultValue();
 
         // now create the forwarding secret file with the correct secret
         if (!Files.exists(forwardingSecret) || alwaysOverride) {

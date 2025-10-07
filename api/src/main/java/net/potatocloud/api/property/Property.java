@@ -14,6 +14,10 @@ public class Property<T> {
     @Setter
     private T value;
 
+    public T getValue() {
+        return value != null ? value : defaultValue;
+    }
+
     public static Property<String> ofString(String name, String defaultValue) {
         return new Property<>(name, defaultValue, defaultValue);
     }
