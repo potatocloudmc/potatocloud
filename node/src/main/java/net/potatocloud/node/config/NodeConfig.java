@@ -29,7 +29,7 @@ public class NodeConfig {
     private String dataFolder = "data";
 
     private String nodeHost = "127.0.0.1";
-    private int nodePort = 9000;
+    private int nodePort = 3434;
 
     @SneakyThrows
     public NodeConfig() {
