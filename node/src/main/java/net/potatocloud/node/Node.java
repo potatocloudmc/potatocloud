@@ -32,6 +32,7 @@ import net.potatocloud.node.service.ServiceManagerImpl;
 import net.potatocloud.node.service.ServiceStartQueue;
 import net.potatocloud.node.setup.SetupManager;
 import net.potatocloud.node.template.TemplateManager;
+import net.potatocloud.node.utils.PortCheckUtil;
 import net.potatocloud.node.version.UpdateChecker;
 import net.potatocloud.node.version.VersionFile;
 import org.apache.commons.io.FileUtils;
@@ -68,6 +69,12 @@ public class Node extends CloudAPI {
         this.startupTime = startupTime;
 
         config = new NodeConfig();
+
+        if (PortCheckUtil.isPortInUse(config.getNodeHost(), config.getNodePort())) {
+            System.err.println("The configured node port is already in use. Is another instance of potatocloud already running on this port?");
+            System.exit(0);
+        }
+
         previousVersion = VersionFile.getVersion();
         VersionFile.create();
 
