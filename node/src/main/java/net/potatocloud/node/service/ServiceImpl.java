@@ -22,6 +22,7 @@ import net.potatocloud.node.console.Console;
 import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.platform.DownloadManager;
 import net.potatocloud.node.platform.PlatformManagerImpl;
+import net.potatocloud.node.platform.PlatformPrepareSteps;
 import net.potatocloud.node.platform.PlatformUtils;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.screen.ScreenManager;
@@ -198,7 +199,7 @@ public class ServiceImpl implements Service {
 
         // execute the prepare steps
         for (String step : platform.getPrepareSteps()) {
-            platformManager.getStep(step).execute(this, platform, directory);
+            PlatformPrepareSteps.getStep(step).execute(this, platform, directory);
         }
 
         // create start arguments
