@@ -5,7 +5,6 @@ import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformManager;
 import net.potatocloud.core.networking.NetworkClient;
 import net.potatocloud.core.networking.NetworkConnection;
-import net.potatocloud.core.networking.Packet;
 import net.potatocloud.core.networking.PacketIds;
 import net.potatocloud.core.networking.packets.platform.PlatformAddPacket;
 import net.potatocloud.core.networking.packets.platform.PlatformRemovePacket;

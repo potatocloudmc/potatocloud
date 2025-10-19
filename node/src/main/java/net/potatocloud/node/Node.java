@@ -118,7 +118,7 @@ public class Node extends CloudAPI {
 
         ServiceDefaultFiles.copyDefaultFiles(logger, config, getClass().getClassLoader());
         serviceManager = new ServiceManagerImpl(
-                config, logger, server, eventManager, groupManager, screenManager, templateManager, platformManager, downloadManager, console
+                config, logger, server, eventManager, groupManager, screenManager, templateManager, platformManager, downloadManager, cacheManager, console
         );
         serviceStartQueue = new ServiceStartQueue(groupManager, serviceManager);
 

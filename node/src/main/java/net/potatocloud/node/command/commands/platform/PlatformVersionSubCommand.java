@@ -45,9 +45,9 @@ public class PlatformVersionSubCommand extends SubCommand implements TabComplete
                     return;
                 }
 
-                //todo clean
-                Node.getInstance().getSetupManager().startSetup(
-                        new AddVersionToPlatformSetup(Node.getInstance().getConsole(), Node.getInstance().getScreenManager(), platform, Node.getInstance().getLogger()));
+                final Node node = Node.getInstance();
+
+                node.getSetupManager().startSetup(new AddVersionToPlatformSetup(node.getConsole(), node.getScreenManager(), platform, node.getLogger()));
             }
 
             case "remove" -> {
@@ -116,7 +116,7 @@ public class PlatformVersionSubCommand extends SubCommand implements TabComplete
                 logger.info("Information for version &a" + version.getFullName() + "&8:");
                 logger.info("&8» &7Platform: &a" + version.getPlatformName());
                 logger.info("&8» &7Legacy: " + (version.isLegacy() ? "&cYes" : "&aNo"));
-                logger.info("&8» &7Download URL: "+ (version.getDownloadUrl() != null ? version.getDownloadUrl() : "&aAuto generated"));
+                logger.info("&8» &7Download URL: " + (version.getDownloadUrl() != null ? version.getDownloadUrl() : "&aAuto generated"));
             }
 
             default -> sendUsage();

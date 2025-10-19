@@ -16,7 +16,6 @@ import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.ServiceStatus;
 import net.potatocloud.core.networking.NetworkServer;
 import net.potatocloud.core.networking.packets.service.ServiceRemovePacket;
-import net.potatocloud.node.Node;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.console.Console;
 import net.potatocloud.node.console.Logger;
@@ -24,6 +23,7 @@ import net.potatocloud.node.platform.DownloadManager;
 import net.potatocloud.node.platform.PlatformManagerImpl;
 import net.potatocloud.node.platform.PlatformPrepareSteps;
 import net.potatocloud.node.platform.PlatformUtils;
+import net.potatocloud.node.platform.cache.CacheManager;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.template.TemplateManager;
@@ -58,6 +58,7 @@ public class ServiceImpl implements Service {
     private final TemplateManager templateManager;
     private final PlatformManagerImpl platformManager;
     private final DownloadManager downloadManager;
+    private final CacheManager cacheManager;
 
     private final EventManager eventManager;
     private final ServiceManager serviceManager;
@@ -94,6 +95,7 @@ public class ServiceImpl implements Service {
             TemplateManager templateManager,
             PlatformManagerImpl platformManager,
             DownloadManager downloadManager,
+            CacheManager cacheManager,
             EventManager eventManager,
             ServiceManager serviceManager,
             Console console
@@ -108,6 +110,7 @@ public class ServiceImpl implements Service {
         this.templateManager = templateManager;
         this.platformManager = platformManager;
         this.downloadManager = downloadManager;
+        this.cacheManager = cacheManager;
         this.eventManager = eventManager;
         this.serviceManager = serviceManager;
         this.console = console;
@@ -187,9 +190,9 @@ public class ServiceImpl implements Service {
 
         downloadManager.downloadPlatformVersion(platform, platform.getVersion(serviceGroup.getPlatformVersionName()));
 
-        final Path cacheFolder = Node.getInstance().getCacheManager().preCachePlatform(serviceGroup);
+        final Path cacheFolder = cacheManager.preCachePlatform(serviceGroup);
 
-        Node.getInstance().getCacheManager().copyCacheToService(serviceGroup, cacheFolder, directory);
+        cacheManager.copyCacheToService(serviceGroup, cacheFolder, directory);
 
         // copy server file
         final File platformFile = PlatformUtils.getPlatformJarFile(platform, version);

@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 @UtilityClass
-public  class PortCheckUtil {
+public class PortCheckUtil {
 
     public boolean isPortInUse(String host, int port) {
         try (Socket socket = new Socket(host, port)) {

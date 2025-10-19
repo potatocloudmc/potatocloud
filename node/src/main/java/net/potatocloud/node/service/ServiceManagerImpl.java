@@ -14,6 +14,7 @@ import net.potatocloud.node.console.Console;
 import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.platform.DownloadManager;
 import net.potatocloud.node.platform.PlatformManagerImpl;
+import net.potatocloud.node.platform.cache.CacheManager;
 import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.service.listeners.*;
 import net.potatocloud.node.template.TemplateManager;
@@ -37,6 +38,7 @@ public class ServiceManagerImpl implements ServiceManager {
     private final TemplateManager templateManager;
     private final PlatformManagerImpl platformManager;
     private final DownloadManager downloadManager;
+    private final CacheManager cacheManager;
     private final Console console;
 
     public ServiceManagerImpl(
@@ -49,6 +51,7 @@ public class ServiceManagerImpl implements ServiceManager {
             TemplateManager templateManager,
             PlatformManagerImpl platformManager,
             DownloadManager downloadManager,
+            CacheManager cacheManager,
             Console console
     ) {
         this.config = config;
@@ -60,6 +63,7 @@ public class ServiceManagerImpl implements ServiceManager {
         this.templateManager = templateManager;
         this.platformManager = platformManager;
         this.downloadManager = downloadManager;
+        this.cacheManager = cacheManager;
         this.console = console;
 
         server.registerPacketListener(PacketIds.REQUEST_SERVICES, new RequestServicesListener(this));
@@ -114,6 +118,7 @@ public class ServiceManagerImpl implements ServiceManager {
                 templateManager,
                 platformManager,
                 downloadManager,
+                cacheManager,
                 eventManager,
                 this,
                 console
