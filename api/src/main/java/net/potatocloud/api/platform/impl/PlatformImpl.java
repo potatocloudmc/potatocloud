@@ -23,7 +23,9 @@ public class PlatformImpl implements Platform {
     private final String parser;
     private final String hashType;
 
-    private final List<PlatformVersion> versions = new ArrayList<>();
+    @Setter
+    private List<PlatformVersion> versions = new ArrayList<>();
+
     private final List<String> prepareSteps = new ArrayList<>();
 
     @Override

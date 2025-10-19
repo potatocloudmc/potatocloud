@@ -4,6 +4,7 @@ import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformManager;
 import net.potatocloud.core.networking.NetworkServer;
 import net.potatocloud.core.networking.PacketIds;
+import net.potatocloud.core.networking.packets.platform.PlatformUpdatePacket;
 import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.platform.listeners.RequestPlatformsListener;
 
@@ -34,7 +35,8 @@ public class PlatformManagerImpl implements PlatformManager {
 
     @Override
     public void updatePlatform(Platform platform) {
-        //todo broadcast packet to notify connector
+        server.broadcastPacket(new PlatformUpdatePacket(platform));
+
         fileHandler.updatePlatform(platform);
     }
 }

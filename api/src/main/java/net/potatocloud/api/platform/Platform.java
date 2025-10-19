@@ -16,6 +16,8 @@ public interface Platform {
 
     List<PlatformVersion> getVersions();
 
+    void setVersions(List<PlatformVersion> versions);
+
     List<String> getPrepareSteps();
 
     String getBase();
