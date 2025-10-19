@@ -11,6 +11,7 @@ import net.potatocloud.node.command.TabCompleter;
 import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.setup.setups.AddVersionToPlatformSetup;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -68,7 +69,11 @@ public class PlatformVersionSubCommand extends SubCommand implements TabComplete
                     return;
                 }
 
-                // todo remove platform
+                final List<PlatformVersion> versions = new ArrayList<>(platform.getVersions());
+                versions.remove(version);
+                platform.setVersions(versions);
+                platform.update();
+
                 logger.info("Version &a" + version.getName() + " &7was removed from platform &a" + platform.getName());
             }
 
