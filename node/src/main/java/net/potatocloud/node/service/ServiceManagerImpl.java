@@ -9,7 +9,6 @@ import net.potatocloud.core.networking.NetworkServer;
 import net.potatocloud.core.networking.PacketIds;
 import net.potatocloud.core.networking.packets.service.ServiceAddPacket;
 import net.potatocloud.core.networking.packets.service.ServiceUpdatePacket;
-import net.potatocloud.node.Node;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.console.Console;
 import net.potatocloud.node.console.Logger;
