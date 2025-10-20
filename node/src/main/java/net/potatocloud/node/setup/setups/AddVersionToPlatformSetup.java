@@ -80,6 +80,6 @@ public class AddVersionToPlatformSetup extends Setup {
 
     @Override
     public String getName() {
-        return "Add Version";
+        return "Add Platform Version";
     }
 }
