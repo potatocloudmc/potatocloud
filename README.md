@@ -7,7 +7,7 @@ A simple "cloud" system for Minecraft servers that is performant, customizable a
 - Velocity (3.3.0-SNAPSHOT - current)
 - Purpur (1.20.4 - current)
 - PandaSpigot (1.8.8 - 1.8.9)
-- [Limbo](https://github.com/LOOHP/Limbo) (1.21.8)
+- [Limbo](https://github.com/LOOHP/Limbo) (1.21.8, 1.21.10)
 - Custom Platforms 
 
 ## Optional Plugins
