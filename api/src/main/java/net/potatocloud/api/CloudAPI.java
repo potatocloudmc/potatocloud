@@ -37,5 +37,4 @@ public abstract class CloudAPI {
     public Service getThisService() {
         return getServiceManager().getCurrentService();
     }
-
 }

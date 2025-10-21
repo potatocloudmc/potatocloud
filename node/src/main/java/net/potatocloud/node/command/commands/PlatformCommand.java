@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.platform.PlatformManager;
 import net.potatocloud.node.command.Command;
 import net.potatocloud.node.command.CommandInfo;
-import net.potatocloud.node.command.commands.platform.PlatformDownloadSubCommand;
-import net.potatocloud.node.command.commands.platform.PlatformInfoSubCommand;
-import net.potatocloud.node.command.commands.platform.PlatformListSubCommand;
-import net.potatocloud.node.command.commands.platform.PlatformVersionSubCommand;
+import net.potatocloud.node.command.commands.platform.*;
 import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.platform.DownloadManager;
 
@@ -20,6 +17,7 @@ public class PlatformCommand extends Command {
         addSubCommand(new PlatformListSubCommand(platformManager, logger));
         addSubCommand(new PlatformInfoSubCommand(platformManager, logger));
         addSubCommand(new PlatformVersionSubCommand(platformManager, logger));
+        addSubCommand(new PlatformCreateSubCommand());
     }
 
     @Override

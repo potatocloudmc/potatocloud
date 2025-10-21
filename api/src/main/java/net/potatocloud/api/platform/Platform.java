@@ -46,7 +46,7 @@ public interface Platform {
     }
 
     default boolean isBukkitBased() {
-        return getBase().equalsIgnoreCase("bukkit") || isPaperBased();
+        return getBase().equalsIgnoreCase("bukkit") || getBase().equalsIgnoreCase("spigot") || isPaperBased();
     }
 
     default boolean isPaperBased() {

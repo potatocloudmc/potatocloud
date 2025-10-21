@@ -1,8 +1,6 @@
 package net.potatocloud.api.platform.impl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformVersion;
 
@@ -12,6 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @RequiredArgsConstructor
+@EqualsAndHashCode(of = "name")
 public class PlatformImpl implements Platform {
 
     private final String name;
@@ -22,11 +21,10 @@ public class PlatformImpl implements Platform {
     private final String preCacheBuilder;
     private final String parser;
     private final String hashType;
+    private final List<String> prepareSteps;
 
     @Setter
     private List<PlatformVersion> versions = new ArrayList<>();
-
-    private final List<String> prepareSteps = new ArrayList<>();
 
     @Override
     public void addVersion(PlatformVersion version) {

@@ -150,6 +150,7 @@ public class PacketBuffer {
         writeString(platform.getPreCacheBuilder());
         writeString(platform.getParser());
         writeString(platform.getHashType());
+        writeStringList(platform.getPrepareSteps());
 
         writeInt(platform.getVersions().size());
         for (PlatformVersion version : platform.getVersions()) {
@@ -159,8 +160,6 @@ public class PacketBuffer {
             writeString(version.getFileHash());
             writeBoolean(version.isLegacy());
         }
-
-        writeStringList(platform.getPrepareSteps());
     }
 
     public Platform readPlatform() {
@@ -172,8 +171,10 @@ public class PacketBuffer {
         final String preCacheBuilder = readString();
         final String parser = readString();
         final String hashType = readString();
+        final List<String> prepareSteps = readStringList();
 
-        final PlatformImpl platform = new PlatformImpl(name, downloadUrl, custom, isProxy, base, preCacheBuilder, parser, hashType);
+        final PlatformImpl platform = new PlatformImpl(
+                name, downloadUrl, custom, isProxy, base, preCacheBuilder, parser, hashType, prepareSteps);
 
         final int versionCount = readInt();
         for (int i = 0; i < versionCount; i++) {
@@ -188,8 +189,6 @@ public class PacketBuffer {
             platform.getVersions().add(version);
         }
 
-        platform.getPrepareSteps().addAll(readStringList());
         return platform;
     }
-
 }

@@ -3,6 +3,7 @@ package net.potatocloud.connector.platform;
 import lombok.Getter;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformManager;
+import net.potatocloud.api.platform.impl.PlatformImpl;
 import net.potatocloud.core.networking.NetworkClient;
 import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketIds;
@@ -41,6 +42,28 @@ public class PlatformManagerImpl implements PlatformManager {
         });
 
         client.send(new RequestPlatformsPacket());
+    }
+
+
+    @Override
+    public Platform createPlatform(String name, String downloadUrl, boolean custom, boolean isProxy, String base, String preCacheBuilder, String parser, String hashType, List<String> prepareSteps) {
+        final Platform platform = new PlatformImpl(
+                name,
+                downloadUrl,
+                custom,
+                isProxy,
+                base,
+                preCacheBuilder,
+                parser,
+                hashType,
+                prepareSteps
+        );
+
+        platforms.add(platform);
+
+        client.send(new PlatformAddPacket(platform));
+
+        return platform;
     }
 
     @Override
