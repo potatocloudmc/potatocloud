@@ -15,7 +15,6 @@ public class ServiceProcessChecker extends Thread {
         setName("ServiceProcessChecker-" + service.getName());
     }
 
-
     @Override
     public void run() {
         while (!isInterrupted() && service.isOnline() && service.getServerProcess() != null && service.getServerProcess().isAlive()) {

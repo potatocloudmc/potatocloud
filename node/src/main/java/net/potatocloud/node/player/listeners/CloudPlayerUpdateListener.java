@@ -24,9 +24,9 @@ public class CloudPlayerUpdateListener implements PacketListener<CloudPlayerUpda
         player.setConnectedProxyName(packet.getConnectedProxyName());
         player.setConnectedServiceName(packet.getConnectedServiceName());
 
-        player.getProperties().clear();
-        for (Property property : packet.getProperties()) {
-            player.setProperty(property, property.getValue(), false);
+        player.getPropertyMap().clear();
+        for (Property<?> property : packet.getPropertyMap().values()) {
+            player.setProperty((Property) property, property.getValue(), false);
         }
 
         Node.getInstance().getServer().getConnectedSessions().stream()

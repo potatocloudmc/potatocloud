@@ -7,6 +7,8 @@ A simple "cloud" system for Minecraft servers that is performant, customizable a
 - Velocity (3.3.0-SNAPSHOT - current)
 - Purpur (1.20.4 - current)
 - PandaSpigot (1.8.8 - 1.8.9)
+- [Limbo](https://github.com/LOOHP/Limbo) (1.21.8, 1.21.10)
+- Custom Platforms 
 
 ## Optional Plugins
 
@@ -34,7 +36,7 @@ A simple "cloud" system for Minecraft servers that is performant, customizable a
         <dependency>
             <groupId>com.github.potatocloudmc.potatocloud</groupId>
             <artifactId>api</artifactId>
-            <version>1.2.0</version>
+            <version>1.3.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -48,10 +50,9 @@ repositories {
 }
 
 dependencies {
-    compileOnly("com.github.potatocloudmc.potatocloud:api:v1.2.0")
+    compileOnly("com.github.potatocloudmc.potatocloud:api:1.3.0")
 }
 ```
-
 
 ### You can access the API by using:
 
@@ -68,18 +69,19 @@ CloudPlayerManager playerManager = api.getCloudPlayerManager();
 ## Property System Example
 
 ```java
-// default property which can be found in the propety class
-Property gameState = Property.GAME_STATE;
+// Example default property from DefaultProperties (more properties can be found in the class)
+Property<String> gameState = DefaultProperties.GAME_STATE;
 
-// custom property
-Property custom = Property.ofString("server_owner", "me");
+// Custom property
+Property<String> custom = Property.ofString("server_owner", "me");
 
-// setting a property and overwriting the default value (optional)
-// properties can be set for groups, services and players
+// Setting a property and optionally overwriting the default value
+// Properties can be set for groups, services, or players
 holder.setProperty(custom, "Player123");
 
-// getting the value of a property
-Object value = holder.getProperty("server_owner").getValue();
+// Getting the value of a property (use name or object)
+Property<String> property = holder.getProperty("server_owner");
+String serverOwner = property.getValue();
 ```
 ## ☁️ Test Server
 

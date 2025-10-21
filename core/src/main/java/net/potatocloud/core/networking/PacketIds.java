@@ -25,4 +25,9 @@ public class PacketIds {
 
     public static final int EVENT = 300;
 
+    public static final int PLATFORM_ADD = 400;
+    public static final int PLATFORM_REMOVE = 401;
+    public static final int REQUEST_PLATFORMS = 402;
+    public static final int PLATFORM_UPDATE = 403;
+
 }

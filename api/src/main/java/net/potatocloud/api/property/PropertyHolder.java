@@ -3,36 +3,42 @@ package net.potatocloud.api.property;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.event.events.property.PropertyChangedEvent;
 
-import java.util.Objects;
-import java.util.Set;
+import java.util.List;
+import java.util.Map;
 
 public interface PropertyHolder {
 
-    Set<Property> getProperties();
+    Map<String, Property<?>> getPropertyMap();
+
+    default List<Property<?>> getProperties() {
+        return getPropertyMap().values().stream().toList();
+    }
 
     String getPropertyHolderName();
 
-    default Property getProperty(String name) {
-        return getProperties().stream()
-                .filter(property -> property.getName().equalsIgnoreCase(name))
-                .findFirst()
-                .orElse(null);
+    default <T> Property<T> getProperty(String name) {
+        return (Property<T>) getPropertyMap().get(name);
     }
 
-    default void setProperty(Property property, Object value, boolean fireEvent) {
-        final Property existingProperty = getProperty(property.getName());
+    default <T> Property<T> getProperty(Property<T> property) {
+        return getProperty(property.getName());
+    }
+
+    default <T> void setProperty(Property<T> property, T value, boolean fireEvent) {
+        final Property<T> existing = getProperty(property.getName());
         Object oldValue = null;
 
-        if (existingProperty != null) {
-            oldValue = existingProperty.getValue();
-            if (Objects.equals(oldValue, value)) {
+        if (existing != null) {
+            oldValue = existing.getValue();
+            if (oldValue.equals(value)) {
                 return;
             }
-            existingProperty.setValue(value);
-            property = existingProperty;
+
+            existing.setValue(value);
+            property = existing;
         } else {
             property.setValue(value);
-            getProperties().add(property);
+            getPropertyMap().put(property.getName(), property);
         }
 
         if (fireEvent) {
@@ -42,15 +48,19 @@ public interface PropertyHolder {
         }
     }
 
-    default void setProperty(Property property, Object value) {
+    default <T> void setProperty(Property<T> property, T value) {
         setProperty(property, value, true);
     }
 
-    default void setProperty(Property property) {
+    default <T> void setProperty(Property<T> property) {
         setProperty(property, property.getValue());
     }
 
-    default boolean hasProperty(Property property) {
-        return getProperties().contains(property);
+    default boolean hasProperty(String name) {
+        return getPropertyMap().containsKey(name);
+    }
+
+    default boolean hasProperty(Property<?> property) {
+        return getPropertyMap().containsValue(property);
     }
 }

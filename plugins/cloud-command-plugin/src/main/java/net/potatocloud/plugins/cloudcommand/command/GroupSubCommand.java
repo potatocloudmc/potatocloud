@@ -6,13 +6,14 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
+import net.potatocloud.api.property.DefaultProperties;
 import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
+import net.potatocloud.core.utils.PropertyUtil;
 import net.potatocloud.plugins.cloudcommand.MessagesConfig;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @RequiredArgsConstructor
 public class GroupSubCommand {
@@ -48,7 +49,7 @@ public class GroupSubCommand {
 
         player.sendMessage(messages.get("group.info.name").replaceText(text -> text.match("%name%").replacement(name)));
         player.sendMessage(messages.get("group.info.platform")
-                .replaceText(text -> text.match("%platform%").replacement(group.getPlatform().getFullName())));
+                .replaceText(text -> text.match("%platform%").replacement(group.getPlatform().getName())));
         player.sendMessage(messages.get("group.info.templates")
                 .replaceText(text -> text.match("%templates%").replacement(String.join(", ", group.getServiceTemplates()))));
         player.sendMessage(messages.get("group.info.min-online")
@@ -109,7 +110,7 @@ public class GroupSubCommand {
 
         switch (sub) {
             case "list" -> {
-                final Set<Property> props = group.getProperties();
+                final List<Property<?>> props = group.getProperties();
 
                 if (props.isEmpty()) {
                     player.sendMessage(messages.get("group.property.empty")
@@ -120,7 +121,7 @@ public class GroupSubCommand {
                 player.sendMessage(messages.get("group.property.list.header")
                         .replaceText(text -> text.match("%name%").replacement(name)));
 
-                for (Property property : props) {
+                for (Property<?> property : props) {
                     player.sendMessage(messages.get("group.property.list.entry")
                             .replaceText(text -> text.match("%key%").replacement(property.getName()))
                             .replaceText(text -> text.match("%value%").replacement(String.valueOf(property.getValue()))));
@@ -133,16 +134,16 @@ public class GroupSubCommand {
                     return;
                 }
 
-                final String key = args[4].toLowerCase();
-                final Property prop = group.getProperty(key);
+                final String key = args[4];
+                final Property<?> property = group.getProperty(key);
 
-                if (prop == null) {
+                if (property == null) {
                     player.sendMessage(messages.get("group.property.not-found")
                             .replaceText(text -> text.match("%key%").replacement(key)));
                     return;
                 }
 
-                group.getProperties().remove(prop);
+                group.getPropertyMap().remove(property.getName());
                 group.update();
 
                 player.sendMessage(messages.get("group.property.remove.success")
@@ -160,7 +161,8 @@ public class GroupSubCommand {
                 final String value = args[5];
 
                 try {
-                    group.setProperty(Property.of(key, value, value));
+                    final Property<?> property = PropertyUtil.stringToProperty(key, value);
+                    group.setProperty(property);
                     group.update();
 
                     player.sendMessage(messages.get("group.property.set.success")
@@ -298,7 +300,7 @@ public class GroupSubCommand {
             if (args.length == 5 && args[2].equalsIgnoreCase("set")) {
                 List<String> completions = new ArrayList<>();
                 completions.add("<custom>");
-                completions.addAll(Property.getDefaultProperties().stream()
+                completions.addAll(DefaultProperties.asSet().stream()
                         .map(Property::getName)
                         .filter(s -> s.startsWith(args[4].toLowerCase()))
                         .toList());

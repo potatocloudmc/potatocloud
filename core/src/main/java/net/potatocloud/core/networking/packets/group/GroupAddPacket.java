@@ -9,7 +9,7 @@ import net.potatocloud.core.networking.PacketIds;
 import net.potatocloud.core.networking.netty.PacketBuffer;
 
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -18,6 +18,7 @@ public class GroupAddPacket implements Packet {
 
     private String name;
     private String platformName;
+    private String platformVersionName;
     private int minOnlineCount;
     private int maxOnlineCount;
     private int maxPlayers;
@@ -28,7 +29,7 @@ public class GroupAddPacket implements Packet {
     private int startPercentage;
     private String javaCommand;
     private List<String> customJvmFlags;
-    private Set<Property> properties;
+    private Map<String, Property<?>> propertyMap;
 
     @Override
     public int getId() {
@@ -39,6 +40,7 @@ public class GroupAddPacket implements Packet {
     public void write(PacketBuffer buf) {
         buf.writeString(name);
         buf.writeString(platformName);
+        buf.writeString(platformVersionName);
         buf.writeInt(minOnlineCount);
         buf.writeInt(maxOnlineCount);
         buf.writeInt(maxPlayers);
@@ -49,13 +51,14 @@ public class GroupAddPacket implements Packet {
         buf.writeInt(startPercentage);
         buf.writeString(javaCommand);
         buf.writeStringList(customJvmFlags);
-        buf.writePropertySet(properties);
+        buf.writePropertyMap(propertyMap);
     }
 
     @Override
     public void read(PacketBuffer buf) {
         name = buf.readString();
         platformName = buf.readString();
+        platformVersionName = buf.readString();
         minOnlineCount = buf.readInt();
         maxOnlineCount = buf.readInt();
         maxPlayers = buf.readInt();
@@ -66,6 +69,6 @@ public class GroupAddPacket implements Packet {
         startPercentage = buf.readInt();
         javaCommand = buf.readString();
         customJvmFlags = buf.readStringList();
-        properties = buf.readPropertySet();
+        propertyMap = buf.readPropertyMap();
     }
 }

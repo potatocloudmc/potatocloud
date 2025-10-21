@@ -3,11 +3,11 @@ package net.potatocloud.node.command.commands;
 import lombok.RequiredArgsConstructor;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.command.Command;
-
-import java.util.List;
+import net.potatocloud.node.command.CommandInfo;
 
 @RequiredArgsConstructor
-public class ShutdownCommand implements Command {
+@CommandInfo(name = "shutdown", description = "Shutdown the node", aliases = {"stop", "end"})
+public class ShutdownCommand extends Command {
 
     private final Node node;
 
@@ -15,20 +15,4 @@ public class ShutdownCommand implements Command {
     public void execute(String[] args) {
         node.shutdown();
     }
-
-    @Override
-    public String getName() {
-        return "shutdown";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Shutdown the cloud";
-    }
-
-    @Override
-    public List<String> getAliases() {
-        return List.of("stop", "end");
-    }
-
 }

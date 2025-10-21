@@ -25,7 +25,7 @@ public class TemplateManager {
     public void copyTemplate(String templateName, Path serviceDirectory) {
         final File sourceFolder = templatesFolder.resolve(templateName).toFile();
         if (!sourceFolder.exists()) {
-            logger.error("Template" + templateName + " does not exists!");
+            logger.error("Template " + templateName + " does not exists!");
             return;
         }
         FileUtils.copyDirectory(sourceFolder, serviceDirectory.toFile());

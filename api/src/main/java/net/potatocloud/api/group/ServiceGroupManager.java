@@ -3,9 +3,9 @@ package net.potatocloud.api.group;
 import net.potatocloud.api.property.Property;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 public interface ServiceGroupManager {
 
@@ -16,6 +16,7 @@ public interface ServiceGroupManager {
     default void createServiceGroup(
             String name,
             String platformName,
+            String platformVersionName,
             int minOnlineCount,
             int maxOnlineCount,
             int maxPlayers,
@@ -28,6 +29,7 @@ public interface ServiceGroupManager {
         createServiceGroup(
                 name,
                 platformName,
+                platformVersionName,
                 minOnlineCount,
                 maxOnlineCount,
                 maxPlayers,
@@ -38,13 +40,14 @@ public interface ServiceGroupManager {
                 startPercentage,
                 "java",
                 new ArrayList<>(),
-                new HashSet<>()
+                new HashMap<>()
         );
     }
 
     void createServiceGroup(
             String name,
             String platformName,
+            String platformVersionName,
             int minOnlineCount,
             int maxOnlineCount,
             int maxPlayers,
@@ -55,7 +58,7 @@ public interface ServiceGroupManager {
             int startPercentage,
             String javaCommand,
             List<String> customJvmFlags,
-            Set<Property> properties
+            Map<String, Property<?>> propertyMap
     );
 
 

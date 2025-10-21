@@ -6,7 +6,7 @@
     <parent>
         <groupId>net.potatocloud</groupId>
         <artifactId>potatocloud</artifactId>
-        <version>1.2.0</version>
+        <version>1.3.0</version>
     </parent>
 
     <groupId>net.potatocloud.core</groupId>
@@ -49,7 +49,6 @@
             <artifactId>gson</artifactId>
             <version>${gson.version}</version>
         </dependency>
-
     </dependencies>
 
 </project>

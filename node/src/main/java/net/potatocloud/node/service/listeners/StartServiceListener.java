@@ -17,7 +17,7 @@ public class StartServiceListener implements PacketListener<StartServicePacket> 
     @Override
     public void onPacket(NetworkConnection connection, StartServicePacket packet) {
         final ServiceGroup group = groupManager.getServiceGroup(packet.getGroupName());
-        if (group == null)  {
+        if (group == null) {
             return;
         }
         serviceManager.startService(group);

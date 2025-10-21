@@ -9,7 +9,7 @@ import net.potatocloud.core.networking.PacketIds;
 import net.potatocloud.core.networking.netty.PacketBuffer;
 
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -25,7 +25,7 @@ public class GroupUpdatePacket implements Packet {
     private int startPriority;
     private int startPercentage;
     private List<String> serviceTemplates;
-    private Set<Property> properties;
+    private Map<String, Property<?>> propertyMap;
     private List<String> customJvmFlags;
 
     @Override
@@ -44,7 +44,7 @@ public class GroupUpdatePacket implements Packet {
         buf.writeInt(startPriority);
         buf.writeInt(startPercentage);
         buf.writeStringList(serviceTemplates);
-        buf.writePropertySet(properties);
+        buf.writePropertyMap(propertyMap);
         buf.writeStringList(customJvmFlags);
     }
 
@@ -59,7 +59,7 @@ public class GroupUpdatePacket implements Packet {
         startPriority = buf.readInt();
         startPercentage = buf.readInt();
         serviceTemplates = buf.readStringList();
-        properties = buf.readPropertySet();
+        propertyMap = buf.readPropertyMap();
         customJvmFlags = buf.readStringList();
     }
 }

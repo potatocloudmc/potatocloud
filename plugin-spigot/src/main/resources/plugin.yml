@@ -1,0 +1,4 @@
+name: potatocloud-plugin
+version: 1.3.0
+main: net.potatocloud.plugin.spigot.SpigotPlugin
+author: "jirmjahu"

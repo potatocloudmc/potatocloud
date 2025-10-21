@@ -24,9 +24,9 @@ public class ServiceUpdateListener implements PacketListener<ServiceUpdatePacket
 
         service.setStatus(ServiceStatus.valueOf(packet.getStatus()));
         service.setMaxPlayers(packet.getMaxPlayers());
-        service.getProperties().clear();
-        for (Property property : packet.getProperties()) {
-            service.setProperty(property, property.getValue(), false);
+        service.getPropertyMap().clear();
+        for (Property<?> property : packet.getPropertyMap().values()) {
+            service.setProperty((Property) property, property.getValue(), false);
         }
 
         Node.getInstance().getServer().getConnectedSessions().stream()

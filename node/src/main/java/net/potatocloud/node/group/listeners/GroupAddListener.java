@@ -1,22 +1,24 @@
 package net.potatocloud.node.group.listeners;
 
 import lombok.RequiredArgsConstructor;
-import net.potatocloud.api.group.ServiceGroupManager;
+import net.potatocloud.api.group.impl.ServiceGroupImpl;
 import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketListener;
 import net.potatocloud.core.networking.packets.group.GroupAddPacket;
 import net.potatocloud.node.Node;
+import net.potatocloud.node.group.ServiceGroupManagerImpl;
 
 @RequiredArgsConstructor
 public class GroupAddListener implements PacketListener<GroupAddPacket> {
 
-    private final ServiceGroupManager groupManager;
+    private final ServiceGroupManagerImpl groupManager;
 
     @Override
     public void onPacket(NetworkConnection connection, GroupAddPacket packet) {
-        groupManager.createServiceGroup(
+        groupManager.addServiceGroup(new ServiceGroupImpl(
                 packet.getName(),
                 packet.getPlatformName(),
+                packet.getPlatformVersionName(),
                 packet.getMinOnlineCount(),
                 packet.getMaxOnlineCount(),
                 packet.getMaxPlayers(),
@@ -27,8 +29,8 @@ public class GroupAddListener implements PacketListener<GroupAddPacket> {
                 packet.getStartPercentage(),
                 packet.getJavaCommand(),
                 packet.getCustomJvmFlags(),
-                packet.getProperties()
-        );
+                packet.getPropertyMap()
+        ));
 
         Node.getInstance().getServer().getConnectedSessions().stream()
                 .filter(networkConnection -> !networkConnection.equals(connection))

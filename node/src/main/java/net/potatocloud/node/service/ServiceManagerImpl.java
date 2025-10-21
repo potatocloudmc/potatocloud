@@ -12,7 +12,9 @@ import net.potatocloud.core.networking.packets.service.ServiceUpdatePacket;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.console.Console;
 import net.potatocloud.node.console.Logger;
-import net.potatocloud.node.platform.PlatformManager;
+import net.potatocloud.node.platform.DownloadManager;
+import net.potatocloud.node.platform.PlatformManagerImpl;
+import net.potatocloud.node.platform.cache.CacheManager;
 import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.service.listeners.*;
 import net.potatocloud.node.template.TemplateManager;
@@ -34,7 +36,9 @@ public class ServiceManagerImpl implements ServiceManager {
     private final ServiceGroupManager groupManager;
     private final ScreenManager screenManager;
     private final TemplateManager templateManager;
-    private final PlatformManager platformManager;
+    private final PlatformManagerImpl platformManager;
+    private final DownloadManager downloadManager;
+    private final CacheManager cacheManager;
     private final Console console;
 
     public ServiceManagerImpl(
@@ -45,7 +49,9 @@ public class ServiceManagerImpl implements ServiceManager {
             ServiceGroupManager groupManager,
             ScreenManager screenManager,
             TemplateManager templateManager,
-            PlatformManager platformManager,
+            PlatformManagerImpl platformManager,
+            DownloadManager downloadManager,
+            CacheManager cacheManager,
             Console console
     ) {
         this.config = config;
@@ -56,6 +62,8 @@ public class ServiceManagerImpl implements ServiceManager {
         this.screenManager = screenManager;
         this.templateManager = templateManager;
         this.platformManager = platformManager;
+        this.downloadManager = downloadManager;
+        this.cacheManager = cacheManager;
         this.console = console;
 
         server.registerPacketListener(PacketIds.REQUEST_SERVICES, new RequestServicesListener(this));
@@ -86,7 +94,7 @@ public class ServiceManagerImpl implements ServiceManager {
                 service.getName(),
                 service.getStatus().name(),
                 service.getMaxPlayers(),
-                service.getProperties()
+                service.getPropertyMap()
         ));
     }
 
@@ -109,6 +117,8 @@ public class ServiceManagerImpl implements ServiceManager {
                 screenManager,
                 templateManager,
                 platformManager,
+                downloadManager,
+                cacheManager,
                 eventManager,
                 this,
                 console
@@ -120,8 +130,8 @@ public class ServiceManagerImpl implements ServiceManager {
                 service.getServiceId(),
                 service.getPort(),
                 service.getStartTimestamp(),
-                service.getGroup().getName(),
-                service.getProperties(),
+                service.getServiceGroup().getName(),
+                service.getPropertyMap(),
                 service.getStatus().name(),
                 service.getMaxPlayers())
         );
@@ -157,13 +167,13 @@ public class ServiceManagerImpl implements ServiceManager {
         return id;
     }
 
-    private int getServicePort(ServiceGroup serviceGroup) {
+    private int getServicePort(ServiceGroup group) {
         final Set<Integer> usedPorts = new HashSet<>();
         for (Service service : services) {
             usedPorts.add(service.getPort());
         }
 
-        int port = serviceGroup.getPlatform().isProxy() ? config.getProxyStartPort() : config.getServiceStartPort();
+        int port = group.getPlatform().isProxy() ? config.getProxyStartPort() : config.getServiceStartPort();
 
         while (usedPorts.contains(port)) {
             port++;

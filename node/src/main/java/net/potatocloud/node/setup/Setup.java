@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.console.Console;
+import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.setup.validator.BooleanValidator;
@@ -32,12 +33,9 @@ public abstract class Setup {
 
     protected abstract void onFinish(Map<String, String> answers);
 
-    protected void addQuestion(String name, String question, String defaultAnswer, List<String> possibleChoices, SetupAnswerValidator validator, SetupQuestionSkipCondition skipCondition) {
-        questions.add(new SetupQuestion(name, question, defaultAnswer, possibleChoices, validator, skipCondition));
-    }
 
-    protected void addQuestion(String name, String question, String defaultAnswer, List<String> possibleChoices, SetupAnswerValidator validator) {
-        questions.add(new SetupQuestion(name, question, defaultAnswer, possibleChoices, validator, null));
+    public SetupQuestionBuilder question(String name) {
+        return new SetupQuestionBuilder(name, this);
     }
 
     public void start() {
@@ -52,12 +50,17 @@ public abstract class Setup {
     public void handleInput(String input) {
         input = input.strip();
 
+        final Node node = Node.getInstance();
+        final SetupManager setupManager = node.getSetupManager();
+        final Logger logger = node.getLogger();
+
         if (input.equalsIgnoreCase("cancel")) {
             screenManager.switchScreen(Screen.NODE_SCREEN);
             screenManager.removeScreen(questionScreen);
             screenManager.removeScreen(summaryScreen);
-            Node.getInstance().getSetupManager().endSetup();
-            Node.getInstance().getLogger().info("Setup &a" + this.getName() + " &7was cancelled");
+
+            setupManager.endSetup();
+            logger.info("Setup &a" + this.getName() + " &7was cancelled");
             return;
         }
 
@@ -77,8 +80,8 @@ public abstract class Setup {
                 screenManager.removeScreen(questionScreen);
                 screenManager.removeScreen(summaryScreen);
 
-                Node.getInstance().getSetupManager().endSetup();
-                Node.getInstance().getLogger().info("Setup &a" + this.getName() + " &7was completed successfully");
+                setupManager.endSetup();
+                logger.info("Setup &a" + this.getName() + " &7was completed successfully");
 
                 return;
             }
@@ -186,7 +189,7 @@ public abstract class Setup {
             commandsText.add("&aEnter&7 = default");
         }
 
-        if (question.getPossibleChoices() != null && !question.getPossibleChoices().isEmpty()) {
+        if (question.getPossibleChoices(answers) != null && !question.getPossibleChoices(answers).isEmpty()) {
             commandsText.add("&aTab&7 = show options");
         }
 

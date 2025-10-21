@@ -8,7 +8,7 @@ import net.potatocloud.core.networking.Packet;
 import net.potatocloud.core.networking.PacketIds;
 import net.potatocloud.core.networking.netty.PacketBuffer;
 
-import java.util.Set;
+import java.util.Map;
 import java.util.UUID;
 
 @Data
@@ -19,7 +19,7 @@ public class CloudPlayerUpdatePacket implements Packet {
     private UUID playerUniqueId;
     private String connectedProxyName;
     private String connectedServiceName;
-    private Set<Property> properties;
+    private Map<String, Property<?>> propertyMap;
 
     @Override
     public int getId() {
@@ -31,7 +31,7 @@ public class CloudPlayerUpdatePacket implements Packet {
         buf.writeString(playerUniqueId.toString());
         buf.writeString(connectedProxyName);
         buf.writeString(connectedServiceName);
-        buf.writePropertySet(properties);
+        buf.writePropertyMap(propertyMap);
     }
 
     @Override
@@ -39,6 +39,6 @@ public class CloudPlayerUpdatePacket implements Packet {
         playerUniqueId = UUID.fromString(buf.readString());
         connectedProxyName = buf.readString();
         connectedServiceName = buf.readString();
-        properties = buf.readPropertySet();
+        propertyMap = buf.readPropertyMap();
     }
 }

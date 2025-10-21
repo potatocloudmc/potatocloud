@@ -2,13 +2,13 @@ package net.potatocloud.node.command.commands;
 
 import lombok.RequiredArgsConstructor;
 import net.potatocloud.node.command.Command;
+import net.potatocloud.node.command.CommandInfo;
 import net.potatocloud.node.command.CommandManager;
 import net.potatocloud.node.console.Logger;
 
-import java.util.List;
-
 @RequiredArgsConstructor
-public class HelpCommand implements Command {
+@CommandInfo(name = "help", description = "Shows all commands", aliases = {"?"})
+public class HelpCommand extends Command {
 
     private final Logger logger;
     private final CommandManager commandManager;
@@ -26,21 +26,4 @@ public class HelpCommand implements Command {
         }
         return " &8[&7" + String.join(", ", command.getAliases()) + "&8]&7";
     }
-
-
-    @Override
-    public String getName() {
-        return "help";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Shows all commands";
-    }
-
-    @Override
-    public List<String> getAliases() {
-        return List.of("?");
-    }
-
 }

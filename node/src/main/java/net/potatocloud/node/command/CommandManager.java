@@ -33,11 +33,20 @@ public class CommandManager {
         }
 
         final String[] args = parts.length > 1 ? Arrays.copyOfRange(parts, 1, parts.length) : new String[0];
+
+        if (!command.getSubCommands().isEmpty() && args.length > 0) {
+            final SubCommand subCommand = command.getSubCommand(args[0]);
+            if (subCommand != null) {
+                subCommand.execute(Arrays.copyOfRange(args, 1, args.length));
+                return;
+            }
+        }
+
         command.execute(args);
     }
 
     public Command getCommand(String name) {
-        final Command command = commands.get(name);
+        final Command command = commands.get(name.toLowerCase());
         if (command != null) {
             return command;
         }

@@ -1,48 +1,40 @@
 package net.potatocloud.api.property;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
-
 @Getter
-public class Property {
-
-    public static final Property GAME_STATE = Property.ofString("gameState", "INGAME");
+@AllArgsConstructor
+public class Property<T> {
 
     private final String name;
-    private final Object defaultValue;
+    private final T defaultValue;
 
     @Setter
-    private Object value;
+    private T value;
 
-    private Property(String name, Object defaultValue, Object value) {
-        this.name = name;
-        this.defaultValue = defaultValue;
-        this.value = value;
+    public T getValue() {
+        return value != null ? value : defaultValue;
     }
 
-    public static Property ofString(String name, String defaultValue) {
-        return new Property(name, defaultValue, defaultValue);
+    public static Property<String> ofString(String name, String defaultValue) {
+        return new Property<>(name, defaultValue, defaultValue);
     }
 
-    public static Property ofInt(String name, int defaultValue) {
-        return new Property(name, defaultValue, defaultValue);
+    public static Property<Integer> ofInteger(String name, int defaultValue) {
+        return new Property<>(name, defaultValue, defaultValue);
     }
 
-    public static Property ofFloat(String name, float defaultValue) {
-        return new Property(name, defaultValue, defaultValue);
+    public static Property<Boolean> ofBoolean(String name, boolean defaultValue) {
+        return new Property<>(name, defaultValue, defaultValue);
     }
 
-    public static Property ofBoolean(String name, boolean defaultValue) {
-        return new Property(name, defaultValue, defaultValue);
+    public static Property<Float> ofFloat(String name, float defaultValue) {
+        return new Property<>(name, defaultValue, defaultValue);
     }
 
-    public static Property of(String name, Object defaultValue, Object value) {
-        return new Property(name, defaultValue, value);
-    }
-
-    public static Set<Property> getDefaultProperties() {
-        return Set.of(GAME_STATE);
+    public static <T> Property<T> of(String name, T defaultValue, T value) {
+        return new Property<>(name, defaultValue, value);
     }
 }

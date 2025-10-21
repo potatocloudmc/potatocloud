@@ -3,7 +3,7 @@ package net.potatocloud.node.service;
 import net.potatocloud.api.event.events.property.PropertyChangedEvent;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
-import net.potatocloud.api.property.Property;
+import net.potatocloud.api.property.DefaultProperties;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.ServiceStatus;
@@ -27,7 +27,7 @@ public class ServiceStartQueue extends Thread {
         setDaemon(true);
 
         Node.getInstance().getEventManager().on(PropertyChangedEvent.class, event -> {
-            if (!event.getProperty().getName().equals(Property.GAME_STATE.getName())) {
+            if (!event.getProperty().getName().equals(DefaultProperties.GAME_STATE.getName())) {
                 return;
             }
 
@@ -82,7 +82,7 @@ public class ServiceStartQueue extends Thread {
                     }
 
                     final int groupStartPercentage = group.getStartPercentage();
-                    if(groupStartPercentage == -1) { // if this is on -1 no server will be started
+                    if (groupStartPercentage == -1) { // if this is on -1 no server will be started
                         continue;
                     }
 

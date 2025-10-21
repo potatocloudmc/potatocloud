@@ -1,5 +1,5 @@
 permission: "potatocloud.proxy"
-useTablistBanner: true # Only works with Labymod
+useTablistBanner: false # Only works with Labymod
 tablistImageURL: "https://imgur.com/TGofXh8.png%22" # Only works with Labymod. "%22" is the Size of the Banner.
 useTablist: true
 useMotd: true

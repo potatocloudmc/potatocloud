@@ -9,9 +9,7 @@ import net.potatocloud.api.event.events.service.ServiceStoppedEvent;
 import net.potatocloud.api.event.events.service.ServiceStoppingEvent;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.platform.Platform;
-import net.potatocloud.api.platform.impl.PandaSpigotVersion;
-import net.potatocloud.api.platform.impl.PaperMCPlatformVersion;
-import net.potatocloud.api.platform.impl.PurpurPlatformVersion;
+import net.potatocloud.api.platform.PlatformVersion;
 import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
@@ -21,7 +19,11 @@ import net.potatocloud.core.networking.packets.service.ServiceRemovePacket;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.console.Console;
 import net.potatocloud.node.console.Logger;
-import net.potatocloud.node.platform.PlatformManager;
+import net.potatocloud.node.platform.DownloadManager;
+import net.potatocloud.node.platform.PlatformManagerImpl;
+import net.potatocloud.node.platform.PlatformPrepareSteps;
+import net.potatocloud.node.platform.PlatformUtils;
+import net.potatocloud.node.platform.cache.CacheManager;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.template.TemplateManager;
@@ -33,8 +35,11 @@ import java.io.*;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.util.*;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Getter
@@ -42,7 +47,7 @@ public class ServiceImpl implements Service {
 
     private final int serviceId;
     private final int port;
-    private final ServiceGroup group;
+    private final ServiceGroup serviceGroup;
     private final NodeConfig config;
     private final Logger logger;
 
@@ -51,12 +56,15 @@ public class ServiceImpl implements Service {
     private final NetworkServer server;
     private final ScreenManager screenManager;
     private final TemplateManager templateManager;
-    private final PlatformManager platformManager;
+    private final PlatformManagerImpl platformManager;
+    private final DownloadManager downloadManager;
+    private final CacheManager cacheManager;
+
     private final EventManager eventManager;
     private final ServiceManager serviceManager;
     private final Console console;
 
-    private final Set<Property> properties;
+    private final Map<String, Property<?>> propertyMap;
     private final Screen screen;
 
     @Setter
@@ -79,32 +87,36 @@ public class ServiceImpl implements Service {
     public ServiceImpl(
             int serviceId,
             int port,
-            ServiceGroup group,
+            ServiceGroup serviceGroup,
             NodeConfig config,
             Logger logger,
             NetworkServer server,
             ScreenManager screenManager,
             TemplateManager templateManager,
-            PlatformManager platformManager,
+            PlatformManagerImpl platformManager,
+            DownloadManager downloadManager,
+            CacheManager cacheManager,
             EventManager eventManager,
             ServiceManager serviceManager,
             Console console
     ) {
         this.serviceId = serviceId;
         this.port = port;
-        this.group = group;
+        this.serviceGroup = serviceGroup;
         this.config = config;
         this.logger = logger;
         this.server = server;
         this.screenManager = screenManager;
         this.templateManager = templateManager;
         this.platformManager = platformManager;
+        this.downloadManager = downloadManager;
+        this.cacheManager = cacheManager;
         this.eventManager = eventManager;
         this.serviceManager = serviceManager;
         this.console = console;
 
-        maxPlayers = group.getMaxPlayers();
-        properties = new HashSet<>(group.getProperties());
+        maxPlayers = serviceGroup.getMaxPlayers();
+        propertyMap = new HashMap<>(serviceGroup.getPropertyMap());
 
         screen = new Screen(getName());
         screenManager.addScreen(screen);
@@ -112,7 +124,7 @@ public class ServiceImpl implements Service {
 
     @Override
     public String getName() {
-        return group.getName() + config.getSplitter() + serviceId;
+        return serviceGroup.getName() + config.getSplitter() + serviceId;
     }
 
     public int getUsedMemory() {
@@ -130,16 +142,6 @@ public class ServiceImpl implements Service {
         return 0;
     }
 
-    @Override
-    public int getPort() {
-        return port;
-    }
-
-    @Override
-    public ServiceGroup getServiceGroup() {
-        return group;
-    }
-
     @SneakyThrows
     public void start() {
         if (isOnline()) {
@@ -152,9 +154,9 @@ public class ServiceImpl implements Service {
         // create service folder
         final Path staticFolder = Path.of(config.getStaticFolder());
         final Path tempFolder = Path.of(config.getTempServicesFolder());
-        directory = group.isStatic() ? staticFolder.resolve(getName()) : tempFolder.resolve(getName());
+        directory = serviceGroup.isStatic() ? staticFolder.resolve(getName()) : tempFolder.resolve(getName());
 
-        if (!group.isStatic()) {
+        if (!serviceGroup.isStatic()) {
             if (Files.exists(directory)) {
                 FileUtils.deleteQuietly(directory.toFile());
             }
@@ -163,7 +165,7 @@ public class ServiceImpl implements Service {
         Files.createDirectories(directory);
 
         // copy templates
-        for (String templateName : group.getServiceTemplates()) {
+        for (String templateName : serviceGroup.getServiceTemplates()) {
             templateManager.copyTemplate(templateName, directory);
         }
 
@@ -171,95 +173,61 @@ public class ServiceImpl implements Service {
         final Path pluginsFolder = directory.resolve("plugins");
         Files.createDirectories(pluginsFolder);
 
-        FileUtils.copyFile(Path.of(config.getDataFolder(), "potatocloud-plugin.jar").toFile(), pluginsFolder.resolve("potatocloud-plugin.jar").toFile());
-
-        // download the platform of the service
-        final Platform platform = group.getPlatform();
-        platformManager.downloadPlatform(platform);
-
-        // prepare the platform of the service
-        if ((platform instanceof PaperMCPlatformVersion || platform instanceof PurpurPlatformVersion || platform instanceof PandaSpigotVersion) && !platform.isProxy()) {
-            // Paper and Purpur
-
-            final Properties properties = new Properties();
-            final File file = directory.resolve("server.properties").toFile();
-
-            if (!file.exists()) {
-                properties.load(Files.newInputStream(Path.of(config.getDataFolder(), "server.properties")));
-            } else {
-                properties.load(new FileInputStream(file));
-            }
-
-            properties.setProperty("server-port", String.valueOf(port));
-            properties.setProperty("query.port", String.valueOf(port));
-
-            final Path serverPropertiesPath = directory.resolve("server.properties");
-            properties.store(Files.newOutputStream(serverPropertiesPath), null);
-
-            // spigot config
-            final Path spigotConfigFile = directory.resolve("spigot.yml");
-
-            if (!Files.exists(spigotConfigFile)) {
-                Files.copy(Path.of(config.getDataFolder(), "spigot.yml"), spigotConfigFile);
-            }
-        } else if (platform.isProxy() && platform instanceof PaperMCPlatformVersion) {
-            // Velocity
-
-            final Path velocityConfigFile = directory.resolve("velocity.toml");
-
-            if (!Files.exists(velocityConfigFile)) {
-                Files.copy(Path.of(config.getDataFolder(), "velocity.toml"), velocityConfigFile);
-            }
-
-            String fileContent = Files.readString(velocityConfigFile);
-            fileContent = fileContent.replace(
-                    "bind = \"0.0.0.0:25565\"",
-                    "bind = \"0.0.0.0:" + port + "\""
-            );
-
-            Files.writeString(velocityConfigFile, fileContent);
-
-            // a forwarding secret file has to be created or else velocity will throw an error
-            final Path forwardingSecretFile = directory.resolve("forwarding.secret");
-            if (!Files.exists(forwardingSecretFile)) {
-                Files.writeString(forwardingSecretFile, UUID.randomUUID().toString(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-            }
+        String pluginName = "";
+        if (serviceGroup.getPlatform().isBukkitBased()) {
+            pluginName = "potatocloud-plugin-spigot.jar";
+        } else if (serviceGroup.getPlatform().isVelocityBased()) {
+            pluginName = "potatocloud-plugin-velocity.jar";
+        } else if (serviceGroup.getPlatform().isLimboBased()) {
+            pluginName = "potatocloud-plugin-limbo.jar";
         }
 
-        // copy server file
-        final Path platformFilePath = Path.of(config.getPlatformsFolder())
-                .resolve(platform.getFullName())
-                .resolve(platform.getFullName() + ".jar");
+        FileUtils.copyFile(Path.of(config.getDataFolder(), pluginName).toFile(), pluginsFolder.resolve(pluginName).toFile(), StandardCopyOption.REPLACE_EXISTING);
 
+        // download the platform of the service
+        final Platform platform = serviceGroup.getPlatform();
+        final PlatformVersion version = serviceGroup.getPlatformVersion();
+
+        downloadManager.downloadPlatformVersion(platform, platform.getVersion(serviceGroup.getPlatformVersionName()));
+
+        final Path cacheFolder = cacheManager.preCachePlatform(serviceGroup);
+
+        cacheManager.copyCacheToService(serviceGroup, cacheFolder, directory);
+
+        // copy server file
+        final File platformFile = PlatformUtils.getPlatformJarFile(platform, version);
         final Path finalServerFilePath = directory.resolve("server.jar");
-        FileUtils.copyFile(platformFilePath.toFile(), finalServerFilePath.toFile());
+
+        FileUtils.copyFile(platformFile, finalServerFilePath.toFile());
+
+        // execute the prepare steps
+        for (String step : platform.getPrepareSteps()) {
+            PlatformPrepareSteps.getStep(step).execute(this, platform, directory);
+        }
 
         // create start arguments
         final ArrayList<String> args = new ArrayList<>();
-        args.add(getGroup().getJavaCommand());
-        args.add("-Xms" + group.getMaxMemory() + "M");
-        args.add("-Xmx" + group.getMaxMemory() + "M");
+        args.add(serviceGroup.getJavaCommand());
+        args.add("-Xms" + serviceGroup.getMaxMemory() + "M");
+        args.add("-Xmx" + serviceGroup.getMaxMemory() + "M");
         args.add("-Dpotatocloud.service.name=" + getName());
         args.add("-Dpotatocloud.node.port=" + config.getNodePort());
 
-        if (!platform.isProxy()) {
-            final Path eulaFile = directory.resolve("eula.txt");
-            Files.writeString(eulaFile, "eula=true", StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        }
+        args.addAll(ServicePerformanceFlags.DEFAULT_FLAGS);
 
-        if (!platform.getRecommendedFlags().isEmpty()) {
-            args.addAll(platform.getRecommendedFlags());
-        }
-
-        if (group.getCustomJvmFlags() != null) {
-            args.addAll(group.getCustomJvmFlags());
+        if (serviceGroup.getCustomJvmFlags() != null) {
+            args.addAll(serviceGroup.getCustomJvmFlags());
         }
 
         args.add("-jar");
-        args.add(platformFilePath.toAbsolutePath().toString());
+        args.add(finalServerFilePath.toAbsolutePath().toString());
 
-        if (!platform.isProxy() && !(platform instanceof PandaSpigotVersion)) {
+        if (platform.isBukkitBased() && !version.isLegacy()) {
             args.add("-nogui");
+        }
+
+        if (platform.isLimboBased()) {
+            args.add("--nogui");
         }
 
         // create and start the service process
@@ -286,7 +254,7 @@ public class ServiceImpl implements Service {
             }
         }, "ProcessReader-" + getName()).start();
 
-        logger.info("Service &a" + this.getName() + "&7 is now starting... &8[&7Port&8: &a" + port + "&8, &7Group&8: &a" + group.getName() + "&8]");
+        logger.info("Service &a" + this.getName() + "&7 is now starting&8... &8[&7Port&8: &a" + port + "&8, &7Group&8: &a" + serviceGroup.getName() + "&8]");
         eventManager.call(new PreparedServiceStartingEvent(this.getName()));
     }
 
@@ -316,7 +284,8 @@ public class ServiceImpl implements Service {
             eventManager.call(new ServiceStoppingEvent(this.getName()));
         }
 
-        executeCommand(group.getPlatform().isProxy() ? "end" : "stop");
+        final Platform platform = platformManager.getPlatform(serviceGroup.getPlatformName());
+        executeCommand(platform.isProxy() ? "end" : "stop");
 
         if (processWriter != null) {
             processWriter.close();
@@ -357,7 +326,7 @@ public class ServiceImpl implements Service {
             eventManager.call(new ServiceStoppedEvent(this.getName()));
         }
 
-        if (!group.isStatic()) {
+        if (!serviceGroup.isStatic()) {
             if (Files.exists(directory)) {
                 if (!FileUtils.deleteQuietly(directory.toFile())) {
                     logger.error("Temp directory for " + getName() + " could not be deleted! The service might still be running");
@@ -407,13 +376,6 @@ public class ServiceImpl implements Service {
             FileUtils.copyDirectory(sourcePath.toFile(), targetPath.toFile());
         } catch (FileSystemException ignored) {
 
-        }
-    }
-
-    @SneakyThrows
-    public List<String> getLogs() {
-        synchronized (logs) {
-            return new ArrayList<>(logs);
         }
     }
 

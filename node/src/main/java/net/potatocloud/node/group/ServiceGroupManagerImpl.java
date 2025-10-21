@@ -23,7 +23,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class ServiceGroupManagerImpl implements ServiceGroupManager {
@@ -62,6 +62,7 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
     public void createServiceGroup(
             String name,
             String platformName,
+            String platformVersionName,
             int minOnlineCount,
             int maxOnlineCount,
             int maxPlayers,
@@ -72,7 +73,7 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
             int startPercentage,
             String javaCommand,
             List<String> customJvmFlags,
-            Set<Property> properties
+            Map<String, Property<?>> propertyMap
     ) {
 
         if (existsServiceGroup(name)) {
@@ -82,6 +83,7 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
         final ServiceGroup serviceGroup = new ServiceGroupImpl(
                 name,
                 platformName,
+                platformVersionName,
                 minOnlineCount,
                 maxOnlineCount,
                 maxPlayers,
@@ -92,17 +94,16 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
                 startPercentage,
                 javaCommand,
                 customJvmFlags,
-                properties
+                propertyMap
         );
 
-        for (String templateName : serviceGroup.getServiceTemplates()) {
-            Node.getInstance().getTemplateManager().createTemplate(templateName);
-        }
+        addServiceGroup(serviceGroup);
 
         // send group add packet to clients
         server.broadcastPacket(new GroupAddPacket(
                 name,
                 platformName,
+                platformVersionName,
                 minOnlineCount,
                 maxOnlineCount,
                 maxPlayers,
@@ -113,11 +114,23 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
                 startPercentage,
                 javaCommand,
                 customJvmFlags,
-                properties
+                propertyMap
         ));
 
-        ServiceGroupStorage.saveToFile(serviceGroup, groupsPath);
-        groups.add(serviceGroup);
+        Node.getInstance().getLogger().info("Group &a" + name + " &7was successfully created");
+    }
+
+    public void addServiceGroup(ServiceGroup group) {
+        if (group == null || existsServiceGroup(group.getName())) {
+            return;
+        }
+
+        for (String templateName : group.getServiceTemplates()) {
+            Node.getInstance().getTemplateManager().createTemplate(templateName);
+        }
+
+        ServiceGroupStorage.saveToFile(group, groupsPath);
+        groups.add(group);
     }
 
     @Override
@@ -154,7 +167,7 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
                 group.getStartPriority(),
                 group.getStartPercentage(),
                 group.getServiceTemplates(),
-                group.getProperties(),
+                group.getPropertyMap(),
                 group.getCustomJvmFlags()
         ));
     }

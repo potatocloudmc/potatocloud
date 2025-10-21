@@ -19,7 +19,7 @@ public class GroupUpdateListener implements PacketListener<GroupUpdatePacket> {
     @Override
     public void onPacket(NetworkConnection connection, GroupUpdatePacket packet) {
         final ServiceGroup group = groupManager.getServiceGroup(packet.getGroupName());
-        if (group == null)  {
+        if (group == null) {
             return;
         }
 
@@ -39,9 +39,9 @@ public class GroupUpdateListener implements PacketListener<GroupUpdatePacket> {
             group.addCustomJvmFlag(flag);
         }
 
-        group.getProperties().clear();
-        for (Property property : packet.getProperties()) {
-            group.setProperty(property, property.getValue(), false);
+        group.getPropertyMap().clear();
+        for (Property<?> property : packet.getPropertyMap().values()) {
+            group.setProperty((Property) property, property.getValue(), false);
         }
 
         if (groupManager instanceof ServiceGroupManagerImpl impl) {

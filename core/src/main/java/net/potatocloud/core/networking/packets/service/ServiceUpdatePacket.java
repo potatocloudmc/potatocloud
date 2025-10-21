@@ -8,7 +8,7 @@ import net.potatocloud.core.networking.Packet;
 import net.potatocloud.core.networking.PacketIds;
 import net.potatocloud.core.networking.netty.PacketBuffer;
 
-import java.util.Set;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -18,7 +18,7 @@ public class ServiceUpdatePacket implements Packet {
     private String serviceName;
     private String status;
     private int maxPlayers;
-    private Set<Property> properties;
+    private Map<String, Property<?>> propertyMap;
 
     @Override
     public int getId() {
@@ -30,7 +30,7 @@ public class ServiceUpdatePacket implements Packet {
         buf.writeString(serviceName);
         buf.writeString(status);
         buf.writeInt(maxPlayers);
-        buf.writePropertySet(properties);
+        buf.writePropertyMap(propertyMap);
     }
 
     @Override
@@ -38,6 +38,6 @@ public class ServiceUpdatePacket implements Packet {
         serviceName = buf.readString();
         status = buf.readString();
         maxPlayers = buf.readInt();
-        properties = buf.readPropertySet();
+        propertyMap = buf.readPropertyMap();
     }
 }
