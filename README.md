@@ -8,6 +8,7 @@ A simple "cloud" system for Minecraft servers that is performant, customizable a
 - Purpur (1.20.4 - current)
 - PandaSpigot (1.8.8 - 1.8.9)
 - [Limbo](https://github.com/LOOHP/Limbo) (1.21.8)
+- Custom Platforms 
 
 ## Optional Plugins
 
