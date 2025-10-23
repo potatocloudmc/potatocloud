@@ -18,9 +18,9 @@ public interface ServiceGroupManager {
     ServiceGroup getServiceGroup(String name);
 
     /**
-     * Gets all service groups.
+     * Gets the list of all service groups.
      *
-     * @return a list of all service groups
+     * @return the list of all service groups
      */
     List<ServiceGroup> getAllServiceGroups();
 

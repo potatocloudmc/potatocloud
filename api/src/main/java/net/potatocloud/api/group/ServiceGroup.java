@@ -52,7 +52,7 @@ public interface ServiceGroup extends PropertyHolder {
     }
 
     /**
-     * Gets the list of service templates of the group.
+     * Gets the service templates of the group.
      *
      * @return the list of service templates of the group
      */
