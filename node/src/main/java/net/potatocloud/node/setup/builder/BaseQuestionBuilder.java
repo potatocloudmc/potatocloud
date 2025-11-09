@@ -3,10 +3,7 @@ package net.potatocloud.node.setup.builder;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.potatocloud.node.setup.Question;
-import net.potatocloud.node.setup.QuestionSkipCondition;
-import net.potatocloud.node.setup.Setup;
-import net.potatocloud.node.setup.SuggestionProvider;
+import net.potatocloud.node.setup.*;
 import net.potatocloud.node.setup.validator.AnswerValidator;
 
 @RequiredArgsConstructor
@@ -18,10 +15,11 @@ public abstract class BaseQuestionBuilder {
     protected final String name;
     protected final String prompt;
 
-    protected String defaultAnswer;
-    protected SuggestionProvider suggestions;
-    protected QuestionSkipCondition skipIf;
-    protected AnswerValidator customValidator;
+    private String defaultAnswer;
+    private SuggestionProvider suggestions;
+    private QuestionSkipCondition skipIf;
+    private AnswerValidator customValidator;
+    private AnswerAction answerAction;
 
     public abstract Question question();
 
@@ -42,6 +40,10 @@ public abstract class BaseQuestionBuilder {
 
         if (customValidator != null) {
             question.setCustomValidator(customValidator);
+        }
+
+        if (answerAction != null) {
+            question.setAnswerAction(answerAction);
         }
 
         parent.getQuestions().add(question);

@@ -139,6 +139,11 @@ public abstract class Setup {
 
         answers.put(question.getName(), answer);
         lastErrorMessage = null;
+
+        if (question.getAnswerAction() != null) {
+            question.getAnswerAction().execute(answers, answer);
+        }
+
         currentIndex++;
 
         // show the next question as long there are some left

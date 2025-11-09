@@ -9,6 +9,7 @@ import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.setup.AnswerResult;
 import net.potatocloud.node.setup.Setup;
 
+import java.io.File;
 import java.util.Map;
 
 public class AddVersionToPlatformSetup extends Setup {
@@ -41,6 +42,14 @@ public class AddVersionToPlatformSetup extends Setup {
                         Type 'yes' to use a download URL.
                         Type 'no' if you want to add the JAR file yourself.
                         """)
+                .answerAction((answers, answer) -> {
+                    // only if using local platform file
+                    if (answer.equalsIgnoreCase("false") || answer.equalsIgnoreCase("no")) {
+                        final File platformFolder = new File("platforms/" + platform.getName() + "/" + answer);
+                        platformFolder.mkdirs();
+                    }
+
+                })
                 .add();
 
         question("local_ready")

@@ -35,4 +35,8 @@ public interface Question {
 
     QuestionType getType();
 
+    AnswerAction getAnswerAction();
+
+    void setAnswerAction(AnswerAction action);
+
 }

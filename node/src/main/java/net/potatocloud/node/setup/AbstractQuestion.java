@@ -20,6 +20,7 @@ public abstract class AbstractQuestion implements Question {
     private String defaultAnswer;
     private SuggestionProvider suggestions;
     private AnswerValidator customValidator;
+    private AnswerAction answerAction;
 
     @Override
     public List<String> getSuggestions() {
