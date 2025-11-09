@@ -19,6 +19,16 @@ public interface PlatformVersion {
     String getName();
 
     /**
+     * Checks whether the platform version is local.
+     * <p>
+     * Local versions are not downloaded automatically.
+     * Instead, the required JAR file must already exist in the platform directory.
+     *
+     * @return {@code true} if the platform version uses a local file, otherwise {@code false}
+     */
+    boolean isLocal();
+
+    /**
      * Gets the download URL of the platform version.
      *
      * @return the download URL of the platform version

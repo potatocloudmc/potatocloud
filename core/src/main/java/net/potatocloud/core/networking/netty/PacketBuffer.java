@@ -156,6 +156,7 @@ public class PacketBuffer {
         for (PlatformVersion version : platform.getVersions()) {
             writeString(version.getPlatformName());
             writeString(version.getName());
+            writeBoolean(version.isLocal());
             writeString(version.getDownloadUrl());
             writeString(version.getFileHash());
             writeBoolean(version.isLegacy());
@@ -180,12 +181,13 @@ public class PacketBuffer {
         for (int i = 0; i < versionCount; i++) {
             final String platformName = readString();
             final String versionName = readString();
+            final boolean local = readBoolean();
             final String versionDownloadUrl = readString();
             final String fileHash = readString();
             final boolean legacy = readBoolean();
 
             final PlatformVersion version = new PlatformVersionImpl(
-                    platformName, versionName, versionDownloadUrl, fileHash, legacy);
+                    platformName, versionName, local, versionDownloadUrl, fileHash, legacy);
             platform.getVersions().add(version);
         }
 

@@ -76,7 +76,8 @@ public class PlatformFileHandler {
                 final String download = map.containsKey("download") ? String.valueOf(map.get("download")) : null;
                 final boolean legacy = map.containsKey("legacy") && Boolean.parseBoolean(map.get("legacy").toString());
 
-                versions.add(new PlatformVersionImpl(key, version, download, legacy));
+                //todo
+                versions.add(new PlatformVersionImpl(key, version, false, download, legacy));
             }
 
             platform.getVersions().addAll(versions);

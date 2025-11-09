@@ -14,13 +14,15 @@ public class PlatformVersionImpl implements PlatformVersion {
 
     private final String platformName;
     private final String name;
+    private boolean local;
     private String downloadUrl;
     private String fileHash;
     private boolean legacy;
 
-    public PlatformVersionImpl(String platformName, String name, String downloadUrl, boolean legacy) {
+    public PlatformVersionImpl(String platformName, String name, boolean local, String downloadUrl, boolean legacy) {
         this.platformName = platformName;
         this.name = name;
+        this.local = local;
         this.downloadUrl = downloadUrl;
         this.legacy = legacy;
     }

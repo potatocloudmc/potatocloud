@@ -6,9 +6,8 @@ import net.potatocloud.api.platform.impl.PlatformVersionImpl;
 import net.potatocloud.node.console.Console;
 import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.screen.ScreenManager;
+import net.potatocloud.node.setup.AnswerResult;
 import net.potatocloud.node.setup.Setup;
-import net.potatocloud.node.setup.SetupAnswerResult;
-import net.potatocloud.node.setup.validator.BooleanValidator;
 
 import java.util.Map;
 
@@ -26,51 +25,90 @@ public class AddVersionToPlatformSetup extends Setup {
     @Override
     public void initQuestions() {
         question("name")
-                .question("What is the name of the version?")
-                .validator(input -> {
-                    if (input.isBlank()) {
-                        return SetupAnswerResult.error("Name cannot be empty");
-                    }
+                .text("What is the name of the version?")
+                .customValidator(input -> {
                     if (platform.hasVersion(input)) {
-                        return SetupAnswerResult.error("This version already exists for this platform");
+                        return AnswerResult.error("This version already exists for this platform");
                     }
-                    return SetupAnswerResult.success();
+                    return AnswerResult.success();
                 })
-                .done();
+                .add();
+
+        question("use_download")
+                .bool("""
+                        Should this version be downloaded automatically?
+                        
+                        Type 'yes' to use a download URL.
+                        Type 'no' if you want to add the JAR file yourself.
+                        """)
+                .add();
+
+        question("local_ready")
+                .text("Please copy your platform file to this folder /platforms/"
+                        + platform.getName() + "/<version-name>"
+                        + " and name it "
+                        + platform.getName() + "-<version-name>.jar\n"
+                        + "Type 'done' when ready or 'cancel' to cancel."
+                )
+                .customValidator(input -> {
+                    if (!input.equalsIgnoreCase("done") && !input.equalsIgnoreCase("cancel")) {
+                        return AnswerResult.error("Type done if you are ready or cancel to cancel");
+                    }
+                    return AnswerResult.success();
+                })
+                .skipIf(answers ->
+                        answers.get("use_download").equalsIgnoreCase("true") || answers.get("use_download").equalsIgnoreCase("yes")
+                )
+                .add();
 
         question("has_template")
-                .question("Does the platform has a template URL with placeholders like {sha256}, {version}, {build}? \n" +
-                        "Example: https://fill-data.papermc.io/v1/objects/{sha256}/paper-{version}-{build}.jar \n" +
-                        "Check the platform file or type 'no' if unsure")
-                .validator(new BooleanValidator())
-                .done();
+                .bool("""
+                        Does the platform have a template URL with placeholders like {sha256}, {version}, {build}?
+                        Example: https://fill-data.papermc.io/v1/objects/{sha256}/paper-{version}-{build}.jar
+                        Check the platform file or type 'no' if unsure.
+                        """)
+                .skipIf(answers -> {
+                    final String useDownload = answers.getOrDefault("use_download", "false");
+                    return !(useDownload.equalsIgnoreCase("true") || useDownload.equalsIgnoreCase("yes"));
+                })
+                .add();
 
         question("download_url")
-                .question("What is the Download URL of this version?")
-                .validator(input -> {
-                    if (input.isBlank()) {
-                        return SetupAnswerResult.error("Download URL cannot be empty");
-                    }
+                .text("What is the Download URL of this version?")
+                .customValidator(input -> {
                     if (!input.startsWith("http://") && !input.startsWith("https://")) {
-                        return SetupAnswerResult.error("Download URL must start with 'http://' or 'https://'");
+                        return AnswerResult.error("Download URL must start with 'http://' or 'https://'");
                     }
-                    return SetupAnswerResult.success();
+                    return AnswerResult.success();
                 })
-                .skipCondition(answers ->
-                        answers.get("has_template").equalsIgnoreCase("true") || answers.get("has_template").equalsIgnoreCase("yes"))
-                .done();
+                .skipIf(answers -> {
+                    final String useDownload = answers.getOrDefault("use_download", "false");
+                    final String hasTemplate = answers.getOrDefault("has_template", "false");
+
+                    return !(useDownload.equalsIgnoreCase("true") || useDownload.equalsIgnoreCase("yes"))
+                            || (hasTemplate.equalsIgnoreCase("true") || hasTemplate.equalsIgnoreCase("yes"));
+                })
+
+                .add();
 
         question("legacy")
-                .question("Is this a legacy version? (1.8)")
-                .validator(new BooleanValidator())
-                .done();
+                .bool("Is this a legacy version? (1.8)")
+                .add();
     }
 
     @Override
     protected void onFinish(Map<String, String> answers) {
-        final String downloadUrl = answers.get("download_url") != null ? answers.get("download_url") : null;
+        final boolean useDownload = Boolean.parseBoolean(answers.get("use_download"));
+        final boolean isLocal = !useDownload;
+        final String downloadUrl = answers.get("download_url");
 
-        final PlatformVersion version = new PlatformVersionImpl(platform.getName(), answers.get("name"), downloadUrl, Boolean.parseBoolean(answers.get("legacy")));
+        final PlatformVersion version = new PlatformVersionImpl(
+                platform.getName(),
+                answers.get("name"),
+                isLocal,
+                downloadUrl,
+                Boolean.parseBoolean(answers.get("legacy"))
+        );
 
         platform.addVersion(version);
         platform.update();

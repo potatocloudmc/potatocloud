@@ -39,6 +39,14 @@ public class DownloadManager {
 
         final File platformFile = PlatformUtils.getPlatformJarFile(platform, version);
 
+        if (version.isLocal()) {
+            if (!platformFile.exists()) {
+                logger.error("Platform &a" + platform.getName() + " &7version &a" + version.getName() + " &7does not exist!");
+                return;
+            }
+            return;
+        }
+
         final BuildParser parser = PARSERS.stream()
                 .filter(p -> p.getName().equalsIgnoreCase(platform.getParser()))
                 .findFirst()
