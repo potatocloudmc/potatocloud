@@ -9,8 +9,10 @@ import net.potatocloud.api.service.ServiceStatus;
 import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketListener;
 import net.potatocloud.core.networking.packets.service.ServiceStartedPacket;
+import net.potatocloud.node.Node;
 import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.service.ServiceImpl;
+import net.potatocloud.node.service.ServiceMemoryUpdateTask;
 import net.potatocloud.node.service.ServiceProcessChecker;
 
 @RequiredArgsConstructor
@@ -40,5 +42,7 @@ public class ServiceStartedListener implements PacketListener<ServiceStartedPack
             impl.setProcessChecker(new ServiceProcessChecker(impl));
             impl.getProcessChecker().start();
         }
+
+        new ServiceMemoryUpdateTask(service, Node.getInstance().getServer()).start();
     }
 }

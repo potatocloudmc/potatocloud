@@ -234,8 +234,6 @@ public class ServiceImpl implements Service {
         final ProcessBuilder processBuilder = new ProcessBuilder(args).directory(directory.toFile());
         serverProcess = processBuilder.start();
 
-        new ServiceMemoryUpdateTask(this, server).start();
-
         processWriter = new BufferedWriter(new OutputStreamWriter(serverProcess.getOutputStream()));
         processReader = new BufferedReader(new InputStreamReader(serverProcess.getInputStream()));
 
