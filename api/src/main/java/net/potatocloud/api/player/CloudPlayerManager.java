@@ -47,7 +47,7 @@ public interface CloudPlayerManager {
     /**
      * Connects the player to the given service.
      *
-     * @param playerName the name of the player to connect
+     * @param playerName  the name of the player to connect
      * @param serviceName the name of the service
      */
     void connectPlayerWithService(String playerName, String serviceName);
@@ -55,7 +55,7 @@ public interface CloudPlayerManager {
     /**
      * Connects the player to the given service.
      *
-     * @param player the player to connect
+     * @param player      the player to connect
      * @param serviceName the name of the service
      */
     default void connectPlayerWithService(CloudPlayer player, String serviceName) {
@@ -66,7 +66,7 @@ public interface CloudPlayerManager {
      * Connects the player to the given service.
      *
      * @param playerName the name of the player to connect
-     * @param service the service to connect with
+     * @param service    the service to connect with
      */
     default void connectPlayerWithService(String playerName, Service service) {
         connectPlayerWithService(playerName, service.getName());
@@ -75,7 +75,7 @@ public interface CloudPlayerManager {
     /**
      * Connects the player to the given service.
      *
-     * @param player the player to connect
+     * @param player  the player to connect
      * @param service the service to connect with
      */
     default void connectPlayerWithService(CloudPlayer player, Service service) {

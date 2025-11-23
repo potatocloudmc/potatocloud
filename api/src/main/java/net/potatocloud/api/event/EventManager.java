@@ -15,7 +15,7 @@ public interface EventManager {
      * Calls an event locally on this api instance.
      *
      * @param event the event to call
-     * @param <T> the type of the event
+     * @param <T>   the type of the event
      */
     <T extends Event> void callLocal(T event);
 
@@ -23,7 +23,7 @@ public interface EventManager {
      * Calls an event globally on all api instances.
      *
      * @param event the event to call
-     * @param <T> the type of the event
+     * @param <T>   the type of the event
      */
     <T extends Event> void call(T event);
 

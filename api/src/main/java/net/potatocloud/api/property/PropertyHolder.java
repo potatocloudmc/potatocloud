@@ -85,7 +85,7 @@ public interface PropertyHolder {
         }
     }
 
-   default <T> void setProperty(Property<T> property, T value) {
+    default <T> void setProperty(Property<T> property, T value) {
         setProperty(property, value, true);
     }
 
