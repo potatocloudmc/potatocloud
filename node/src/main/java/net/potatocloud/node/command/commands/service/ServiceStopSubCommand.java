@@ -6,6 +6,7 @@ import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.node.command.SubCommand;
 import net.potatocloud.node.command.SubCommandInfo;
 import net.potatocloud.node.command.TabCompleter;
+import net.potatocloud.node.command.TabCompleters;
 import net.potatocloud.node.console.Logger;
 
 import java.util.List;
@@ -37,10 +38,7 @@ public class ServiceStopSubCommand extends SubCommand implements TabCompleter {
     @Override
     public List<String> complete(String[] args) {
         if (args.length == 1) {
-            return serviceManager.getAllServices().stream()
-                    .map(Service::getName)
-                    .filter(name -> name.startsWith(args[0]))
-                    .toList();
+            return TabCompleters.service(args);
         }
         return List.of();
     }

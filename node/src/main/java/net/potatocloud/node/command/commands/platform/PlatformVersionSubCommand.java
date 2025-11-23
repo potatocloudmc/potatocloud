@@ -8,6 +8,7 @@ import net.potatocloud.node.Node;
 import net.potatocloud.node.command.SubCommand;
 import net.potatocloud.node.command.SubCommandInfo;
 import net.potatocloud.node.command.TabCompleter;
+import net.potatocloud.node.command.TabCompleters;
 import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.setup.setups.AddVersionToPlatformSetup;
 
@@ -139,20 +140,11 @@ public class PlatformVersionSubCommand extends SubCommand implements TabComplete
         }
 
         if (args.length == 2 && List.of("add", "remove", "list", "info").contains(args[0].toLowerCase())) {
-            return platformManager.getPlatforms().stream()
-                    .map(Platform::getName)
-                    .filter(name -> name.toLowerCase().startsWith(args[1].toLowerCase()))
-                    .toList();
+            return TabCompleters.platform(args, 1);
         }
 
         if (args.length == 3 && List.of("add", "remove", "info").contains(args[0].toLowerCase())) {
-            final Platform platform = platformManager.getPlatform(args[1]);
-            if (platform != null) {
-                return platform.getVersions().stream()
-                        .map(PlatformVersion::getName)
-                        .filter(name -> name.toLowerCase().startsWith(args[2].toLowerCase()))
-                        .toList();
-            }
+            return TabCompleters.platformVersion(platformManager.getPlatform(args[1]), args, 2);
         }
 
         return List.of();

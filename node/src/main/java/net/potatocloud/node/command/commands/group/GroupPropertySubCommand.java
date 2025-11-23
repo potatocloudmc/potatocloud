@@ -9,6 +9,7 @@ import net.potatocloud.core.utils.PropertyUtil;
 import net.potatocloud.node.command.SubCommand;
 import net.potatocloud.node.command.SubCommandInfo;
 import net.potatocloud.node.command.TabCompleter;
+import net.potatocloud.node.command.TabCompleters;
 import net.potatocloud.node.console.Logger;
 
 import java.util.ArrayList;
@@ -120,10 +121,7 @@ public class GroupPropertySubCommand extends SubCommand implements TabCompleter 
         }
 
         if (args.length == 2) {
-            return groupManager.getAllServiceGroups().stream()
-                    .map(ServiceGroup::getName)
-                    .filter(name -> name.startsWith(args[1]))
-                    .toList();
+            return TabCompleters.group(args, 1);
         }
 
         if (args.length == 3 && args[0].equalsIgnoreCase("remove")) {

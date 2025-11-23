@@ -6,6 +6,7 @@ import net.potatocloud.api.platform.PlatformManager;
 import net.potatocloud.node.command.SubCommand;
 import net.potatocloud.node.command.SubCommandInfo;
 import net.potatocloud.node.command.TabCompleter;
+import net.potatocloud.node.command.TabCompleters;
 import net.potatocloud.node.console.Logger;
 
 import java.util.List;
@@ -54,10 +55,7 @@ public class PlatformInfoSubCommand extends SubCommand implements TabCompleter {
     @Override
     public List<String> complete(String[] args) {
         if (args.length == 1) {
-            return platformManager.getPlatforms().stream()
-                    .map(Platform::getName)
-                    .filter(name -> name.toLowerCase().startsWith(args[0].toLowerCase()))
-                    .toList();
+            return TabCompleters.platform(args);
         }
         return List.of();
     }

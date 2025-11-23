@@ -7,6 +7,7 @@ import net.potatocloud.api.platform.PlatformVersion;
 import net.potatocloud.node.command.SubCommand;
 import net.potatocloud.node.command.SubCommandInfo;
 import net.potatocloud.node.command.TabCompleter;
+import net.potatocloud.node.command.TabCompleters;
 import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.platform.DownloadManager;
 
@@ -45,21 +46,11 @@ public class PlatformDownloadSubCommand extends SubCommand implements TabComplet
     @Override
     public List<String> complete(String[] args) {
         if (args.length == 1) {
-            return platformManager.getPlatforms().stream()
-                    .map(Platform::getName)
-                    .filter(name -> name.toLowerCase().startsWith(args[0].toLowerCase()))
-                    .toList();
+            return TabCompleters.platform(args);
         }
 
         if (args.length == 2) {
-            final Platform platform = platformManager.getPlatform(args[0]);
-            if (platform == null) {
-                return List.of();
-            }
-            return platform.getVersions().stream()
-                    .map(PlatformVersion::getName)
-                    .filter(ver -> ver.toLowerCase().startsWith(args[1].toLowerCase()))
-                    .toList();
+            return TabCompleters.platformVersion(platformManager.getPlatform(args[0]), args, 1);
         }
         return List.of();
     }

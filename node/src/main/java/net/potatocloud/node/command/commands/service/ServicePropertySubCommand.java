@@ -9,6 +9,7 @@ import net.potatocloud.core.utils.PropertyUtil;
 import net.potatocloud.node.command.SubCommand;
 import net.potatocloud.node.command.SubCommandInfo;
 import net.potatocloud.node.command.TabCompleter;
+import net.potatocloud.node.command.TabCompleters;
 import net.potatocloud.node.console.Logger;
 
 import java.util.ArrayList;
@@ -120,10 +121,7 @@ public class ServicePropertySubCommand extends SubCommand implements TabComplete
         }
 
         if (args.length == 2) {
-            return serviceManager.getAllServices().stream()
-                    .map(Service::getName)
-                    .filter(name -> name.startsWith(args[1]))
-                    .toList();
+            return TabCompleters.service(args, 1);
         }
 
         if (args.length == 3 && args[0].equalsIgnoreCase("remove")) {

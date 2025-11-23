@@ -7,6 +7,7 @@ import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.node.command.SubCommand;
 import net.potatocloud.node.command.SubCommandInfo;
 import net.potatocloud.node.command.TabCompleter;
+import net.potatocloud.node.command.TabCompleters;
 import net.potatocloud.node.console.Logger;
 
 import java.util.List;
@@ -48,10 +49,7 @@ public class GroupInfoSubCommand extends SubCommand implements TabCompleter {
     @Override
     public List<String> complete(String[] args) {
         if (args.length == 1) {
-            return groupManager.getAllServiceGroups().stream()
-                    .map(ServiceGroup::getName)
-                    .filter(name -> name.startsWith(args[0]))
-                    .toList();
+            return TabCompleters.group(args);
         }
         return List.of();
     }
