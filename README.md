@@ -2,90 +2,60 @@
 
 A simple "cloud" system for Minecraft servers that is performant, customizable and made to be simple and easy to use
 
+## Features
+- **All Core Cloud Features** – static/dynamic servers, templates, and more
+- **Simple & Powerful API** - easy to integrate and use.
+- **Screen System** - View service output live and execute commands
+- **Property System** – add custom data to players, services, or groups
+- **No External Database Required** – runs out-of-the-box with minimal setup
+- **Clean, Structured Console** - clear logs and output
+- **Customizable** – many features can be configured or disabled if not needed
+- **Easy to Use** - beginner-friendly and intuitive
+- **Powerful Platform System** – auto-update platforms like Paper or add custom platforms
+
 ## Supported Platforms (Server Versions)
-- Paper (1.20.4 - current)
-- Velocity (3.3.0-SNAPSHOT - current)
-- Purpur (1.20.4 - current)
+- Paper (1.20.4 - Latest)
+- Velocity (3.3.0-SNAPSHOT - Latest)
+- Purpur (1.20.4 - Latest)
 - PandaSpigot (1.8.8 - 1.8.9)
 - [Limbo](https://github.com/LOOHP/Limbo) (1.21.8, 1.21.10)
-- Custom Platforms 
+- Custom Platforms
+
+## Installation
+To install potatocloud, follow these steps:
+
+1. **Install Java 21** if you don’t have it
+2. **Download the latest release** from the [potatocloud releases](https://github.com/potatocloudmc/potatocloud/releases)
+3. **Extract the ZIP** to any folder you want
+4. **Run the cloud using the start script in the folder**:
+    - Windows: `start.bat`
+    - Linux/macOS: `start.sh`
+5. **Create a lobby and a proxy group** with the command `group create` (don’t forget to say yes to the fallback question when creating a lobby)
+6. That’s it! You should now be able to join your server
 
 ## Optional Plugins
 
-| Plugin Name          | Platform(s)    | Description                                                |
-|----------------------|----------------|------------------------------------------------------------|
-| Cloud Command Plugin | Velocity       | Allows you to manage many things ingame via commands       |
-| Notify Plugin        | Velocity       | Sends notifications when servers start and stop            |
-| Proxy Plugin         | Velocity       | Adds MOTD, Tablist(With Labymod support), Maintenance Mode |
-| Hub Command Plugin   | Velocity       | Command for returning to an fallback server                |
-| LabyMod Plugin       | Bukkit / Paper | Set LabyMod game mode on join to current server            |
+These plugins are separate jars you can drop into your proxy or servers:
 
-## API Dependency
+| Plugin Name          | Platform(s)    | Description                                                 |
+|----------------------|----------------|-------------------------------------------------------------|
+| Cloud Command Plugin | Velocity       | Allows you to manage many things ingame via commands        |
+| Notify Plugin        | Velocity       | Sends notifications when servers start and stop             |
+| Proxy Plugin         | Velocity       | Adds MOTD, Tablist (with LabyMod support), Maintenance Mode |
+| Hub Command Plugin   | Velocity       | Command for returning to a fallback server                  |
+| LabyMod Plugin       | Bukkit / Paper | Set LabyMod game mode on join to current server             |
 
-### Maven
+All plugins are available in the [potatocloud](https://github.com/potatocloudmc/potatocloud/releases) zip file.
 
-```xml
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
+## API
+Check out the [potatocloud API Wiki](https://github.com/potatocloudmc/potatocloud/wiki/01%E2%80%90Getting-Started-with-the-API). It shows you how to use the API and includes examples.
 
-    <dependencies>
-        <dependency>
-            <groupId>com.github.potatocloudmc.potatocloud</groupId>
-            <artifactId>api</artifactId>
-            <version>1.3.0</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
+## Building from Source
+Use Maven to build the project:
+```bash
+mvn clean install
 ```
 
-### Gradle
-
-```kotlin
-repositories {
-    maven("https://jitpack.io")
-}
-
-dependencies {
-    compileOnly("com.github.potatocloudmc.potatocloud:api:1.3.0")
-}
-```
-
-### You can access the API by using:
-
-```java
-CloudAPI api = CloudAPI.getInstance();
-
-ServiceGroupManager groupManager = api.getServiceGroupManager();
-
-ServiceManager serviceManager = api.getServiceManager();
-
-CloudPlayerManager playerManager = api.getCloudPlayerManager();
-```
-
-## Property System Example
-
-```java
-// Example default property from DefaultProperties (more properties can be found in the class)
-Property<String> gameState = DefaultProperties.GAME_STATE;
-
-// Custom property
-Property<String> custom = Property.ofString("server_owner", "me");
-
-// Setting a property and optionally overwriting the default value
-// Properties can be set for groups, services, or players
-holder.setProperty(custom, "Player123");
-
-// Getting the value of a property (use name or object)
-Property<String> property = holder.getProperty("server_owner");
-String serverOwner = property.getValue();
-```
-## ☁️ Test Server
-
-This cloud system is used by [Surnex.net](https://surnex.net) as a test object.
-
-
+## Test Server
+Used by [Surnex.net](https://surnex.net)
 
