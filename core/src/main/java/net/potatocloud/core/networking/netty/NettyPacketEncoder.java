@@ -9,14 +9,17 @@ public class NettyPacketEncoder extends MessageToByteEncoder<Packet> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, Packet packet, ByteBuf out) {
-        // create a new buffer for the packet with the id and packet data
-        ByteBuf buf = ctx.alloc().buffer();
+        // Create a new buffer for the packet with the id and packet data
+        final ByteBuf buf = ctx.alloc().buffer();
+
+        // Write the packet id and packet data into the buffer
         buf.writeInt(packet.getId());
         packet.write(new PacketBuffer(buf));
 
-        // payload length
+        // Payload length
         out.writeInt(buf.readableBytes());
-        // write the payload
+
+        // Write the payload
         out.writeBytes(buf);
         buf.release();
     }

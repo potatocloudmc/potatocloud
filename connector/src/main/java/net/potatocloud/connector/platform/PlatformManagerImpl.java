@@ -24,7 +24,7 @@ public class PlatformManagerImpl implements PlatformManager {
     public PlatformManagerImpl(NetworkClient client) {
         this.client = client;
 
-        // since this class is very short just keep the package listeners here as long as there are not too many and they are not too big
+        // Since this class is very short just keep the package listeners here as long as there are not too many and they are not too big
         client.registerPacketListener(PacketIds.PLATFORM_ADD, (NetworkConnection connection, PlatformAddPacket packet) -> {
             platforms.add(packet.getPlatform());
         });

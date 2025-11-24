@@ -52,7 +52,7 @@ public class DownloadManager {
                 .findFirst()
                 .orElse(null);
 
-        // use build parser to get the correct download url and hash if version has no download url
+        // Use build parser to get the correct download url and hash if version has no download url
         if ((version.getDownloadUrl() == null || version.getDownloadUrl().isEmpty()) && parser != null) {
             parser.parse(version, platform.getDownloadUrl());
         }
@@ -84,6 +84,7 @@ public class DownloadManager {
 
     @SneakyThrows
     private boolean needsUpdate(PlatformVersion version, File platformFile) {
+        // Check if the platform version file is outdated by comparing its hash with the latest version hash
         final String versionHash = version.getFileHash();
         if (versionHash == null || versionHash.isEmpty()) {
             return false;
@@ -94,6 +95,7 @@ public class DownloadManager {
                     ? DigestUtils.md5Hex(stream)
                     : DigestUtils.sha256Hex(stream);
 
+            // Returns true if the file is outdated
             return !currentFileHash.equalsIgnoreCase(versionHash);
         }
     }

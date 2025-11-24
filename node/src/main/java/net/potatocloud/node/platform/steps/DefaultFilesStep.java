@@ -24,7 +24,7 @@ public class DefaultFilesStep implements PrepareStep {
                 Files.copy(Path.of(config.getDataFolder(), "server.properties"), serverProperties);
             }
 
-            // the spigot yml is only needed when velocity uses legacy forwarding
+            // The spigot yml is only needed when velocity uses legacy forwarding
             if (!ProxyUtils.isProxyModernForwarding()) {
                 final Path spigotYml = serverDirectory.resolve("spigot.yml");
 

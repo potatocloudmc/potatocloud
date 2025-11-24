@@ -13,9 +13,9 @@ public interface PlatformPlugin {
 
     default void initCurrentService() {
         final Service currentService = CloudAPI.getInstance().getServiceManager().getCurrentService();
-        // service manager is still null or the services have not finished loading
+        // Service manager is still null or the services have not finished loading
         if (currentService == null) {
-            // retry after 1 second
+            // Retry after 1 second
             runTaskLater(this::initCurrentService, 1);
             return;
         }

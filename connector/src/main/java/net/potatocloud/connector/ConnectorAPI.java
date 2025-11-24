@@ -15,6 +15,9 @@ import net.potatocloud.core.networking.NetworkClient;
 import net.potatocloud.core.networking.PacketManager;
 import net.potatocloud.core.networking.netty.NettyNetworkClient;
 
+/**
+ * The Connector connects a node to this instance and provides API methods for running services.
+ */
 @Getter
 public class ConnectorAPI extends CloudAPI {
 

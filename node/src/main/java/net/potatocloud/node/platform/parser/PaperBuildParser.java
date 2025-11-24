@@ -23,12 +23,14 @@ public class PaperBuildParser implements BuildParser {
         try {
             String mcVersion = version.getName();
 
+            // Find the latest minecraft version if the user wants the latest
             if (mcVersion.equalsIgnoreCase("latest")) {
                 final JsonArray versions = RequestUtil.request("https://api.papermc.io/v2/projects/" + projectName).getAsJsonArray("versions");
 
                 mcVersion = versions.get(versions.size() - 1).getAsString();
             }
 
+            // Get the latest build of the chosen version
             final JsonArray builds = RequestUtil.request("https://api.papermc.io/v2/projects/" + projectName + "/versions/" + mcVersion).getAsJsonArray("builds");
             final int latestBuild = builds.get(builds.size() - 1).getAsInt();
 
@@ -41,6 +43,7 @@ public class PaperBuildParser implements BuildParser {
             final JsonObject application = buildJson.getAsJsonObject("downloads").getAsJsonObject("application");
             final String sha256 = application.get("sha256").getAsString();
 
+            // Replace placeholders in the platform download URL
             final String downloadUrl = baseUrl
                     .replace("{version}", mcVersion)
                     .replace("{build}", String.valueOf(latestBuild))

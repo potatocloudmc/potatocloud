@@ -19,18 +19,21 @@ public class PurpurBuildParser implements BuildParser {
         try {
             String mcVersion = version.getName();
 
+            // Find the latest minecraft version if the user wants the latest
             if (mcVersion.equalsIgnoreCase("latest")) {
                 final JsonArray versionsArray = RequestUtil.request("https://api.purpurmc.org/v2/purpur/").getAsJsonArray("versions");
 
                 mcVersion = versionsArray.get(versionsArray.size() - 1).getAsString();
             }
 
+            // Get the latest build of the chosen version
             final JsonObject versionJson = RequestUtil.request("https://api.purpurmc.org/v2/purpur/" + mcVersion);
             final String latestBuild = versionJson.getAsJsonObject("builds").get("latest").getAsString();
 
             final JsonObject buildJson = RequestUtil.request("https://api.purpurmc.org/v2/purpur/" + mcVersion + "/" + latestBuild);
             final String md5 = buildJson.get("md5").getAsString();
 
+            // Replace placeholders in the platform download URL
             final String downloadUrl = baseUrl
                     .replace("{version}", mcVersion)
                     .replace("{build}", latestBuild);

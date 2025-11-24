@@ -62,7 +62,7 @@ public class VelocityPlugin implements PlatformPlugin {
     public void onServiceReady(Service service) {
         currentService = service;
 
-        // register already online services
+        // Register already online services
         for (Service ser : api.getServiceManager().getAllServices()) {
             registerServer(ser);
         }
@@ -167,6 +167,7 @@ public class VelocityPlugin implements PlatformPlugin {
     public void onDisconnect(DisconnectEvent event) {
         final CloudPlayerManagerImpl playerManager = (CloudPlayerManagerImpl) api.getPlayerManager();
         final CloudPlayer player = playerManager.getCloudPlayer(event.getPlayer().getUniqueId());
+
         if (player != null) {
             playerManager.unregisterPlayer(player);
             api.getEventManager().call(new CloudPlayerDisconnectEvent(event.getPlayer().getUniqueId(), event.getPlayer().getUsername()));

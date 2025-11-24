@@ -19,6 +19,7 @@ public class PaperPlatformPreCacheBuilder implements PlatformPreCacheBuilder {
     public void buildCache(Platform platform, PlatformVersion version, ServiceGroup group, Path cacheFolder) {
         final File platformJarFile = PlatformUtils.getPlatformJarFile(platform, version);
 
+        // Create a temporary folder for cache generation
         final Path tempDir = cacheFolder.resolve("temp");
         tempDir.toFile().mkdirs();
 
@@ -28,7 +29,7 @@ public class PaperPlatformPreCacheBuilder implements PlatformPreCacheBuilder {
         args.add("-jar");
         args.add(platformJarFile.getAbsolutePath());
 
-        // run the server process to generate cache
+        // Run the server process to generate cache
         final ProcessBuilder processBuilder = new ProcessBuilder(args).directory(tempDir.toFile());
         final Process process = processBuilder.start();
         process.waitFor();
@@ -58,6 +59,7 @@ public class PaperPlatformPreCacheBuilder implements PlatformPreCacheBuilder {
             return;
         }
 
+        // Copy cached folders to the service directory
         final Path cachedCache = cacheFolder.resolve("cache");
         if (Files.exists(cachedCache)) {
             FileUtils.copyDirectory(cachedCache.toFile(), serviceDir.resolve("cache").toFile());

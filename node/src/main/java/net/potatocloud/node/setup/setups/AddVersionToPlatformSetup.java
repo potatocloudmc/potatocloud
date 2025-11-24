@@ -44,8 +44,9 @@ public class AddVersionToPlatformSetup extends Setup {
                         Type 'no' if you want to add the JAR file yourself.
                         """)
                 .answerAction((answers, answer) -> {
-                    // only if using local platform file
-                    if (answer.equalsIgnoreCase("false") || answer.equalsIgnoreCase("no")) {
+                    // Only if using local platform file, create the needed folder
+                    final boolean usingLocalFile = answer.equalsIgnoreCase("false") || answer.equalsIgnoreCase("no");
+                    if (usingLocalFile) {
                         final File platformFolder = new File("platforms/" + platform.getName() + "/" + answer);
                         platformFolder.mkdirs();
                     }

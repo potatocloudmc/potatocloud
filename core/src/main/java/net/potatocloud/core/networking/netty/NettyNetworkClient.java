@@ -23,6 +23,8 @@ public class NettyNetworkClient implements NetworkClient {
     public void connect(String host, int port) {
         PacketRegistry.registerPackets(packetManager);
 
+        // TODO: Switch to the new way of creating the event loop group just like in the server
+        // The last time I tried I had problems with it so I left it like that
         group = Epoll.isAvailable() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
 
         final Bootstrap bootstrap = new Bootstrap();

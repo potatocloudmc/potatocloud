@@ -34,7 +34,7 @@ public class CacheManager {
             return null;
         }
 
-        // legacy versions are not supported by the paper pre cacher
+        // Legacy versions are not supported by the paper pre cacher
         if (version.isLegacy() && builder instanceof PaperPlatformPreCacheBuilder) {
             return null;
         }
@@ -52,7 +52,7 @@ public class CacheManager {
         final String key = platform.getName() + "-" + version.getName() + "-" + jarHash;
 
         if (cacheFolder.toFile().exists()) {
-            // cache was already created and is up to date
+            // Cache was already created and is up to date
             return cacheFolder;
         }
 
@@ -61,7 +61,7 @@ public class CacheManager {
         }
 
         try {
-            // remove old cache folders
+            // Delete old cache folders
             for (File file : platformFolder.toFile().listFiles()) {
                 if (file.isDirectory() && file.getName().startsWith("cache-")) {
                     FileUtils.deleteDirectory(file);
@@ -71,20 +71,21 @@ public class CacheManager {
             logger.info("Started caching for &a" + platform.getName() + "&7 version &a" + version.getName());
             cacheFolder.toFile().mkdirs();
 
-            // start the pre cacher implementation of the platform
+            // Start the pre cacher implementation of the platform
             builder.buildCache(platform, version, group, cacheFolder);
             logger.info("Finished caching for &a" + platform.getName() + "&7 version &a" + version.getName());
 
         } catch (Exception e) {
             logger.error("Caching failed for version " + version.getFullName());
         } finally {
-            // make the builder free again even if it fails
+            // Make the builder free again even if it fails
             runningCacheBuilders.remove(key);
         }
         return cacheFolder;
     }
 
     public void copyCacheToService(ServiceGroup group, Path cacheFolder, Path serviceDir) {
+        // Copy pre-built cache to service directory
         final PlatformPreCacheBuilder builder = getPreCacheBuilder(group.getPlatform().getPreCacheBuilder());
         if (builder != null) {
             builder.copyCacheToService(cacheFolder, serviceDir);

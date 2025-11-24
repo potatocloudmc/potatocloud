@@ -26,16 +26,14 @@ public class SetupForwardingStep implements PrepareStep {
         final Path forwardingSecret = serverDirectory.resolve("forwarding.secret");
 
         if (!ProxyUtils.isProxyModernForwarding()) {
-            // velocity proxy uses legacy forwarding
-            // a forwarding secret file still has to be created or else velocity will throw an error
+            // A forwarding secret file still has to be created or else velocity will throw an error
             if (!Files.exists(forwardingSecret)) {
                 Files.writeString(forwardingSecret, UUID.randomUUID().toString(), StandardOpenOption.CREATE);
             }
             return;
         }
 
-        // velocity proxy uses modern forwarding
-        // change forwarding mode to modern
+        // If Velocity uses modern forwarding, Switch forwarding mode to modern
         final Path velocityToml = serverDirectory.resolve("velocity.toml");
         if (Files.exists(velocityToml)) {
             String fileContent = Files.readString(velocityToml);
@@ -47,11 +45,11 @@ public class SetupForwardingStep implements PrepareStep {
             Files.writeString(velocityToml, fileContent);
         }
 
-        // if the group does not have the property, use the properties default
+        // Check if the forwarding secret should always be replaced
         final Property<Boolean> property = service.getServiceGroup().getProperty(DefaultProperties.ALWAYS_OVERRIDE_FORWARDING_SECRET);
         final boolean alwaysOverride = property != null ? property.getValue() : DefaultProperties.ALWAYS_OVERRIDE_FORWARDING_SECRET.getDefaultValue();
 
-        // now create the forwarding secret file with the correct secret
+        // Now create the forwarding secret file with the correct secret
         if (!Files.exists(forwardingSecret) || alwaysOverride) {
             Files.writeString(forwardingSecret, VelocityForwardingSecret.FORWARDING_SECRET, StandardOpenOption.CREATE);
         }

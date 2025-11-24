@@ -31,9 +31,9 @@ public class ScreenManager {
         console.clearScreen();
 
         if (screen.getName().equals(Screen.NODE_SCREEN)) {
-            // get cached logs directly from the logger
+            // Get cached logs directly from the logger for the node screen and print them
             logger.getCachedLogs().stream()
-                    .filter(log -> !log.toLowerCase().contains("service screen"))
+                    .filter(log -> !log.toLowerCase().contains("service screen")) // Remove service screen commands from the logs
                     .forEach(console::println);
             console.setPrompt(console.getDefaultPrompt());
             return;

@@ -17,11 +17,12 @@ public class SetupProxyStep implements PrepareStep {
     @Override
     @SneakyThrows
     public void execute(Service service, Platform platform, Path serverDirectory) {
-        // nothing to do, a spigot config with bungeecord enabled was already copied
+        // Skip if Bukkit Based uses legacy proxy mode (already configured in the spigot.yml)
         if (platform.isBukkitBased() && !ProxyUtils.isProxyModernForwarding()) {
             return;
         }
 
+        // Configure Paper for modern Velocity forwarding
         if (platform.isPaperBased() && ProxyUtils.isProxyModernForwarding()) {
             final Path paperYml = serverDirectory.resolve("config").resolve("paper-global.yml");
             final YamlFile yaml = new YamlFile(paperYml.toFile());
@@ -34,6 +35,7 @@ public class SetupProxyStep implements PrepareStep {
             return;
         }
 
+        // Configure Limbo proxy settings
         if (platform.isLimboBased()) {
             final Path propertiesPath = serverDirectory.resolve("server.properties");
             final Properties properties = PropertiesFileUtils.loadProperties(propertiesPath);

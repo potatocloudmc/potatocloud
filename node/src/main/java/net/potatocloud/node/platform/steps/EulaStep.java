@@ -16,6 +16,7 @@ public class EulaStep implements PrepareStep {
     public void execute(Service service, Platform platform, Path serverDirectory) {
         if (platform.isBukkitBased()) {
             final Path eulaFile = serverDirectory.resolve("eula.txt");
+
             Files.writeString(eulaFile, "eula=true", StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         }
     }
