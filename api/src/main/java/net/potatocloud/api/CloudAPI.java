@@ -5,6 +5,7 @@ import net.potatocloud.api.event.EventManager;
 import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.api.platform.PlatformManager;
 import net.potatocloud.api.player.CloudPlayerManager;
+import net.potatocloud.api.property.PropertyHolder;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 
@@ -60,6 +61,13 @@ public abstract class CloudAPI {
      * @return the player manager
      */
     public abstract CloudPlayerManager getPlayerManager();
+
+    /**
+     * Gets the global properties holder.
+     *
+     * @return the global properties holder
+     */
+    public abstract PropertyHolder getGlobalProperties();
 
     /**
      * @deprecated Use {@link ServiceManager#getCurrentService()} instead

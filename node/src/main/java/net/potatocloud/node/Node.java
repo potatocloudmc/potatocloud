@@ -7,9 +7,9 @@ import net.potatocloud.api.event.EventManager;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.api.player.CloudPlayerManager;
+import net.potatocloud.api.property.PropertyHolder;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.core.event.ServerEventManager;
-import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.NetworkServer;
 import net.potatocloud.core.networking.PacketManager;
 import net.potatocloud.core.networking.netty.NettyNetworkServer;
@@ -24,6 +24,7 @@ import net.potatocloud.node.platform.DownloadManager;
 import net.potatocloud.node.platform.PlatformManagerImpl;
 import net.potatocloud.node.platform.cache.CacheManager;
 import net.potatocloud.node.player.CloudPlayerManagerImpl;
+import net.potatocloud.node.properties.NodePropertiesHolder;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.service.ServiceDefaultFiles;
@@ -53,6 +54,7 @@ public class Node extends CloudAPI {
     private final PacketManager packetManager;
     private final NetworkServer server;
     private final EventManager eventManager;
+    private final NodePropertiesHolder propertiesHolder;
     private final CloudPlayerManager playerManager;
     private final TemplateManager templateManager;
     private final ServiceGroupManager groupManager;
@@ -102,6 +104,7 @@ public class Node extends CloudAPI {
         logger.info("NetworkServer started using &aNetty &7on &a" + config.getNodeHost() + "&8:&a" + config.getNodePort());
 
         eventManager = new ServerEventManager(server);
+        propertiesHolder = new NodePropertiesHolder(server);
         playerManager = new CloudPlayerManagerImpl(server);
         templateManager = new TemplateManager(logger, Path.of(config.getTemplatesFolder()));
         groupManager = new ServiceGroupManagerImpl(Path.of(config.getGroupsFolder()), server);
@@ -153,9 +156,6 @@ public class Node extends CloudAPI {
             ((ServiceImpl) service).shutdownBlocking();
         }
 
-        for (NetworkConnection connectedSession : server.getConnectedSessions()) {
-            connectedSession.close();
-        }
         server.shutdown();
 
         FileUtils.deleteDirectory(Path.of(config.getTempServicesFolder()).toFile());
@@ -175,5 +175,10 @@ public class Node extends CloudAPI {
     @Override
     public ServiceGroupManager getServiceGroupManager() {
         return groupManager;
+    }
+
+    @Override
+    public PropertyHolder getGlobalProperties() {
+        return propertiesHolder;
     }
 }

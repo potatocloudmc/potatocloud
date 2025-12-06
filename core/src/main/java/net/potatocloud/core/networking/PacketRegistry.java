@@ -10,6 +10,10 @@ import net.potatocloud.core.networking.packets.platform.PlatformRemovePacket;
 import net.potatocloud.core.networking.packets.platform.PlatformUpdatePacket;
 import net.potatocloud.core.networking.packets.platform.RequestPlatformsPacket;
 import net.potatocloud.core.networking.packets.player.*;
+import net.potatocloud.core.networking.packets.property.PropertyAddPacket;
+import net.potatocloud.core.networking.packets.property.PropertyRemovePacket;
+import net.potatocloud.core.networking.packets.property.PropertyUpdatePacket;
+import net.potatocloud.core.networking.packets.property.RequestPropertiesPacket;
 import net.potatocloud.core.networking.packets.service.*;
 
 public class PacketRegistry {
@@ -43,5 +47,10 @@ public class PacketRegistry {
         manager.register(PacketIds.PLATFORM_REMOVE, PlatformRemovePacket::new);
         manager.register(PacketIds.REQUEST_PLATFORMS, RequestPlatformsPacket::new);
         manager.register(PacketIds.PLATFORM_UPDATE, PlatformUpdatePacket::new);
+
+        manager.register(PacketIds.REQUEST_PROPERTIES, RequestPropertiesPacket::new);
+        manager.register(PacketIds.PROPERTY_ADD, PropertyAddPacket::new);
+        manager.register(PacketIds.PROPERTY_REMOVE, PropertyRemovePacket::new);
+        manager.register(PacketIds.PROPERTY_UPDATE, PropertyUpdatePacket::new);
     }
 }

@@ -31,4 +31,9 @@ public class PacketIds {
     public static final int REQUEST_PLATFORMS = 402;
     public static final int PLATFORM_UPDATE = 403;
 
+    public static final int REQUEST_PROPERTIES = 500;
+    public static final int PROPERTY_UPDATE = 501;
+    public static final int PROPERTY_REMOVE = 502;
+    public static final int PROPERTY_ADD = 503;
+
 }

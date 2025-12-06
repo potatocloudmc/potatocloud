@@ -25,6 +25,16 @@ public class Property<T> {
     private T value;
 
     /**
+     * Sets the value of the property using an object.
+     *
+     * @param value the value to set
+     */
+    @SuppressWarnings("unchecked")
+    public void setValueObject(Object value) {
+        this.value = (T) value;
+    }
+
+    /**
      * Gets the current value of the property. Returns the default value if the current value is {@code null}
      *
      * @return the property value
