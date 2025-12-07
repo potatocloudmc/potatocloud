@@ -6,7 +6,7 @@ A simple "cloud" system for Minecraft servers that is performant, customizable a
 - **All Core Cloud Features** – static/dynamic servers, templates, and more
 - **Simple & Powerful API** - easy to integrate and use.
 - **Screen System** - View service output live and execute commands
-- **Property System** – add custom data to players, services, or groups
+- **Property System** – add custom data to players, services, groups, or globally
 - **No External Database Required** – runs out-of-the-box with minimal setup
 - **Clean, Structured Console** - clear logs and output
 - **Customizable** – many features can be configured or disabled if not needed
@@ -51,9 +51,9 @@ All plugins are available in the [potatocloud](https://github.com/potatocloudmc/
 Check out the [potatocloud API Wiki](https://github.com/potatocloudmc/potatocloud/wiki/01%E2%80%90Getting-Started-with-the-API). It shows you how to use the API and includes examples.
 
 ## Building from Source
-Use Maven to build the project:
+Use Gradle to build the project:
 ```bash
-mvn clean install
+./gradlew shadowJar
 ```
 
 ## Test Server
