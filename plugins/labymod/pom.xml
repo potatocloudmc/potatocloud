@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -10,8 +10,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <groupId>net.potatocloud.plugins.cloudcommand</groupId>
-    <artifactId>cloud-command-plugin</artifactId>
+    <artifactId>labymod</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -25,8 +24,8 @@
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
         <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
+            <id>labymod</id>
+            <url>https://dist.labymod.net/api/v1/maven/release/</url>
         </repository>
     </repositories>
 
@@ -39,27 +38,26 @@
         </dependency>
 
         <dependency>
-            <groupId>net.potatocloud.core</groupId>
-            <artifactId>core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.velocitypowered</groupId>
-            <artifactId>velocity-api</artifactId>
-            <version>${velocity.version}</version>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>${spigot.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>com.github.Carleslc.Simple-YAML</groupId>
-            <artifactId>Simple-Yaml</artifactId>
-            <version>${simpleyaml.version}</version>
+            <groupId>net.labymod.serverapi</groupId>
+            <artifactId>server-bukkit</artifactId>
+            <version>1.0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>net.labymod.serverapi</groupId>
+            <artifactId>server-common</artifactId>
+            <version>1.0.6</version>
         </dependency>
     </dependencies>
 
     <build>
-        <finalName>potatocloud-plugin-cloudcommand-${project.version}</finalName>
+        <finalName>potatocloud-plugin-labymod-${project.version}</finalName>
 
         <plugins>
             <plugin>
@@ -77,4 +75,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

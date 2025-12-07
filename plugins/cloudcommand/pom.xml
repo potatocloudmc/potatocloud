@@ -10,8 +10,8 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <groupId>net.potatocloud.plugins.proxy</groupId>
-    <artifactId>cloud-proxy-plugin</artifactId>
+    <groupId>net.potatocloud.plugins.cloudcommand</groupId>
+    <artifactId>cloudcommand</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -28,10 +28,6 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
-        <repository>
-            <id>labymod</id>
-            <url>https://dist.labymod.net/api/v1/maven/release/</url>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -40,6 +36,12 @@
             <artifactId>api</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>net.potatocloud.core</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -54,23 +56,10 @@
             <artifactId>Simple-Yaml</artifactId>
             <version>${simpleyaml.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>net.labymod.serverapi</groupId>
-            <artifactId>server-velocity</artifactId>
-            <version>1.0.6</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-        </dependency>
-
     </dependencies>
 
     <build>
-        <finalName>potatocloud-plugin-proxy-${project.version}</finalName>
+        <finalName>potatocloud-plugin-cloudcommand-${project.version}</finalName>
 
         <plugins>
             <plugin>
@@ -88,6 +77,4 @@
             </plugin>
         </plugins>
     </build>
-
-
 </project>
