@@ -13,7 +13,6 @@
         <module>core</module>
         <module>node</module>
         <module>api</module>
-        <module>plugin-common</module>
         <module>plugins</module>
         <module>connector</module>
         <module>plugin-spigot</module>

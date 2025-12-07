@@ -1,4 +1,4 @@
-package net.potatocloud.plugin;
+package net.potatocloud.connector.utils;
 
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.service.Service;

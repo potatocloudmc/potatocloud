@@ -38,12 +38,6 @@
         </dependency>
 
         <dependency>
-            <groupId>net.potatocloud.plugin.common</groupId>
-            <artifactId>plugin-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.loohp</groupId>
             <artifactId>Limbo</artifactId>
             <version>${limbo.version}</version>

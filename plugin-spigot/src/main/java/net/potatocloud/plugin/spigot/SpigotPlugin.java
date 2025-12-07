@@ -2,7 +2,7 @@ package net.potatocloud.plugin.spigot;
 
 import net.potatocloud.api.service.Service;
 import net.potatocloud.connector.ConnectorAPI;
-import net.potatocloud.plugin.PlatformPlugin;
+import net.potatocloud.connector.utils.PlatformPlugin;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;

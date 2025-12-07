@@ -7,7 +7,7 @@ import com.loohp.limbo.events.status.StatusPingEvent;
 import net.kyori.adventure.text.Component;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.connector.ConnectorAPI;
-import net.potatocloud.plugin.PlatformPlugin;
+import net.potatocloud.connector.utils.PlatformPlugin;
 
 public class LimboPlugin extends com.loohp.limbo.plugins.LimboPlugin implements Listener, PlatformPlugin {
 

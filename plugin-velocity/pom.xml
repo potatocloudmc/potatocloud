@@ -45,12 +45,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>net.potatocloud.plugin.common</groupId>
-            <artifactId>plugin-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
     </dependencies>
 
     <build>
