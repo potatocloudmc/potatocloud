@@ -10,8 +10,8 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <groupId>net.potatocloud.plugins.hub</groupId>
-    <artifactId>cloud-hub-plugin</artifactId>
+    <groupId>net.potatocloud.plugins.notify</groupId>
+    <artifactId>notify</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -53,7 +53,7 @@
     </dependencies>
 
     <build>
-        <finalName>potatocloud-plugin-hub-${project.version}</finalName>
+        <finalName>potatocloud-plugin-notify-${project.version}</finalName>
 
         <plugins>
             <plugin>

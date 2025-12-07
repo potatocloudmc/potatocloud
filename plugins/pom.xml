@@ -13,11 +13,11 @@
     <artifactId>plugins</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>cloud-command-plugin</module>
-        <module>cloud-hub-plugin</module>
-        <module>cloud-notify-plugin</module>
-        <module>cloud-proxy-plugin</module>
-        <module>cloud-labymod-plugin</module>
+        <module>cloudcommand</module>
+        <module>hub</module>
+        <module>notify</module>
+        <module>proxy</module>
+        <module>labymod</module>
     </modules>
 
     <properties>
