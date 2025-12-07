@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/api" />
+            <option value="$PROJECT_DIR$/connector" />
+            <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/node" />
+            <option value="$PROJECT_DIR$/plugin-limbo" />
+            <option value="$PROJECT_DIR$/plugin-spigot" />
+            <option value="$PROJECT_DIR$/plugin-velocity" />
+            <option value="$PROJECT_DIR$/plugins" />
+            <option value="$PROJECT_DIR$/plugins/cloudcommand" />
+            <option value="$PROJECT_DIR$/plugins/hub" />
+            <option value="$PROJECT_DIR$/plugins/labymod" />
+            <option value="$PROJECT_DIR$/plugins/notify" />
+            <option value="$PROJECT_DIR$/plugins/proxy" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>

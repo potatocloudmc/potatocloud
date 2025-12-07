@@ -1,0 +1,35 @@
+[versions]
+
+shadow = "9.3.0"
+
+lombok = "1.18.42"
+gson = "2.13.2"
+jline = "3.30.6"
+commons-io = "2.21.0"
+netty = "4.2.2.Final"
+simpleyaml = "1.8.4"
+commons-codec = "1.20.0"
+oshi = "6.9.1"
+spigot = "1.20.4-R0.1-SNAPSHOT"
+limbo = "0.7.16-ALPHA"
+velocity = "3.4.0-SNAPSHOT"
+labymod = "1.0.6"
+
+[libraries]
+lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+jline = { module = "org.jline:jline", version.ref = "jline" }
+commons-io = { module = "commons-io:commons-io", version.ref = "commons-io" }
+netty = { module = "io.netty:netty-all", version.ref = "netty" }
+simpleyaml = { module = "com.github.Carleslc.Simple-YAML:Simple-Yaml", version.ref = "simpleyaml" }
+commons-codec = { module = "commons-codec:commons-codec", version.ref = "commons-codec" }
+oshi = { module = "com.github.oshi:oshi-core", version.ref = "oshi" }
+spigot = { module = "org.spigotmc:spigot-api", version.ref = "spigot" }
+limbo = { module = "com.loohp:Limbo", version.ref = "limbo" }
+velocity = { module = "com.velocitypowered:velocity-api", version.ref = "velocity" }
+labymod-common = { module = "net.labymod.serverapi:server-common", version.ref = "labymod" }
+labymod-bukkit = { module = "net.labymod.serverapi:server-bukkit", version.ref = "labymod" }
+labymod-velocity = { module = "net.labymod.serverapi:server-velocity", version.ref = "labymod" }
+
+[plugins]
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
