@@ -13,6 +13,7 @@ paper:
     - setup-proxy
   versions:
     - version: latest
+    - version: 1.21.11
     - version: 1.21.10
     - version: 1.21.9
     - version: 1.21.8
@@ -54,6 +55,7 @@ purpur:
     - setup-proxy
   versions:
     - version: latest
+    - version: 1.21.11
     - version: 1.21.10
     - version: 1.21.9
     - version: 1.21.8
@@ -101,6 +103,8 @@ limbo:
     - port
     - setup-proxy
   versions:
+    - version: 1.21.11
+      download: https://ci.loohpjames.com/job/Limbo/66/artifact/target/Limbo-0.7.17-ALPHA-1.21.11.jar
     - version: 1.21.10
       download: https://ci.loohpjames.com/job/Limbo/lastSuccessfulBuild/artifact/target/Limbo-0.7.16-ALPHA-1.21.10.jar
     - version: 1.21.8
