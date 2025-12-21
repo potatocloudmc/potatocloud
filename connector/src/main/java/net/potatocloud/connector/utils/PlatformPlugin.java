@@ -12,15 +12,24 @@ public interface PlatformPlugin {
     void onServiceReady(Service service);
 
     default void initCurrentService() {
-        final Service currentService = CloudAPI.getInstance().getServiceManager().getCurrentService();
-        // Service manager is still null or the services have not finished loading
-        if (currentService == null) {
-            // Retry after 1 second
+        final CloudAPI api = CloudAPI.getInstance();
+
+        if (api.getServiceManager() == null) {
             runTaskLater(this::initCurrentService, 1);
             return;
         }
 
-        ConnectorAPI.getInstance().getClient().send(new ServiceStartedPacket(currentService.getName()));
+        final Service currentService = api.getServiceManager().getCurrentService();
+
+        if (currentService == null) {
+            runTaskLater(this::initCurrentService, 1);
+            return;
+        }
+
+        ConnectorAPI.getInstance()
+                .getClient()
+                .send(new ServiceStartedPacket(currentService.getName()));
+
         onServiceReady(currentService);
     }
 }
