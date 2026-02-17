@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@CommandInfo(name = "service", description = "Manage services", aliases = {"ser", "s"})
+@CommandInfo(name = "service", description = "Manage services", aliases = {"ser", "serv", "s"})
 public class ServiceCommand extends Command {
 
     public ServiceCommand(Logger logger, ServiceManager serviceManager, ScreenManager screenManager) {
