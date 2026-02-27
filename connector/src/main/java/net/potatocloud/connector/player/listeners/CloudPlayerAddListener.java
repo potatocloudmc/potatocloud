@@ -14,6 +14,6 @@ public class CloudPlayerAddListener implements PacketListener<CloudPlayerAddPack
 
     @Override
     public void onPacket(NetworkConnection connection, CloudPlayerAddPacket packet) {
-        playerManager.registerPlayerLocal(new CloudPlayerImpl(packet.getUsername(), packet.getUniqueId(), packet.getConnectedProxyName()));
+        playerManager.registerPlayerLocal(new CloudPlayerImpl(packet.getUsername(), packet.getUniqueId(), packet.getConnectedProxyName(), packet.getConnectedServiceName(), packet.getPropertyMap()));
     }
 }

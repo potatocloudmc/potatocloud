@@ -14,10 +14,7 @@ import net.potatocloud.core.networking.packet.packets.player.CloudPlayerRemovePa
 import net.potatocloud.core.networking.packet.packets.player.CloudPlayerUpdatePacket;
 import net.potatocloud.core.networking.packet.packets.player.RequestCloudPlayersPacket;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 public class CloudPlayerManagerImpl implements CloudPlayerManager {
@@ -41,7 +38,7 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
         }
         registerPlayerLocal(player);
 
-        client.send(new CloudPlayerAddPacket(player.getUsername(), player.getUniqueId(), player.getConnectedProxyName(), null));
+        client.send(new CloudPlayerAddPacket(player.getUsername(), player.getUniqueId(), player.getConnectedProxyName(), "", player.getPropertyMap()));
     }
 
     public void registerPlayerLocal(CloudPlayer player) {

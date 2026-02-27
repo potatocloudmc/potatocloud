@@ -1,8 +1,6 @@
 package net.potatocloud.api.player.impl;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.property.Property;
 
@@ -13,6 +11,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @EqualsAndHashCode(of = "uniqueId")
+@AllArgsConstructor
 public class CloudPlayerImpl implements CloudPlayer {
 
     private final String username;

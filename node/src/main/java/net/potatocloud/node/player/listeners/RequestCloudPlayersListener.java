@@ -20,7 +20,8 @@ public class RequestCloudPlayersListener implements PacketListener<RequestCloudP
                     player.getUsername(),
                     player.getUniqueId(),
                     player.getConnectedProxyName(),
-                    player.getConnectedServiceName()
+                    player.getConnectedServiceName(),
+                    player.getPropertyMap()
             ));
         }
     }
