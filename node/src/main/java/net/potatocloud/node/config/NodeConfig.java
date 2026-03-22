@@ -13,33 +13,35 @@ public class NodeConfig {
 
     public static final String CONFIG_FILE_NAME = "config.yml";
 
-    private final String prompt;
-    private final boolean enableBanner;
-    private final int primaryColorCode;
-    private final boolean logPlayerConnections;
+    private final YamlFile config;
 
-    private final int serviceStartPort;
-    private final int proxyStartPort;
-    private final String splitter;
-    private final boolean platformAutoUpdate;
-    private final int maxServices;
-    private final int maxStartingServices;
-    private final int killTimeout;
+    private String prompt;
+    private boolean enableBanner;
+    private int primaryColorCode;
+    private boolean logPlayerConnections;
 
-    private final String groupsFolder;
-    private final String staticFolder;
-    private final String tempServicesFolder;
-    private final String templatesFolder;
-    private final String platformsFolder;
-    private final String logsFolder;
-    private final String dataFolder;
-    private final String backupsFolder;
+    private int serviceStartPort;
+    private int proxyStartPort;
+    private String splitter;
+    private boolean platformAutoUpdate;
+    private int maxServices;
+    private int maxStartingServices;
+    private int killTimeout;
 
-    private final String nodeHost;
-    private final int nodePort;
+    private String groupsFolder;
+    private String staticFolder;
+    private String tempServicesFolder;
+    private String templatesFolder;
+    private String platformsFolder;
+    private String logsFolder;
+    private String dataFolder;
+    private String backupsFolder;
 
-    private final boolean disableUpdateChecker;
-    private final boolean debug;
+    private String nodeHost;
+    private int nodePort;
+
+    private boolean disableUpdateChecker;
+    private boolean debug;
 
     public NodeConfig() {
         final Path configPath = Path.of(CONFIG_FILE_NAME);
@@ -51,13 +53,15 @@ public class NodeConfig {
             );
         }
 
-        final YamlFile config = new YamlFile(configPath.toFile());
+        this.config = new YamlFile(configPath.toFile());
         try {
             config.load();
         } catch (IOException e) {
             throw new IllegalStateException("Failed to read " + CONFIG_FILE_NAME, e);
         }
+    }
 
+    public void loadKeys() {
         prompt = config.getString("console.prompt");
         enableBanner = config.getBoolean("console.enable-banner");
         primaryColorCode = config.getInt("console.primary-color");
@@ -83,7 +87,7 @@ public class NodeConfig {
         nodeHost = config.getString("node.host");
         nodePort = config.getInt("node.port");
 
-        disableUpdateChecker = config.getBoolean("disable-update-checke");
+        disableUpdateChecker = config.getBoolean("disable-update-checker");
         debug = config.getBoolean("debug");
     }
 }

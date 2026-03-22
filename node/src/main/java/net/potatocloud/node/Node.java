@@ -82,6 +82,8 @@ public class Node extends CloudAPI {
     public Node(long startupTime) {
         this.startupTime = startupTime;
 
+        config = new NodeConfig();
+
         previousVersion = VersionFile.read();
         migrationManager = new MigrationManager(previousVersion);
         registerMigrations();
@@ -89,7 +91,7 @@ public class Node extends CloudAPI {
 
         VersionFile.write(CloudAPI.VERSION);
 
-        config = new NodeConfig();
+        config.loadKeys();
 
         if (!NetworkUtils.isPortFree(config.getNodePort())) {
             System.err.println("The configured node port is already in use. Is another instance of potatocloud already running on this port?");
@@ -158,7 +160,7 @@ public class Node extends CloudAPI {
     }
 
     private void registerMigrations() {
-        new Migration_1_4_3(Path.of(config.getGroupsFolder()), migrationManager);
+        new Migration_1_4_3(Path.of(config.getConfig().getString("folders.groups")), migrationManager);
         new Migration_1_4_4(migrationManager);
     }
 
