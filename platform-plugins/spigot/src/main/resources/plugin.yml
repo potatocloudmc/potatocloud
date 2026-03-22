@@ -1,5 +1,5 @@
 name: potatocloud-plugin
-version: 1.4.3
+version: 1.4.4
 main: net.potatocloud.plugin.platform.spigot.SpigotPlugin
 api-version: 1.13
 author: "jirmjahu"
