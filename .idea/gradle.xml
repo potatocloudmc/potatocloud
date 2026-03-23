@@ -24,6 +24,7 @@
             <option value="$PROJECT_DIR$/server-plugins/notify" />
             <option value="$PROJECT_DIR$/server-plugins/proxy" />
             <option value="$PROJECT_DIR$/server-plugins/shared" />
+            <option value="$PROJECT_DIR$/server-plugins/signs" />
           </set>
         </option>
       </GradleProjectSettings>
