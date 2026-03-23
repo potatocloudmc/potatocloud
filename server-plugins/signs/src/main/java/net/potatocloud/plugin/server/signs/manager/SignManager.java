@@ -26,7 +26,7 @@ public class SignManager {
     public boolean register(LobbySign lobbySign) {
         // check if there are already a sign
         final LobbySign searchLobbySign = this.getFromBlock(lobbySign.signLocation().block());
-        if (searchLobbySign == null) {
+        if (searchLobbySign != null) {
             return false;
         }
 
