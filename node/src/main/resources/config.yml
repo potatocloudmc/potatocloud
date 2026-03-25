@@ -30,7 +30,7 @@ service:
   max-services: -1
 
   # Maximum number of services that can start at the same time (-1 = unlimited)
-  max-starting-servics: -1
+  max-starting-services: -1
 
   # Timeout in seconds before forcibly killing a service after normal stop attempt
   kill-timeout: 10
