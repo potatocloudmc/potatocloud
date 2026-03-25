@@ -89,4 +89,4 @@ limbo:
     - setup-proxy
   versions:
     - version: 1.21.11
-      download: https://ci.loohpjames.com/job/Limbo/70/artifact/target/Limbo-0.7.18-ALPHA-1.21.11.jar
+      download: https://ci.loohpjames.com/job/Limbo/71/artifact/target/Limbo-0.7.18-ALPHA-1.21.11.jar
