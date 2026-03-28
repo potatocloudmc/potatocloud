@@ -205,7 +205,9 @@ public class Node extends CloudAPI {
         FileUtils.deleteDirectory(Path.of(config.getTempServicesFolder()));
 
         logger.info("Shutdown complete. Goodbye!");
-        console.close();
+
+        // console.close();
+        System.exit(0);
     }
 
     public long getUptime() {

@@ -34,7 +34,7 @@ public class CommandManager {
         }
 
         if (command == null) {
-            logger.error("Command &8'&a%s&8'&7 does not exist&8.".formatted(input));
+            logger.info("Command &a" + input + " &7does &cnot &7exist");
             return;
         }
 

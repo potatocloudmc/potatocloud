@@ -34,6 +34,6 @@ public class TemplateManager {
             return;
         }
 
-       FileUtils.copyDirectory(sourceDirectory, serviceDirectory);
+        FileUtils.copyDirectory(sourceDirectory, serviceDirectory);
     }
 }
