@@ -1,0 +1,7 @@
+name: potatocloud-signs
+version: 1.4.4
+main: net.potatocloud.plugin.server.signs.SignPlugin
+author: "TruaYT"
+
+depend:
+  - potatocloud-plugin
