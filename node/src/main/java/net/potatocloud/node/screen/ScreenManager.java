@@ -25,7 +25,9 @@ public class ScreenManager {
     }
 
     public void removeScreen(Screen screen) {
-        screens.remove(screen.name());
+        if (screen != null) {
+            screens.remove(screen.name());
+        }
     }
 
     public Screen screen(String name) {
