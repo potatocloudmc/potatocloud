@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformVersion;
-import net.potatocloud.core.utils.FileUtils;
+import net.potatocloud.common.FileUtils;
 import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.platform.PlatformUtils;
 import net.potatocloud.node.utils.HashUtils;

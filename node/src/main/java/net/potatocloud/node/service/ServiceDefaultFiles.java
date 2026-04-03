@@ -1,7 +1,7 @@
 package net.potatocloud.node.service;
 
 import lombok.experimental.UtilityClass;
-import net.potatocloud.core.utils.ResourceFileUtils;
+import net.potatocloud.common.ResourceFileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;

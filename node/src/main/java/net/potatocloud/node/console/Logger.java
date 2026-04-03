@@ -12,10 +12,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 
 public class Logger {
@@ -28,7 +28,7 @@ public class Logger {
     private final NodeConfig config;
     private final Console console;
     private final Path logsDirectory;
-    private final List<String> cachedLogs = new ArrayList<>();
+    private final List<String> cachedLogs = new CopyOnWriteArrayList<>();
 
     public Logger(NodeConfig config, Console console, Path logsDirectory) {
         this.config = config;
@@ -102,13 +102,15 @@ public class Logger {
         appendLine(latestLogPath, uncoloredMessage);
 
         // Make sure the cached logs list wont get too big
-        if (cachedLogs.size() > 1000) {
-            cachedLogs.removeFirst();
+        synchronized (cachedLogs) {
+            if (cachedLogs.size() >= 1000) {
+                cachedLogs.remove(0);
+            }
         }
 
         cachedLogs.add(coloredMessage);
 
-        final boolean isNodeScreen = Node.getInstance().getScreenManager().getCurrentScreen().getName().equals(Screen.NODE_SCREEN);
+        final boolean isNodeScreen = Node.getInstance().getScreenManager().getCurrentScreen().name().equals(Screen.NODE_SCREEN);
         if (!level.equals(Level.COMMAND) && isNodeScreen) {
             console.println(coloredMessage);
         }

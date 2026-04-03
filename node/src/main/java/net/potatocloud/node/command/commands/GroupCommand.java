@@ -5,7 +5,7 @@ import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.api.property.DefaultProperties;
 import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
-import net.potatocloud.core.utils.PropertyUtil;
+import net.potatocloud.common.PropertyUtil;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.command.ArgumentType;
 import net.potatocloud.node.command.Command;

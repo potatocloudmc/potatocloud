@@ -1,7 +1,7 @@
 package net.potatocloud.node.config;
 
 import lombok.Getter;
-import net.potatocloud.core.utils.ResourceFileUtils;
+import net.potatocloud.common.ResourceFileUtils;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.IOException;
@@ -61,7 +61,7 @@ public class NodeConfig {
         }
     }
 
-    public void loadKeys() {
+    public void load() {
         prompt = config.getString("console.prompt");
         enableBanner = config.getBoolean("console.enable-banner");
         primaryColorCode = config.getInt("console.primary-color");

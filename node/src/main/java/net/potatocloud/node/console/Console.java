@@ -1,8 +1,8 @@
 package net.potatocloud.node.console;
 
 import lombok.Getter;
-import net.potatocloud.node.Node;
 import net.potatocloud.node.command.CommandManager;
+import net.potatocloud.node.config.NodeConfig;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.impl.LineReaderImpl;
@@ -15,19 +15,19 @@ import java.nio.charset.StandardCharsets;
 @Getter
 public class Console {
 
+    private final NodeConfig config;
+
     private final Terminal terminal;
     private final LineReader lineReader;
-
     private final ConsoleReader consoleReader;
-    private final Node node;
 
     private String prompt;
 
-    public Console(CommandManager commandManager, Node node) {
-        this.node = node;
+    public Console(NodeConfig config, CommandManager commandManager) {
+        this.config = config;
 
         try {
-            terminal = TerminalBuilder.builder()
+            this.terminal = TerminalBuilder.builder()
                     .name("potatocloud-console")
                     .system(true)
                     .encoding(StandardCharsets.UTF_8)
@@ -36,20 +36,20 @@ public class Console {
             throw new RuntimeException("Failed to initialize terminal", e);
         }
 
-        lineReader = LineReaderBuilder.builder()
+        this.lineReader = LineReaderBuilder.builder()
                 .terminal(terminal)
                 .completer(new ConsoleCompleter(commandManager))
                 .build();
 
-        prompt = getDefaultPrompt();
+        this.prompt = defaultPrompt();
 
-        consoleReader = new ConsoleReader(this, commandManager, node);
+        this.consoleReader = new ConsoleReader(this, commandManager);
     }
 
     public void start() {
         clearScreen();
 
-        if (node.getConfig().isEnableBanner()) {
+        if (config.isEnableBanner()) {
             ConsoleBanner.display(this);
         }
 
@@ -60,8 +60,9 @@ public class Console {
         lineReader.printAbove(ConsoleColor.format(message));
     }
 
-    public String getDefaultPrompt() {
-        final String rawPrompt = node.getConfig().getPrompt();
+    public String defaultPrompt() {
+        final String rawPrompt = config.getPrompt();
+
         return ConsoleColor.format(rawPrompt.replace("%user%", System.getProperty("user.name")));
     }
 
@@ -74,7 +75,6 @@ public class Console {
 
     public void clearScreen() {
         terminal.puts(InfoCmp.Capability.clear_screen);
-        terminal.writer().print("\033[H\033[2J");
         updateScreen();
     }
 

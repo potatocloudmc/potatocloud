@@ -2,7 +2,7 @@ package net.potatocloud.core.networking;
 
 import net.potatocloud.core.networking.packet.Packet;
 import net.potatocloud.core.networking.packet.PacketListener;
-import net.potatocloud.core.utils.Closeable;
+import net.potatocloud.common.Closeable;
 
 public interface NetworkComponent extends Closeable {
 

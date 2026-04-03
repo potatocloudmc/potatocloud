@@ -1,4 +1,4 @@
-package net.potatocloud.core.utils;
+package net.potatocloud.common;
 
 import java.io.IOException;
 import java.io.InputStream;

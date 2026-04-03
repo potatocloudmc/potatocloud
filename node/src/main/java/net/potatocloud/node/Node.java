@@ -13,7 +13,7 @@ import net.potatocloud.core.migration.MigrationManager;
 import net.potatocloud.core.networking.NetworkServer;
 import net.potatocloud.core.networking.netty.server.NettyNetworkServer;
 import net.potatocloud.core.networking.packet.PacketManager;
-import net.potatocloud.core.utils.FileUtils;
+import net.potatocloud.common.FileUtils;
 import net.potatocloud.node.command.CommandManager;
 import net.potatocloud.node.command.commands.*;
 import net.potatocloud.node.config.NodeConfig;
@@ -90,7 +90,7 @@ public class Node extends CloudAPI {
 
         VersionFile.write(CloudAPI.VERSION);
 
-        config.loadKeys();
+        config.load();
 
         if (!NetworkUtils.isPortFree(config.getNodePort())) {
             System.err.println("The configured node port is already in use. Is another instance of potatocloud already running on this port?");
@@ -98,7 +98,7 @@ public class Node extends CloudAPI {
         }
 
         commandManager = new CommandManager();
-        console = new Console(commandManager, this);
+        console = new Console(config, commandManager);
         logger = new Logger(config, console, Path.of(config.getLogsFolder()));
 
         commandManager.setLogger(logger);

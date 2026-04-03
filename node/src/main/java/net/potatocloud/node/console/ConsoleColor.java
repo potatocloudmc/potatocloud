@@ -1,6 +1,5 @@
 package net.potatocloud.node.console;
 
-
 import net.potatocloud.node.Node;
 import org.jline.jansi.Ansi;
 
@@ -25,7 +24,7 @@ public enum ConsoleColor {
     public static String format(String text) {
         for (ConsoleColor color : values()) {
             if (color.code == 'a') {
-                text = text.replace("&a", getPrimaryColor());
+                text = text.replace("&a", primaryColor());
             } else {
                 text = text.replace("&" + color.code, color.ansiColor);
             }
@@ -33,7 +32,7 @@ public enum ConsoleColor {
         return text + Ansi.ansi().reset();
     }
 
-    private static String getPrimaryColor() {
+    private static String primaryColor() {
         return Ansi.ansi().reset().fg(Node.getInstance().getConfig().getPrimaryColorCode()).toString();
     }
 }

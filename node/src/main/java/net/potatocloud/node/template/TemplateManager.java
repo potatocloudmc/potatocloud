@@ -1,8 +1,7 @@
 package net.potatocloud.node.template;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import net.potatocloud.core.utils.FileUtils;
+import net.potatocloud.common.FileUtils;
 import net.potatocloud.node.console.Logger;
 
 import java.io.IOException;

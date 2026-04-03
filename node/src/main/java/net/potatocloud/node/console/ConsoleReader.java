@@ -16,15 +16,16 @@ public class ConsoleReader extends Thread {
 
     private final Console console;
     private final CommandManager commandManager;
-    private final Node node;
 
     @Override
     public void run() {
         try {
             while (!isInterrupted()) {
 
+                final Node node = Node.getInstance();
+
                 // Wait until the node is ready
-                if (!Node.getInstance().isReady()) {
+                if (!node.isReady()) {
                     continue;
                 }
 
@@ -32,7 +33,7 @@ public class ConsoleReader extends Thread {
 
                 final ScreenManager screenManager = node.getScreenManager();
                 final Screen currentScreen = screenManager.getCurrentScreen();
-                final boolean isNodeScreen = currentScreen.getName().equals(Screen.NODE_SCREEN);
+                final boolean isNodeScreen = currentScreen.name().equals(Screen.NODE_SCREEN);
 
                 if (isNodeScreen && input.isBlank()) {
                     // remove blank inputs
@@ -49,7 +50,7 @@ public class ConsoleReader extends Thread {
                 }
 
                 // the user is in a setup currently
-                if (currentScreen.getName().contains("setup")) {
+                if (currentScreen.name().contains("setup")) {
                     final Setup currentSetup = node.getSetupManager().getCurrentSetup();
                     if (currentSetup != null) {
                         currentSetup.handleInput(input);
@@ -58,11 +59,11 @@ public class ConsoleReader extends Thread {
                 }
 
                 if (input.strip().equalsIgnoreCase("leave") || input.strip().equalsIgnoreCase("exit")) {
-                    Node.getInstance().getScreenManager().switchScreen(Screen.NODE_SCREEN);
+                    Node.getInstance().getScreenManager().switchTo(Screen.NODE_SCREEN);
                     continue;
                 }
 
-                final Service service = node.getServiceManager().getService(currentScreen.getName());
+                final Service service = node.getServiceManager().getService(currentScreen.name());
                 if (service == null) {
                     continue;
                 }
@@ -70,7 +71,7 @@ public class ConsoleReader extends Thread {
                 service.executeCommand(input);
             }
         } catch (UserInterruptException e) {
-            node.shutdown();
+            Node.getInstance().shutdown();
         } catch (EndOfFileException e) {
             console.clearScreen();
             console.updateScreen();

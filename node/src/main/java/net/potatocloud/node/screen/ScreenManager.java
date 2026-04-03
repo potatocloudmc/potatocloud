@@ -6,8 +6,8 @@ import lombok.Setter;
 import net.potatocloud.node.console.Console;
 import net.potatocloud.node.console.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 @Setter
@@ -17,51 +17,52 @@ public class ScreenManager {
     private final Console console;
     private final Logger logger;
 
-    private Screen currentScreen = null;
-    private final List<Screen> screens = new ArrayList<>();
+    private final Map<String, Screen> screens = new ConcurrentHashMap<>();
+    private Screen currentScreen;
 
-    public void switchScreen(String screenName, boolean updatePrompt) {
-        final Screen screen = getScreen(screenName);
+    public void addScreen(Screen screen) {
+        screens.put(screen.name(), screen);
+    }
+
+    public void removeScreen(Screen screen) {
+        if (screen != null) {
+            screens.remove(screen.name());
+        }
+    }
+
+    public Screen screen(String name) {
+        return screens.get(name);
+    }
+
+    public void switchTo(String screenName) {
+        switchTo(screenName, true);
+    }
+
+    public void switchTo(String name, boolean updatePrompt) {
+        final Screen screen = screens.get(name);
+
         if (screen == null) {
             return;
         }
 
-        currentScreen = screen;
+        this.currentScreen = screen;
 
         console.clearScreen();
 
-        if (screen.getName().equals(Screen.NODE_SCREEN)) {
+        if (screen.name().equals(Screen.NODE_SCREEN)) {
             // Get cached logs directly from the logger for the node screen and print them
             logger.getCachedLogs().stream()
                     .filter(log -> !log.toLowerCase().contains("service screen")) // Remove service screen commands from the logs
                     .forEach(console::println);
-            console.setPrompt(console.getDefaultPrompt());
+
+            console.setPrompt(console.defaultPrompt());
             return;
         }
 
         if (updatePrompt) {
-            console.setPrompt("[" + screen.getName() + "] ");
+            console.setPrompt("[" + screen.name() + "] ");
         }
 
-        screen.getCachedLogs().forEach(console::println);
-    }
-
-    public void switchScreen(String screenName) {
-        switchScreen(screenName, true);
-    }
-
-    public Screen getScreen(String screenName) {
-        return screens.stream()
-                .filter(screen -> screen.getName().equalsIgnoreCase(screenName))
-                .findFirst()
-                .orElse(null);
-    }
-
-    public void addScreen(Screen screen) {
-        screens.add(screen);
-    }
-
-    public void removeScreen(Screen screen) {
-        screens.remove(screen);
+        screen.cachedLogs().forEach(console::println);
     }
 }

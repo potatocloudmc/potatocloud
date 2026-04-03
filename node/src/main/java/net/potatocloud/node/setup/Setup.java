@@ -55,7 +55,7 @@ public abstract class Setup {
         final Logger logger = node.getLogger();
 
         if (input.equalsIgnoreCase("cancel")) {
-            screenManager.switchScreen(Screen.NODE_SCREEN);
+            screenManager.switchTo(Screen.NODE_SCREEN);
             screenManager.removeScreen(questionScreen);
             screenManager.removeScreen(summaryScreen);
 
@@ -74,7 +74,7 @@ public abstract class Setup {
 
             if (input.equalsIgnoreCase("confirm")) {
                 // end setup
-                screenManager.switchScreen(Screen.NODE_SCREEN);
+                screenManager.switchTo(Screen.NODE_SCREEN);
                 onFinish(Collections.unmodifiableMap(answers));
 
                 screenManager.removeScreen(questionScreen);
@@ -171,7 +171,7 @@ public abstract class Setup {
         final String screenName = "setup_" + getName().toLowerCase();
         questionScreen = new Screen(screenName);
         screenManager.addScreen(questionScreen);
-        screenManager.switchScreen(screenName, false);
+        screenManager.switchTo(screenName, false);
 
         console.setPrompt("> ");
         console.println("&7Setup: &a" + getName() + " &8(&7Question &a" + (currentIndex + 1) + "&8/&a" + questions.size() + "&8)");
@@ -219,7 +219,7 @@ public abstract class Setup {
         summaryScreen = new Screen(screenName);
         screenManager.addScreen(summaryScreen);
 
-        screenManager.switchScreen(screenName, false);
+        screenManager.switchTo(screenName, false);
 
         console.setPrompt("> ");
         console.println("&7Setup: &a" + getName() + " &8(&7Summary&8)");

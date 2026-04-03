@@ -4,7 +4,7 @@ import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformVersion;
 import net.potatocloud.api.platform.impl.PlatformImpl;
 import net.potatocloud.api.platform.impl.PlatformVersionImpl;
-import net.potatocloud.core.utils.ResourceFileUtils;
+import net.potatocloud.common.ResourceFileUtils;
 import net.potatocloud.node.console.Logger;
 import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.file.YamlFile;

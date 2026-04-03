@@ -11,7 +11,7 @@ import net.potatocloud.core.networking.packet.packets.group.GroupAddPacket;
 import net.potatocloud.core.networking.packet.packets.group.GroupDeletePacket;
 import net.potatocloud.core.networking.packet.packets.group.GroupUpdatePacket;
 import net.potatocloud.core.networking.packet.packets.group.RequestGroupsPacket;
-import net.potatocloud.core.utils.FileUtils;
+import net.potatocloud.common.FileUtils;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.group.listeners.GroupAddListener;

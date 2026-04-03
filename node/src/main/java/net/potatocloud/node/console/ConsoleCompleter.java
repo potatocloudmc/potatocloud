@@ -24,7 +24,7 @@ public class ConsoleCompleter implements Completer {
         final Screen currentScreen = screenManager.getCurrentScreen();
 
         // Add leave and exit options for all screens except node and setup screens
-        if (currentScreen != null && !currentScreen.getName().equals(Screen.NODE_SCREEN) && !currentScreen.getName().startsWith("setup_")) {
+        if (currentScreen != null && !currentScreen.name().equals(Screen.NODE_SCREEN) && !currentScreen.name().startsWith("setup_")) {
             candidates.add(new Candidate("leave"));
             candidates.add(new Candidate("exit"));
             return;

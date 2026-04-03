@@ -1,6 +1,6 @@
 package net.potatocloud.plugin.server.shared;
 
-import net.potatocloud.core.utils.ResourceFileUtils;
+import net.potatocloud.common.ResourceFileUtils;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.IOException;

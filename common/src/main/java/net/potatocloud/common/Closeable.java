@@ -1,4 +1,4 @@
-package net.potatocloud.core.utils;
+package net.potatocloud.common;
 
 public interface Closeable {
 

@@ -1,4 +1,4 @@
-package net.potatocloud.core.utils;
+package net.potatocloud.common;
 
 import net.potatocloud.api.property.Property;
 import net.potatocloud.api.property.PropertyHolder;

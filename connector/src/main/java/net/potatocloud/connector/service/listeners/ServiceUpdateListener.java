@@ -8,7 +8,7 @@ import net.potatocloud.api.service.ServiceStatus;
 import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.packet.PacketListener;
 import net.potatocloud.core.networking.packet.packets.service.ServiceUpdatePacket;
-import net.potatocloud.core.utils.PropertyUtil;
+import net.potatocloud.common.PropertyUtil;
 
 @RequiredArgsConstructor
 public class ServiceUpdateListener implements PacketListener<ServiceUpdatePacket> {

@@ -54,8 +54,8 @@ public class Migration_1_4_4 extends Migration {
             config.set("service.max-services", -1);
         }
 
-        if (!config.isSet("service.max-starting-servics")) {
-            config.set("service.max-starting-servics", -1);
+        if (!config.isSet("service.max-starting-services")) {
+            config.set("service.max-starting-services", -1);
         }
 
         if (!config.isSet("service.kill-timeout")) {

@@ -1,18 +1,19 @@
 package net.potatocloud.node.console;
 
-import lombok.experimental.UtilityClass;
+public final class ConsoleBanner {
 
-@UtilityClass
-public class ConsoleBanner {
+    private ConsoleBanner() {
+    }
 
-    private static final String BANNER_TEXT = "                 __        __             __                __\n" +
-            "    ____  ____  / /_____ _/ /_____  _____/ /___  __  ______/ /\n" +
-            "   / __ \\/ __ \\/ __/ __ \\/ __/ __ \\/ ___/ / __ \\/ / / / __  / \n" +
-            "  / /_/ / /_/ / /_/ /_/ / /_/ /_/ / /__/ / /_/ / /_/ / /_/ /  \n" +
-            " / ____/\\____/\\__/\\____/\\__/\\____/\\___/_/\\____/\\____/\\____/   \n" +
-            "/_/                                                           ";
+    private static final String BANNER_TEXT = """
+                             __        __             __                __
+                ____  ____  / /_____ _/ /_____  _____/ /___  __  ______/ /
+               / __ \\/ __ \\/ __/ __ \\/ __/ __ \\/ ___/ / __ \\/ / / / __  /\s
+              / /_/ / /_/ / /_/ /_/ / /_/ /_/ / /__/ / /_/ / /_/ / /_/ / \s
+             / ____/\\____/\\__/\\____/\\__/\\____/\\___/_/\\____/\\____/\\____/  \s
+            /_/                                                          \s""";
 
-    public void display(Console console) {
+    public static void display(Console console) {
         console.println(" ");
         console.println(BANNER_TEXT);
         console.println(" ");
