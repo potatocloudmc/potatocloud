@@ -27,6 +27,8 @@ public class NodeConfig {
     private int maxServices;
     private int maxStartingServices;
     private int killTimeout;
+    private boolean memoryCheckEnabled;
+    private int maxMemory;
 
     private String groupsFolder;
     private String staticFolder;
@@ -74,6 +76,8 @@ public class NodeConfig {
         maxServices = config.getInt("service.max-services");
         maxStartingServices = config.getInt("service.max-starting-services");
         killTimeout = config.getInt("service.kill-timeout");
+        memoryCheckEnabled = config.getBoolean("service.memory-check-enabled");
+        maxMemory = config.getInt("service.max-memory");
 
         groupsFolder = config.getString("folders.groups");
         staticFolder = config.getString("folders.static");
