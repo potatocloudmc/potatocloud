@@ -13,6 +13,7 @@ paper:
     - setup-proxy
   versions:
     - version: latest
+    - version: 26.1.1
     - version: 1.21.11
     - version: 1.21.10
     - version: 1.21.9
@@ -38,6 +39,8 @@ velocity:
     - setup-forwarding
   versions:
     - version: latest
+    - version: 3.5.0-SNAPSHOT
+    - version: 3.4.0
     - version: 3.4.0-SNAPSHOT
     - version: 3.3.0-SNAPSHOT
 purpur:
@@ -88,5 +91,7 @@ limbo:
     - port
     - setup-proxy
   versions:
+    - version: 26.1.1
+    - download: https://ci.loohpjames.com/job/Limbo/73/artifact/target/Limbo-2026.0.1-ALPHA-26.1.1.jar
     - version: 1.21.11
       download: https://ci.loohpjames.com/job/Limbo/71/artifact/target/Limbo-0.7.18-ALPHA-1.21.11.jar
