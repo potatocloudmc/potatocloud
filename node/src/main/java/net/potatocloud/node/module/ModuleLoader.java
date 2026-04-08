@@ -76,8 +76,6 @@ public class ModuleLoader {
 
                 modules.put(name, module);
                 module.onEnable();
-
-                logger.info("Module " + name + " (v" + versionStr + ") enabled.");
             }
         } catch (Exception ex) {
             logger.error("Error loading " + jarFile.getFileName() + ": " + ex.getMessage());
