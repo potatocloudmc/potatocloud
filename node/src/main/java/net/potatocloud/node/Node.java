@@ -5,15 +5,16 @@ import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.event.EventManager;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
+import net.potatocloud.api.module.PotatoModule;
 import net.potatocloud.api.player.CloudPlayerManager;
 import net.potatocloud.api.property.PropertyHolder;
 import net.potatocloud.api.utils.version.Version;
+import net.potatocloud.common.FileUtils;
 import net.potatocloud.core.event.ServerEventManager;
 import net.potatocloud.core.migration.MigrationManager;
 import net.potatocloud.core.networking.NetworkServer;
 import net.potatocloud.core.networking.netty.server.NettyNetworkServer;
 import net.potatocloud.core.networking.packet.PacketManager;
-import net.potatocloud.common.FileUtils;
 import net.potatocloud.node.command.CommandManager;
 import net.potatocloud.node.command.commands.*;
 import net.potatocloud.node.config.NodeConfig;
@@ -22,6 +23,7 @@ import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.group.ServiceGroupManagerImpl;
 import net.potatocloud.node.migration.Migration_1_4_3;
 import net.potatocloud.node.migration.Migration_1_4_4;
+import net.potatocloud.node.module.ModuleLoader;
 import net.potatocloud.node.platform.DownloadManager;
 import net.potatocloud.node.platform.PlatformManagerImpl;
 import net.potatocloud.node.platform.cache.CacheManager;
@@ -73,6 +75,8 @@ public class Node extends CloudAPI {
 
     private final SetupManager setupManager;
     private final UpdateChecker updateChecker;
+
+    private final ModuleLoader moduleLoader;
 
     private final Version previousVersion;
     private boolean ready = false;
@@ -156,8 +160,15 @@ public class Node extends CloudAPI {
 
         logger.info("Startup completed in &a" + (System.currentTimeMillis() - startupTime) + "ms &8| &7Use &8'&ahelp&8' &7to see available commands");
 
+        moduleLoader = new ModuleLoader(logger);
+        moduleLoader.loadModules();
+
         serviceStartScheduler.start();
         ready = true;
+    }
+
+    public static Node getInstance() {
+        return (Node) CloudAPI.getInstance();
     }
 
     private void registerMigrations() {
@@ -186,6 +197,8 @@ public class Node extends CloudAPI {
 
         serviceStartScheduler.close();
 
+        moduleLoader.getModules().values().forEach(PotatoModule::onDisable);
+
         if (!serviceManager.getAllServices().isEmpty()) {
             logger.info("Shutting down all running services&8...");
 
@@ -210,10 +223,6 @@ public class Node extends CloudAPI {
 
     public long getUptime() {
         return System.currentTimeMillis() - startupTime;
-    }
-
-    public static Node getInstance() {
-        return (Node) CloudAPI.getInstance();
     }
 
     @Override
