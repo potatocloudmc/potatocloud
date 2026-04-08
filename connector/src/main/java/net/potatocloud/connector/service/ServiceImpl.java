@@ -33,11 +33,6 @@ public class ServiceImpl implements Service {
     private final NetworkClient client = ConnectorAPI.getInstance().getClient();
 
     @Override
-    public int getUsedMemory() {
-        return usedMemory;
-    }
-
-    @Override
     public ServiceGroup getServiceGroup() {
         return group;
     }

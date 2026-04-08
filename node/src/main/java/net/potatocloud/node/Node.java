@@ -24,6 +24,7 @@ import net.potatocloud.node.group.ServiceGroupManagerImpl;
 import net.potatocloud.node.migration.Migration_1_4_3;
 import net.potatocloud.node.migration.Migration_1_4_4;
 import net.potatocloud.node.module.ModuleLoader;
+import net.potatocloud.node.migration.Migration_1_4_5;
 import net.potatocloud.node.platform.DownloadManager;
 import net.potatocloud.node.platform.PlatformManagerImpl;
 import net.potatocloud.node.platform.cache.CacheManager;
@@ -174,6 +175,7 @@ public class Node extends CloudAPI {
     private void registerMigrations() {
         new Migration_1_4_3(Path.of(config.getConfig().getString("folders.groups")), migrationManager);
         new Migration_1_4_4(migrationManager);
+        new Migration_1_4_5(migrationManager);
     }
 
     private void registerCommands() {

@@ -185,6 +185,29 @@ public class ServiceManagerImpl implements ServiceManager {
         return port;
     }
 
+    public boolean hasEnoughMemory(ServiceGroup group) {
+        if (!config.isMemoryCheckEnabled()) {
+            return true;
+        }
+
+        final long usedMb = services.stream()
+                .mapToLong(service -> service.getServiceGroup().getMaxMemory())
+                .sum();
+
+        return (usedMb + group.getMaxMemory()) <= config.getMaxMemory();
+    }
+
+    public void logMemoryWarning(ServiceGroup group) {
+        final long usedMb = services.stream()
+                .mapToLong(service -> service.getServiceGroup().getMaxMemory())
+                .sum();
+
+        logger.warn("Service(s) for group &a" + group.getName()
+                + " &7could not be started &8[&7Required&8: &a" + group.getMaxMemory() + " MB"
+                + "&8, &7Used&8: &a" + usedMb + " MB"
+                + "&8, &7Max&8: &a" + config.getMaxMemory() + " MB&8]");
+    }
+
     @Override
     public Service getCurrentService() {
         return null;

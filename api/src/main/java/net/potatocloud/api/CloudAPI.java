@@ -10,7 +10,6 @@ import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.utils.version.Version;
 
-@Getter
 public abstract class CloudAPI {
 
     /**
@@ -22,7 +21,7 @@ public abstract class CloudAPI {
     /**
      * The current version.
      */
-    public static final Version VERSION = Version.of(1, 4, 4);
+    public static final Version VERSION = Version.of(1, 4, 5);
 
     public CloudAPI() {
         instance = this;

@@ -1,7 +1,7 @@
 {
   "id": "potatocloud-plugin",
   "name": "potatocloud-plugin",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "main": "net.potatocloud.plugin.platform.velocity.VelocityPlugin",
   "authors": [
     "jirmjahu"

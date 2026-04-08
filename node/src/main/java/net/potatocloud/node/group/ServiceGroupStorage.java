@@ -1,6 +1,5 @@
 package net.potatocloud.node.group;
 
-import lombok.experimental.UtilityClass;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.impl.ServiceGroupImpl;
 import net.potatocloud.api.property.Property;
@@ -11,10 +10,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
-@UtilityClass
-public class ServiceGroupStorage {
+public final class ServiceGroupStorage {
 
-    public void saveToFile(ServiceGroup group, Path directory) {
+    private ServiceGroupStorage() {
+    }
+
+    public static void saveToFile(ServiceGroup group, Path directory) {
         final YamlFile config = new YamlFile(directory.resolve(group.getName() + ".yml").toFile());
 
         config.set("name", group.getName());
@@ -52,7 +53,7 @@ public class ServiceGroupStorage {
         }
     }
 
-    public ServiceGroup loadFromFile(File file) {
+    public static ServiceGroup loadFromFile(File file) {
         final YamlFile config = new YamlFile(file);
         try {
             config.load();
