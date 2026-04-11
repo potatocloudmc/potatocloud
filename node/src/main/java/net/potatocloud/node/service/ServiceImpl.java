@@ -121,7 +121,7 @@ public class ServiceImpl implements Service {
         propertyMap = new HashMap<>(group.getPropertyMap());
 
         screen = new Screen(getName());
-        screenManager.addScreen(screen);
+        screenManager.register(screen);
     }
 
     @Override
@@ -362,7 +362,7 @@ public class ServiceImpl implements Service {
 
         ((ServiceManagerImpl) serviceManager).removeService(this);
 
-        screenManager.removeScreen(screen);
+        screenManager.unregister(screen.name());
 
         if (screenManager.getCurrentScreen().name().equals(getName())) {
             screenManager.switchTo(Screen.NODE_SCREEN);

@@ -160,7 +160,7 @@ public abstract class Setup {
         final String screenName = "setup_" + getName().toLowerCase();
 
         questionScreen = new Screen(screenName);
-        screenManager.addScreen(questionScreen);
+        screenManager.register(questionScreen);
         screenManager.switchTo(screenName, false);
 
         console.setPrompt("> ");
@@ -203,7 +203,7 @@ public abstract class Setup {
         final String screenName = "setup_" + getName().toLowerCase() + "_summary";
 
         summaryScreen = new Screen(screenName);
-        screenManager.addScreen(summaryScreen);
+        screenManager.register(summaryScreen);
         screenManager.switchTo(screenName, false);
 
         console.setPrompt("> ");
@@ -236,7 +236,7 @@ public abstract class Setup {
 
     private void cleanup() {
         screenManager.switchTo(Screen.NODE_SCREEN);
-        screenManager.removeScreen(questionScreen);
-        screenManager.removeScreen(summaryScreen);
+        screenManager.unregister(questionScreen.name());
+        screenManager.unregister(summaryScreen.name());
     }
 }

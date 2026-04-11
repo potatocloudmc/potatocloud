@@ -20,17 +20,15 @@ public class ScreenManager {
     private final Map<String, Screen> screens = new ConcurrentHashMap<>();
     private Screen currentScreen;
 
-    public void addScreen(Screen screen) {
+    public void register(Screen screen) {
         screens.put(screen.name(), screen);
     }
 
-    public void removeScreen(Screen screen) {
-        if (screen != null) {
-            screens.remove(screen.name());
-        }
+    public void unregister(String name) {
+        screens.remove(name);
     }
 
-    public Screen screen(String name) {
+    public Screen get(String name) {
         return screens.get(name);
     }
 
