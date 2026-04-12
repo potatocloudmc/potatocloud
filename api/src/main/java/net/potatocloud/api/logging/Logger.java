@@ -32,6 +32,13 @@ public interface Logger {
         log(Level.ERROR, message);
     }
 
+    default void exception(Throwable throwable) {
+        log(Level.ERROR, "An exception occurred: " + throwable.getMessage());
+        for (StackTraceElement element : throwable.getStackTrace()) {
+            log(Level.ERROR, "    at " + element.toString());
+        }
+    }
+
     /**
      * Logs a debug message.
      * Debug messages are only shown when debug mode is enabled.
