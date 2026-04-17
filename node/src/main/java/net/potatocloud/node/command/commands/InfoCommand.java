@@ -1,10 +1,10 @@
 package net.potatocloud.node.command.commands;
 
+import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.utils.TimeFormatter;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.command.Command;
 import net.potatocloud.node.command.CommandInfo;
-import net.potatocloud.node.console.Logger;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.GlobalMemory;

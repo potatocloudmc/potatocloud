@@ -1,16 +1,17 @@
 package net.potatocloud.node.service;
 
-import lombok.experimental.UtilityClass;
 import net.potatocloud.common.ResourceFileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-@UtilityClass
-public class ServiceDefaultFiles {
+public final class ServiceDefaultFiles {
 
-    public void copyDefaultFiles(Path dataPath) {
+    private ServiceDefaultFiles() {
+    }
+
+    public static void copyDefaultFiles(Path dataPath) {
         try {
             Files.createDirectories(dataPath);
 

@@ -6,13 +6,14 @@ import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.api.property.DefaultProperties;
 import net.potatocloud.api.service.Service;
-import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.node.config.NodeConfig;
+import net.potatocloud.node.service.ServiceManagerImpl;
 import net.potatocloud.node.service.start.condition.ServiceStartCondition;
 import net.potatocloud.node.service.start.condition.conditions.MinOnlineCondition;
 import net.potatocloud.node.service.start.condition.conditions.PlayerUsageCondition;
 import net.potatocloud.node.service.start.rule.ServiceStartRule;
 import net.potatocloud.node.service.start.rule.rules.GroupMaxOnlineRule;
+import net.potatocloud.node.service.start.rule.rules.MaxMemoryRule;
 import net.potatocloud.node.service.start.rule.rules.MaxServicesRule;
 import net.potatocloud.node.service.start.rule.rules.MaxStartingRule;
 
@@ -25,21 +26,22 @@ import java.util.concurrent.TimeUnit;
 public class ServiceStartScheduler {
 
     private final ServiceGroupManager groupManager;
-    private final ServiceManager serviceManager;
+    private final ServiceManagerImpl serviceManager;
 
     private final List<ServiceStartRule> rules;
     private final List<ServiceStartCondition> conditions;
 
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
-    public ServiceStartScheduler(NodeConfig config, ServiceGroupManager groupManager, ServiceManager serviceManager, EventManager eventManager) {
+    public ServiceStartScheduler(NodeConfig config, ServiceGroupManager groupManager, ServiceManagerImpl serviceManager, EventManager eventManager) {
         this.groupManager = groupManager;
         this.serviceManager = serviceManager;
 
         this.rules = List.of(
                 new GroupMaxOnlineRule(),
                 new MaxServicesRule(config, serviceManager),
-                new MaxStartingRule(config, serviceManager)
+                new MaxStartingRule(config, serviceManager),
+                new MaxMemoryRule(serviceManager)
         );
 
         this.conditions = List.of(

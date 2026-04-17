@@ -3,6 +3,7 @@ package net.potatocloud.api;
 import lombok.Getter;
 import net.potatocloud.api.event.EventManager;
 import net.potatocloud.api.group.ServiceGroupManager;
+import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.platform.PlatformManager;
 import net.potatocloud.api.player.CloudPlayerManager;
 import net.potatocloud.api.property.PropertyHolder;
@@ -10,7 +11,6 @@ import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.utils.version.Version;
 
-@Getter
 public abstract class CloudAPI {
 
     /**
@@ -22,11 +22,18 @@ public abstract class CloudAPI {
     /**
      * The current version.
      */
-    public static final Version VERSION = Version.of(1, 4, 4);
+    public static final Version VERSION = Version.of(1, 5, 0);
 
     public CloudAPI() {
         instance = this;
     }
+
+    /**
+     * Gets the logger.
+     *
+     * @return the logger
+     */
+    public abstract Logger getLogger();
 
     /**
      * Gets the service group manager.

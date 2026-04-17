@@ -2,7 +2,7 @@ package net.potatocloud.node.command;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.potatocloud.node.console.Logger;
+import net.potatocloud.api.logging.Logger;
 
 import java.util.*;
 

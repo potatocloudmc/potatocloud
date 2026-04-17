@@ -27,8 +27,6 @@ tasks.named<ShadowJar>("shadowJar") {
     archiveBaseName.set("potatocloud-plugin-cloudcommand")
     archiveVersion.set("${rootProject.version}")
     archiveClassifier.set("")
-
-    exclude("net/potatocloud/api/**")
 }
 
 

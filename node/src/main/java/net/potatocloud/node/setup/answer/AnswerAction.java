@@ -1,4 +1,4 @@
-package net.potatocloud.node.setup;
+package net.potatocloud.node.setup.answer;
 
 import java.util.Map;
 

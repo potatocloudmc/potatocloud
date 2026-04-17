@@ -13,6 +13,8 @@ paper:
     - setup-proxy
   versions:
     - version: latest
+    - version: 26.1.2
+    - version: 26.1.1
     - version: 1.21.11
     - version: 1.21.10
     - version: 1.21.9
@@ -21,10 +23,6 @@ paper:
     - version: 1.21.6
     - version: 1.21.5
     - version: 1.21.4
-    - version: 1.21.3
-    - version: 1.20.6
-    - version: 1.20.5
-    - version: 1.20.4
 velocity:
   download: https://fill-data.papermc.io/v1/objects/{sha256}/velocity-{version}-{build}.jar
   base: velocity
@@ -38,6 +36,8 @@ velocity:
     - setup-forwarding
   versions:
     - version: latest
+    - version: 3.5.0-SNAPSHOT
+    - version: 3.4.0
     - version: 3.4.0-SNAPSHOT
     - version: 3.3.0-SNAPSHOT
 purpur:
@@ -55,6 +55,7 @@ purpur:
     - setup-proxy
   versions:
     - version: latest
+    - version: 26.1.2
     - version: 1.21.11
     - version: 1.21.10
     - version: 1.21.9
@@ -63,10 +64,29 @@ purpur:
     - version: 1.21.6
     - version: 1.21.5
     - version: 1.21.4
-    - version: 1.21.3
-    - version: 1.20.6
-    - version: 1.20.5
-    - version: 1.20.4
+leaf:
+  download: https://api.leafmc.one/v2/projects/leaf/versions/{version}/builds/{build}/downloads/leaf-{version}-{build}.jar
+  base: paper
+  custom: false
+  proxy: false
+  parser: leaf
+  hash-type: sha256
+  pre-cache: paper
+  prepare-steps:
+    - default-files
+    - eula
+    - port
+    - setup-proxy
+  versions:
+    - version: latest
+    - version: 1.21.11
+    - version: 1.21.10
+    - version: 1.21.9
+    - version: 1.21.8
+    - version: 1.21.7
+    - version: 1.21.6
+    - version: 1.21.5
+    - version: 1.21.4
 pandaspigot:
   base: bukkit
   custom: false
@@ -88,5 +108,7 @@ limbo:
     - port
     - setup-proxy
   versions:
+    - version: 26.1.2
+    - download: https://ci.loohpjames.com/job/Limbo/74/artifact/target/Limbo-2026.0.1-ALPHA-26.1.2.jar
     - version: 1.21.11
       download: https://ci.loohpjames.com/job/Limbo/71/artifact/target/Limbo-0.7.18-ALPHA-1.21.11.jar

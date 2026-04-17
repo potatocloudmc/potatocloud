@@ -5,6 +5,7 @@ import net.potatocloud.core.networking.packet.packets.group.GroupAddPacket;
 import net.potatocloud.core.networking.packet.packets.group.GroupDeletePacket;
 import net.potatocloud.core.networking.packet.packets.group.GroupUpdatePacket;
 import net.potatocloud.core.networking.packet.packets.group.RequestGroupsPacket;
+import net.potatocloud.core.networking.packet.packets.logging.LogMessagePacket;
 import net.potatocloud.core.networking.packet.packets.platform.PlatformAddPacket;
 import net.potatocloud.core.networking.packet.packets.platform.PlatformRemovePacket;
 import net.potatocloud.core.networking.packet.packets.platform.PlatformUpdatePacket;
@@ -52,5 +53,7 @@ public class PacketRegistry {
         manager.register(PacketIds.PROPERTY_ADD, PropertyAddPacket::new);
         manager.register(PacketIds.PROPERTY_REMOVE, PropertyRemovePacket::new);
         manager.register(PacketIds.PROPERTY_UPDATE, PropertyUpdatePacket::new);
+
+        manager.register(PacketIds.LOG_MESSAGE, LogMessagePacket::new);
     }
 }

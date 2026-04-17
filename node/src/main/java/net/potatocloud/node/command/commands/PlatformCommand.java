@@ -1,5 +1,6 @@
 package net.potatocloud.node.command.commands;
 
+import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformManager;
 import net.potatocloud.api.platform.PlatformVersion;
@@ -8,7 +9,6 @@ import net.potatocloud.node.command.ArgumentType;
 import net.potatocloud.node.command.Command;
 import net.potatocloud.node.command.CommandInfo;
 import net.potatocloud.node.command.SubCommand;
-import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.setup.setups.AddVersionToPlatformSetup;
 import net.potatocloud.node.setup.setups.PlatformConfigurationSetup;
 

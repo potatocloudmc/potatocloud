@@ -1,9 +1,9 @@
 package net.potatocloud.node.command.commands;
 
+import net.potatocloud.api.logging.Logger;
 import net.potatocloud.node.command.Command;
 import net.potatocloud.node.command.CommandInfo;
 import net.potatocloud.node.command.CommandManager;
-import net.potatocloud.node.console.Logger;
 
 @CommandInfo(name = "help", description = "Shows all commands", aliases = {"?"})
 public class HelpCommand extends Command {

@@ -20,6 +20,12 @@ public class StartServiceListener implements PacketListener<StartServicePacket> 
         if (group == null) {
             return;
         }
+
+        if (!serviceManager.hasEnoughMemory(group)) {
+            serviceManager.logMemoryWarning(group);
+            return;
+        }
+
         serviceManager.startServiceInternal(group.getName(), packet.getRequestId());
     }
 }

@@ -9,8 +9,11 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/api" />
+            <option value="$PROJECT_DIR$/common" />
             <option value="$PROJECT_DIR$/connector" />
             <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/modules" />
+            <option value="$PROJECT_DIR$/modules/module-template" />
             <option value="$PROJECT_DIR$/node" />
             <option value="$PROJECT_DIR$/platform-plugins" />
             <option value="$PROJECT_DIR$/platform-plugins/limbo" />

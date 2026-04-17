@@ -1,19 +1,19 @@
 package net.potatocloud.node.command.commands;
 
 import net.potatocloud.api.group.ServiceGroup;
+import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.property.DefaultProperties;
 import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
-import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.common.PropertyUtil;
 import net.potatocloud.node.command.ArgumentType;
 import net.potatocloud.node.command.Command;
 import net.potatocloud.node.command.CommandInfo;
 import net.potatocloud.node.command.SubCommand;
-import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.service.ServiceImpl;
+import net.potatocloud.node.service.ServiceManagerImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.List;
 @CommandInfo(name = "service", description = "Manage services", aliases = {"ser", "serv", "s"})
 public class ServiceCommand extends Command {
 
-    public ServiceCommand(Logger logger, ServiceManager serviceManager, ScreenManager screenManager) {
+    public ServiceCommand(Logger logger, ServiceManagerImpl serviceManager, ScreenManager screenManager) {
         defaultExecutor(ctx -> sendHelp());
 
         sub("copy", "Copy files from a service to a template")
@@ -259,8 +259,19 @@ public class ServiceCommand extends Command {
                     final ServiceGroup group = ctx.get("group");
                     final int amount = ctx.has("amount") ? ctx.get("amount") : 1;
 
-                    serviceManager.startServices(group, amount);
-                    logger.info("Starting " + amount + " service" + (amount == 1 ? "" : "s") + " in group &a" + group.getName());
+                    int started = 0;
+                    for (int i = 0; i < amount; i++) {
+                        if (!serviceManager.hasEnoughMemory(group)) {
+                            serviceManager.logMemoryWarning(group);
+                            break;
+                        }
+                        serviceManager.startService(group.getName());
+                        started++;
+                    }
+
+                    if (started > 0) {
+                        logger.info("Starting " + started + " service" + (started == 1 ? "" : "s") + " in group &a" + group.getName());
+                    }
                 });
 
         sub("stop", "Stop a service")

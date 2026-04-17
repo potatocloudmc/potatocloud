@@ -2,10 +2,9 @@ package net.potatocloud.node.version;
 
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import net.potatocloud.api.CloudAPI;
+import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.utils.version.Version;
-import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.utils.RequestUtil;
 
 @RequiredArgsConstructor

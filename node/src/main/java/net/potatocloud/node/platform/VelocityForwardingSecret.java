@@ -2,7 +2,10 @@ package net.potatocloud.node.platform;
 
 import java.util.UUID;
 
-public class VelocityForwardingSecret {
+public final class VelocityForwardingSecret {
+
+    private VelocityForwardingSecret() {
+    }
 
     public static final String FORWARDING_SECRET;
 

@@ -46,7 +46,6 @@ public class GroupUpdatePacket implements Packet {
         buf.writeInt(startPercentage);
         buf.writeStringList(serviceTemplates);
         buf.writePropertyMap(propertyMap);
-
     }
 
     @Override

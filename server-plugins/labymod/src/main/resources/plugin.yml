@@ -1,5 +1,5 @@
 name: potatocloud-labymod
-version: 1.4.4
+version: 1.5.0
 main: net.potatocloud.plugin.server.labymod.LabyModPlugin
 author: "TruaYT"
 
