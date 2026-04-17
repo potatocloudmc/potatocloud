@@ -13,7 +13,6 @@ repositories {
 
 dependencies {
     compileOnly(project(":api"))
-    implementation(project(":core"))
     implementation(project(":server-plugins:shared"))
     implementation(project(":common"))
     implementation(libs.simpleyaml)
