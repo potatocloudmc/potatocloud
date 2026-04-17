@@ -22,43 +22,31 @@ public class NodeLogger implements Logger {
 
     private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-    private static final String LATEST_LOG_FILENAME = "latest.log";
     private static final Pattern COLOR_PATTERN = Pattern.compile("(&.)|\u001B\\[[;\\d]*m");
+
+    private static final String LATEST_LOG = "latest.log";
+    private static final int MAX_CACHED_LOGS = 1000;
 
     private final NodeConfig config;
     private final Console console;
     private final Path logsDirectory;
-    private final List<String> cachedLogs = new CopyOnWriteArrayList<>();
+
+    private final List<String> cache = new CopyOnWriteArrayList<>();
 
     public NodeLogger(NodeConfig config, Console console, Path logsDirectory) {
         this.config = config;
         this.console = console;
         this.logsDirectory = logsDirectory;
 
-        if (Files.notExists(logsDirectory)) {
-            try {
+        try {
+            if (Files.notExists(logsDirectory)) {
                 Files.createDirectories(logsDirectory);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to create logs directory: " + logsDirectory, e);
             }
+
+            Files.deleteIfExists(logsDirectory.resolve(LATEST_LOG));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to initialize NodeLogger", e);
         }
-
-        final Path latestLogPath = logsDirectory.resolve(LATEST_LOG_FILENAME);
-        if (Files.exists(latestLogPath)) {
-            try {
-                Files.deleteIfExists(latestLogPath);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to delete " + LATEST_LOG_FILENAME, e);
-            }
-        }
-    }
-
-    public void logCommand(String command) {
-        log(Level.COMMAND_INPUT, command);
-    }
-
-    public List<String> getCachedLogs() {
-        return Collections.unmodifiableList(cachedLogs);
     }
 
     @Override
@@ -68,53 +56,59 @@ public class NodeLogger implements Logger {
         }
 
         final Date now = new Date();
-        final String formattedTime = TIME_FORMAT.format(now);
-        final String formattedDate = DATE_FORMAT.format(now);
+        final String time = TIME_FORMAT.format(now);
+        final String date = DATE_FORMAT.format(now);
 
-        String uncoloredMessage;
-        String coloredMessage;
+        String raw;
+        String colored;
 
-        if (level.equals(Level.COMMAND_INPUT)) {
-            coloredMessage = console.getPrompt() + message;
-            uncoloredMessage = removeColorCodes(coloredMessage);
+        if (level == Level.COMMAND_INPUT) {
+            colored = console.getPrompt() + message;
+            raw = stripColors(colored);
         } else {
-            uncoloredMessage = "[" + formattedTime + " " + level.name() + "] " + removeColorCodes(message);
-            coloredMessage = "&8[&7" + formattedTime + " " + level.getColorCode() + level.name() + "&8] &7" + message;
+            raw = formatRaw(level, time, message);
+            colored = formatColored(level, time, message);
         }
 
-        final Path dayLogPath = logsDirectory.resolve(formattedDate + ".log");
-        final Path latestLogPath = logsDirectory.resolve(LATEST_LOG_FILENAME);
+        final Path dayLogPath = logsDirectory.resolve(date + ".log");
+        final Path latestLogPath = logsDirectory.resolve(LATEST_LOG);
 
-        appendLine(dayLogPath, uncoloredMessage);
-        appendLine(latestLogPath, uncoloredMessage);
+        appendLine(dayLogPath, raw);
+        appendLine(latestLogPath, raw);
 
         // Make sure the cached logs list will not get too big
-        synchronized (cachedLogs) {
-            if (cachedLogs.size() >= 1000) {
-                cachedLogs.remove(0);
+        synchronized (cache) {
+            if (cache.size() >= MAX_CACHED_LOGS) {
+                cache.remove(0);
             }
         }
 
-        cachedLogs.add(coloredMessage);
+        cache.add(colored);
 
-        final boolean nodeScreen = Node.getInstance().getScreenManager().getCurrentScreen().name().equals(Screen.NODE_SCREEN);
+        final boolean nodeScreen = Node.getInstance()
+                .getScreenManager()
+                .getCurrentScreen()
+                .name()
+                .equals(Screen.NODE_SCREEN);
+
         if (!level.equals(Level.COMMAND_INPUT) && nodeScreen) {
-            console.println(coloredMessage);
+            console.println(colored);
         }
     }
 
-    private String removeColorCodes(String input) {
+    private String formatRaw(Level level, String time, String message) {
+        return "[" + time + " " + level.name() + "] " + stripColors(message);
+    }
+
+    private String formatColored(Level level, String time, String message) {
+        return "&8[&7" + time + " " + level.getColorCode() + level.name() + "&8] &7" + message;
+    }
+
+    private String stripColors(String input) {
         return COLOR_PATTERN.matcher(input).replaceAll("");
     }
 
     private void appendLine(Path path, String line) {
-        if (Files.notExists(path)) {
-            try {
-                Files.createFile(path);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to create log file: " + path, e);
-            }
-        }
         try {
             Files.writeString(
                     path,
@@ -126,5 +120,13 @@ public class NodeLogger implements Logger {
         } catch (IOException e) {
             throw new RuntimeException("Failed to write to log file: " + path, e);
         }
+    }
+
+    public void logCommand(String command) {
+        log(Level.COMMAND_INPUT, command);
+    }
+
+    public List<String> getCachedLogs() {
+        return Collections.unmodifiableList(cache);
     }
 }

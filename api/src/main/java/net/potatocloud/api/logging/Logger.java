@@ -38,9 +38,9 @@ public interface Logger {
      * @param throwable the exception to log
      */
     default void exception(Throwable throwable) {
-        log(Level.ERROR, "An exception occurred: " + throwable.getMessage());
+        error(throwable.toString());
         for (StackTraceElement element : throwable.getStackTrace()) {
-            log(Level.ERROR, "    at " + element.toString());
+            error("    at " + element);
         }
     }
 

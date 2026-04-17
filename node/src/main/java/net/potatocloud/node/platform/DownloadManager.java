@@ -36,6 +36,11 @@ public class DownloadManager {
             return;
         }
 
+        if (version == null) {
+            logger.info("&cThis version does not exist");
+            return;
+        }
+
         if (!Files.exists(platformsDirectory)) {
             try {
                 Files.createDirectories(platformsDirectory);
@@ -62,6 +67,11 @@ public class DownloadManager {
         // Use build parser to get the correct download url and hash if version has no download url
         if ((version.getDownloadUrl() == null || version.getDownloadUrl().isEmpty()) && parser != null) {
             parser.parse(version, platform.getDownloadUrl());
+        }
+
+        if (version.getDownloadUrl() == null || version.getDownloadUrl().isEmpty()) {
+            logger.info("&cVersion &a" + version.getName() + " &7has no download url!");
+            return;
         }
 
         if (Files.notExists(platformJarPath)) {
