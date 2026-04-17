@@ -96,4 +96,15 @@ public class NodeConfig {
         disableUpdateChecker = config.getBoolean("disable-update-checker");
         debug = config.getBoolean("debug");
     }
+
+    public void reload() {
+        try {
+            config.load();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to reload " + CONFIG_FILE_NAME, e);
+        }
+
+        load();
+    }
+
 }
