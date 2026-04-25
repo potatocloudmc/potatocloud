@@ -13,7 +13,6 @@ repositories {
 
 dependencies {
     compileOnly(project(":api"))
-    implementation(project(":core"))
     implementation(project(":server-plugins:shared"))
     implementation(project(":common"))
     implementation(libs.simpleyaml)
@@ -27,8 +26,6 @@ tasks.named<ShadowJar>("shadowJar") {
     archiveBaseName.set("potatocloud-plugin-cloudcommand")
     archiveVersion.set("${rootProject.version}")
     archiveClassifier.set("")
-
-    exclude("net/potatocloud/api/**")
 }
 
 

@@ -23,15 +23,19 @@ public class PaperBuildParser implements BuildParser {
         try {
             String versionName = version.getName();
 
-            final JsonObject project = RequestUtil.request("https://fill.papermc.io/v3/projects/" + projectName);
-            final JsonObject versions = project.getAsJsonObject("versions");
-
-            // Find the latest minecraft version if the user wants the latest
+            // Find the latest Minecraft version if the user wants the latest
             if (versionName.equalsIgnoreCase("latest")) {
+                final JsonObject project = RequestUtil.request("https://fill.papermc.io/v3/projects/" + projectName);
+                final JsonObject versions = project.getAsJsonObject("versions");
+
                 final List<String> allVersions = new ArrayList<>();
 
                 for (Map.Entry<String, JsonElement> entry : versions.entrySet()) {
                     final JsonArray versionsArray = entry.getValue().getAsJsonArray();
+
+                    if (versionsArray == null || versionsArray.isEmpty()) {
+                        throw new RuntimeException("No versions found in Paper API");
+                    }
 
                     for (JsonElement element : versionsArray) {
                         allVersions.add(element.getAsString());
@@ -44,10 +48,16 @@ public class PaperBuildParser implements BuildParser {
             // Get the latest build of the chosen version
             final JsonObject latestBuild = RequestUtil.request("https://fill.papermc.io/v3/projects/"
                     + projectName + "/versions/" + versionName + "/builds/latest");
+
             final int latestBuildId = latestBuild.get("id").getAsInt();
 
             final JsonObject downloads = latestBuild.getAsJsonObject("downloads");
-            final JsonObject serverDefault = downloads.getAsJsonObject("server:default");
+            final JsonObject serverDefault = downloads != null ? downloads.getAsJsonObject("server:default") : null;
+
+            if (serverDefault == null) {
+                throw new RuntimeException("Missing download info for Paper build");
+            }
+
             final String sha256 = serverDefault
                     .getAsJsonObject("checksums")
                     .get("sha256")
@@ -59,9 +69,9 @@ public class PaperBuildParser implements BuildParser {
                     .replace("{build}", String.valueOf(latestBuildId))
                     .replace("{sha256}", sha256);
 
-            if (version instanceof PlatformVersionImpl impl) {
-                impl.setFileHash(sha256);
-                impl.setDownloadUrl(downloadUrl);
+            if (version instanceof PlatformVersionImpl versionImpl) {
+                versionImpl.setFileHash(sha256);
+                versionImpl.setDownloadUrl(downloadUrl);
             }
 
         } catch (Exception e) {

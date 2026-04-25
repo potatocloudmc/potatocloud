@@ -9,7 +9,7 @@ import net.potatocloud.api.property.DefaultProperties;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.console.Console;
 import net.potatocloud.node.screen.ScreenManager;
-import net.potatocloud.node.setup.AnswerResult;
+import net.potatocloud.node.setup.answer.AnswerResult;
 import net.potatocloud.node.setup.Setup;
 import net.potatocloud.node.utils.ProxyUtils;
 
@@ -30,110 +30,78 @@ public class GroupConfigurationSetup extends Setup {
 
     @Override
     public void initQuestions() {
-        question("name")
-                .text("What is the name of this group?")
-                .customValidator(input -> {
-                    if (groupManager.existsServiceGroup(input)) {
-                        return AnswerResult.error("A group with the same name already exists");
-                    }
-                    return AnswerResult.success();
-                })
+        text("name", "What is the name of this group?")
+                .customValidator(input -> groupManager.existsServiceGroup(input)
+                        ? AnswerResult.error("A group with the same name already exists")
+                        : AnswerResult.success())
                 .add();
 
-        question("platform")
-                .text("Which platform should be used by this group?")
+        text("platform", "Which platform should be used by this group?")
                 .suggestions(() -> platformManager.getPlatforms().stream()
                         .map(Platform::getName)
                         .collect(Collectors.toList()))
-                .customValidator(input -> platformManager.exists(input) ? AnswerResult.success() : AnswerResult.error("This platform does not exist"))
+                .customValidator(input -> platformManager.exists(input)
+                        ? AnswerResult.success()
+                        : AnswerResult.error("This platform does not exist"))
                 .add();
 
-        question("platform_version")
-                .text("Which version of the selected platform should be used?")
+        text("platform_version", "Which version of the selected platform should be used?")
                 .suggestions(() -> {
-                    final String platformName = answers.get("platform");
-                    if (platformName == null) {
-                        return List.of();
-                    }
-                    final Platform platform = platformManager.getPlatform(platformName);
-                    if (platform == null) {
-                        return List.of();
-                    }
-                    return platform.getVersions().stream().map(PlatformVersion::getName).collect(Collectors.toList());
+                    final Platform platform = platformManager.getPlatform(answers.get("platform"));
+                    return platform == null ? List.of()
+                            : platform.getVersions().stream().map(PlatformVersion::getName).collect(Collectors.toList());
                 })
                 .customValidator(input -> {
-                    final String platformName = answers.get("platform");
-                    final Platform platform = platformManager.getPlatform(platformName);
-                    if (platform == null || platform.getVersion(input) == null) {
-                        return AnswerResult.error("This version does not exist for the selected platform");
-                    }
-                    return AnswerResult.success();
+                    final Platform platform = platformManager.getPlatform(answers.get("platform"));
+                    return platform != null && platform.getVersion(input) != null
+                            ? AnswerResult.success()
+                            : AnswerResult.error("This version does not exist for the selected platform");
                 })
                 .add();
 
-        question("min_online_count")
-                .number("How many services of this group should always be online?")
+        number("min_online_count", "How many services of this group should always be online?")
                 .defaultAnswer("1")
                 .add();
 
-        question("max_online_count")
-                .number("What is the maximum number of online services in this group?")
+        number("max_online_count", "What is the maximum number of online services in this group?")
                 .defaultAnswer("1")
                 .add();
 
-        question("max_players")
-                .number("What is the maximum number of players per service?")
+        number("max_players", "What is the maximum number of players per service?")
                 .add();
 
-        question("max_memory")
-                .number("What is the maximum memory a service can use in this group? (In MB)")
+        number("max_memory", "What is the maximum memory a service can use in this group? (In MB)")
                 .suggestions(() -> List.of("256", "512", "1024", "1536", "2048", "3072", "4096", "6144", "8192"))
                 .add();
 
-        question("fallback")
-                .bool("Is this group a fallback?")
-                .suggestions(() -> List.of("true", "false", "yes", "no"))
+        bool("fallback", "Is this group a fallback?")
                 .skipIf(answers -> {
-                    final String platformName = answers.get("platform");
-                    if (platformName == null) {
-                        return false;
-                    }
-                    final Platform platform = platformManager.getPlatform(platformName);
+                    final Platform platform = platformManager.getPlatform(answers.get("platform"));
                     return platform != null && platform.isProxy();
                 })
                 .add();
 
-        question("static_servers")
-                .bool("Are services in this group static? (Service files will not be deleted on shutdown)")
-                .suggestions(() -> List.of("true", "false", "yes", "no"))
+        bool("static_servers", "Are services in this group static? (Service files will not be deleted on shutdown)")
                 .add();
 
-        question("start_priority")
-                .number("What is the start priority of this group? (higher = starts first)")
+        number("start_priority", "What is the start priority of this group? (higher = starts first)")
                 .defaultAnswer("1")
                 .add();
 
-        question("start_percentage")
-                .number("At which percentage of online players should new services be started? (-1 = disabled)")
+        number("start_percentage", "At which percentage of online players should new services be started? (-1 = disabled)")
                 .defaultAnswer("80")
                 .add();
 
-        question("velocity_modern_forwarding")
-                .bool("Do you want to use Velocity modern forwarding? Modern forwarding is more secure but will break support for versions below 1.13")
-                .suggestions(() -> List.of("true", "false", "yes", "no"))
+        bool("velocity_modern_forwarding", "Do you want to use Velocity modern forwarding? Modern forwarding is more secure but will break support for versions below 1.13")
                 .skipIf(answers -> {
-                    final String platformName = answers.get("platform");
-                    if (platformName == null) {
-                        return true;
-                    }
-                    final Platform platform = platformManager.getPlatform(platformName);
+                    final Platform platform = platformManager.getPlatform(answers.get("platform"));
                     return platform == null || !platform.isVelocityBased();
                 })
                 .add();
     }
 
     @Override
-    protected void onFinish(Map<String, String> answers) {
+    protected void finish(Map<String, String> answers) {
         final String platformName = answers.get("platform");
         if (platformName == null) {
             return;

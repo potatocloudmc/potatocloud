@@ -1,12 +1,12 @@
 package net.potatocloud.node.setup.setups;
 
+import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformManager;
 import net.potatocloud.node.console.Console;
-import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.screen.ScreenManager;
-import net.potatocloud.node.setup.AnswerResult;
 import net.potatocloud.node.setup.Setup;
+import net.potatocloud.node.setup.answer.AnswerResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,61 +25,44 @@ public class PlatformConfigurationSetup extends Setup {
 
     @Override
     public void initQuestions() {
-        question("name")
-                .text("What is the name of the platform?")
-                .customValidator(input -> {
-                    if (platformManager.exists(input)) {
-                        return AnswerResult.error("A platform with the same name already exists");
-                    }
-                    return AnswerResult.success();
-                })
+        text("name", "What is the name of the platform?")
+                .customValidator(input -> platformManager.exists(input)
+                        ? AnswerResult.error("A platform with the same name already exists")
+                        : AnswerResult.success())
                 .add();
 
-        question("base")
-                .text("What is the base of the platform?")
-                .customValidator(input -> {
-                    final List<String> supportedBases = List.of("bukkit", "spigot", "paper", "velocity", "limbo");
-                    if (!supportedBases.contains(input)) {
-                        return AnswerResult.error("This base is not supported");
-                    }
-
-                    return AnswerResult.success();
-                })
+        text("base", "What is the base of the platform?")
                 .suggestions(() -> List.of("bukkit", "spigot", "paper", "velocity", "limbo"))
+                .customValidator(input -> List.of("bukkit", "spigot", "paper", "velocity", "limbo").contains(input)
+                        ? AnswerResult.success()
+                        : AnswerResult.error("This base is not supported"))
                 .add();
     }
 
     @Override
-    protected void onFinish(Map<String, String> answers) {
+    protected void finish(Map<String, String> answers) {
         final String name = answers.get("name");
         final String base = answers.get("base");
 
-        // set values based on selected base
         boolean proxy = false;
-        String preCache = "";
+        String preCache = null;
         List<String> prepareSteps = new ArrayList<>();
 
         switch (base) {
-            case "paper":
+            case "paper" -> {
                 preCache = "paper";
                 prepareSteps = List.of("default-files", "eula", "port", "setup-proxy");
-                break;
-            case "purpur":
+            }
+            case "purpur" -> {
                 preCache = "purpur";
                 prepareSteps = List.of("default-files", "eula", "port", "setup-proxy");
-                break;
-            case "bukkit", "spigot":
-                preCache = null;
-                prepareSteps = List.of("default-files", "eula", "port", "setup-proxy");
-                break;
-            case "velocity":
+            }
+            case "bukkit", "spigot" -> prepareSteps = List.of("default-files", "eula", "port", "setup-proxy");
+            case "velocity" -> {
                 proxy = true;
-                preCache = null;
                 prepareSteps = List.of("default-files", "port", "setup-forwarding");
-                break;
-            case "limbo":
-                preCache = null;
-                prepareSteps = List.of("default-files", "port", "setup-proxy");
+            }
+            case "limbo" -> prepareSteps = List.of("default-files", "port", "setup-proxy");
         }
 
         final Platform platform = platformManager.createPlatform(name, null, true, proxy, base, preCache, null, null, prepareSteps);

@@ -35,12 +35,19 @@ service:
   # Timeout in seconds before forcibly killing a service after normal stop attempt
   kill-timeout: 10
 
+  # Enables checking available system memory before starting new services
+  memory-check-enabled: false
+
+  # Maximum RAM (in MB) that all services combined can use.
+  max-memory: 16384
+
 folders:
   groups: groups
   static: services/static
   temp-services: services/temp
   templates: templates
   platforms: platforms
+  modules: modules
   logs: logs
   data: data
 

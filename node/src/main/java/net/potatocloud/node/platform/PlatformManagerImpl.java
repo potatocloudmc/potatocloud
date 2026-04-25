@@ -1,5 +1,6 @@
 package net.potatocloud.node.platform;
 
+import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformManager;
 import net.potatocloud.api.platform.impl.PlatformImpl;
@@ -7,7 +8,6 @@ import net.potatocloud.core.networking.NetworkServer;
 import net.potatocloud.core.networking.packet.packets.platform.PlatformAddPacket;
 import net.potatocloud.core.networking.packet.packets.platform.PlatformUpdatePacket;
 import net.potatocloud.core.networking.packet.packets.platform.RequestPlatformsPacket;
-import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.platform.listeners.PlatformAddListener;
 import net.potatocloud.node.platform.listeners.PlatformUpdateListener;
 import net.potatocloud.node.platform.listeners.RequestPlatformsListener;
@@ -31,8 +31,6 @@ public class PlatformManagerImpl implements PlatformManager {
         server.on(RequestPlatformsPacket.class, new RequestPlatformsListener(this));
         server.on(PlatformUpdatePacket.class, new PlatformUpdateListener(this));
         server.on(PlatformAddPacket.class, new PlatformAddListener(this));
-
-        logger.info("Loaded &a" + platforms.size() + " &7platforms");
     }
 
     public List<Platform> getPlatforms() {

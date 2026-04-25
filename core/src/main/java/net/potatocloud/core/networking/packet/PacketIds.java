@@ -36,4 +36,6 @@ public class PacketIds {
     public static final int PROPERTY_REMOVE = 502;
     public static final int PROPERTY_ADD = 503;
 
+    public static final int LOG_MESSAGE = 600;
+
 }

@@ -1,12 +1,12 @@
 package net.potatocloud.node.command.commands;
 
+import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.player.CloudPlayerManager;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.node.command.ArgumentType;
 import net.potatocloud.node.command.Command;
 import net.potatocloud.node.command.CommandInfo;
-import net.potatocloud.node.console.Logger;
 
 import java.util.Set;
 

@@ -1,8 +1,8 @@
 package net.potatocloud.node.command;
 
 import lombok.Getter;
+import net.potatocloud.api.logging.Logger;
 import net.potatocloud.node.Node;
-import net.potatocloud.node.console.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;

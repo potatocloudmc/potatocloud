@@ -1,14 +1,14 @@
 package net.potatocloud.api.utils;
 
-import lombok.experimental.UtilityClass;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
-@UtilityClass
-public class TimeFormatter {
+public final class TimeFormatter {
+
+    private TimeFormatter() {
+    }
 
     public static String formatAsDuration(long millis) {
         final Duration duration = Duration.ofMillis(millis);

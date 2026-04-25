@@ -3,13 +3,13 @@ package net.potatocloud.node.service;
 import net.potatocloud.api.event.EventManager;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
+import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.core.networking.NetworkServer;
 import net.potatocloud.core.networking.packet.packets.service.*;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.console.Console;
-import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.platform.DownloadManager;
 import net.potatocloud.node.platform.PlatformManagerImpl;
 import net.potatocloud.node.platform.cache.CacheManager;
@@ -183,6 +183,29 @@ public class ServiceManagerImpl implements ServiceManager {
         }
 
         return port;
+    }
+
+    public boolean hasEnoughMemory(ServiceGroup group) {
+        if (!config.isMemoryCheckEnabled()) {
+            return true;
+        }
+
+        final long usedMb = services.stream()
+                .mapToLong(service -> service.getServiceGroup().getMaxMemory())
+                .sum();
+
+        return (usedMb + group.getMaxMemory()) <= config.getMaxMemory();
+    }
+
+    public void logMemoryWarning(ServiceGroup group) {
+        final long usedMb = services.stream()
+                .mapToLong(service -> service.getServiceGroup().getMaxMemory())
+                .sum();
+
+        logger.warn("Service(s) for group &a" + group.getName()
+                + " &7could not be started &8[&7Required&8: &a" + group.getMaxMemory() + " MB"
+                + "&8, &7Used&8: &a" + usedMb + " MB"
+                + "&8, &7Max&8: &a" + config.getMaxMemory() + " MB&8]");
     }
 
     @Override
