@@ -47,7 +47,7 @@ These plugins are separate jars you can drop into your proxy or servers:
 > All plugins are available in the [potatocloud](https://github.com/potatocloudmc/potatocloud/releases) zip file.
 
 ## API
-Check out the [potatocloud API Wiki](https://github.com/potatocloudmc/potatocloud/wiki/01%E2%80%90Getting-Started-with-the-API). It shows you how to use the API and includes examples.
+Check out the [potatocloud API Wiki](https://github.com/potatocloudmc/potatocloud/wiki/01%E2%80%90Getting-Started-with-the-API). Alternatively, you can take a look at [DeepWiki](https://deepwiki.com/potatocloudmc/potatocloud)
 
 ## Building from Source
 Use Gradle to build the project:
