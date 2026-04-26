@@ -27,9 +27,9 @@ To install potatocloud, follow these steps:
 
 ## Supported Platforms (Server Versions)
 - Paper (1.21.4 - Latest)
-- LeafMC (1.21.4 - latest)
 - Velocity (3.3.0-SNAPSHOT - Latest)
 - Purpur (1.21.4 - Latest)
+- LeafMC (1.21.4 - Latest)
 - PandaSpigot (1.8.8 - 1.8.9)
 - [Limbo](https://github.com/LOOHP/Limbo) (1.21.8, 1.21.10)
 - Custom Platforms
