@@ -26,9 +26,10 @@ To install potatocloud, follow these steps:
 6. That’s it! You should now be able to join your server
 
 ## Supported Platforms (Server Versions)
-- Paper (1.20.4 - Latest)
+- Paper (1.21.4 - Latest)
 - Velocity (3.3.0-SNAPSHOT - Latest)
-- Purpur (1.20.4 - Latest)
+- Purpur (1.21.4 - Latest)
+- LeafMC (1.21.4 - Latest)
 - PandaSpigot (1.8.8 - 1.8.9)
 - [Limbo](https://github.com/LOOHP/Limbo) (1.21.8, 1.21.10)
 - Custom Platforms
@@ -46,7 +47,7 @@ These plugins are separate jars you can drop into your proxy or servers:
 > All plugins are available in the [potatocloud](https://github.com/potatocloudmc/potatocloud/releases) zip file.
 
 ## API
-Check out the [potatocloud API Wiki](https://github.com/potatocloudmc/potatocloud/wiki/01%E2%80%90Getting-Started-with-the-API). It shows you how to use the API and includes examples.
+Check out the [potatocloud API Wiki](https://github.com/potatocloudmc/potatocloud/wiki/01%E2%80%90Getting-Started-with-the-API). Alternatively, you can take a look at [DeepWiki](https://deepwiki.com/potatocloudmc/potatocloud)
 
 ## Building from Source
 Use Gradle to build the project:
