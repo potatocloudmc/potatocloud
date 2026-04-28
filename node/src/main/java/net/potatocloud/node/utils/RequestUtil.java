@@ -17,7 +17,7 @@ public final class RequestUtil {
     public static JsonObject request(String url) {
         try (HttpClient client = HttpClient.newHttpClient()) {
             final HttpRequest buildRequest = HttpRequest.newBuilder(URI.create(url))
-                    .header("User-Agent", "potatocloud/" + CloudAPI.VERSION + " (https://github.com/potatocloudmc/potatocloud)")
+                    //.header("User-Agent", "potatocloud/" + CloudAPI.VERSION + " (https://github.com/potatocloudmc/potatocloud)")
                     .build();
 
             final HttpResponse<String> buildResponse = client.send(buildRequest, HttpResponse.BodyHandlers.ofString());

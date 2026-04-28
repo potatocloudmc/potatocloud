@@ -21,10 +21,6 @@ public final class ServiceDefaultFiles {
                     "paper-global.yml",
                     "velocity.toml",
                     "limbo-server.properties",
-                    "potatocloud-plugin-spigot.jar",
-                    "potatocloud-plugin-spigot-legacy.jar",
-                    "potatocloud-plugin-velocity.jar",
-                    "potatocloud-plugin-limbo.jar"
             };
 
             for (String name : files) {

@@ -38,4 +38,9 @@ public class PacketIds {
 
     public static final int LOG_MESSAGE = 600;
 
+    public static final int TRANSLATION_ADD = 650;
+    public static final int TRANSLATION_REMOVE = 651;
+    public static final int TRANSLATION_UPDATE = 652;
+    public static final int REQUEST_TRANSLATION = 653;
+
 }

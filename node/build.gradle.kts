@@ -19,6 +19,8 @@ dependencies {
     implementation(libs.commons.codec)
 
     implementation(libs.gson)
+    implementation(libs.hikaricp)
+    implementation(libs.mariadb)
     implementation(libs.jline)
     implementation(libs.oshi)
     implementation(libs.slf4j.nop)

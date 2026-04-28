@@ -29,7 +29,7 @@ public class GroupAddListener implements PacketListener<GroupAddPacket> {
                 packet.getMinOnlineCount(),
                 packet.getMaxOnlineCount(),
                 packet.isStatic(),
-                packet.isFallback(),
+                packet.isPrimary(),
                 packet.getStartPriority(),
                 packet.getStartPercentage(),
                 packet.getServiceTemplates(),

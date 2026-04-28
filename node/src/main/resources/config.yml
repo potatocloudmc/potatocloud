@@ -2,15 +2,9 @@ console:
   # Console prompt text (%user% = current user)
   prompt: '&7&a%user%&7@cloud ~> '
 
-  # Show banner on startup
-  enable-banner: true
-
   # Primary color code for console messages and prompt
   # Supported colors: https://www.ditig.com/256-colors-cheat-sheet
   primary-color: 42
-
-  # Show player join and leave messages in the console
-  log-player-connections: true
 
 service:
   # Starting port for new services
@@ -19,21 +13,12 @@ service:
   # Starting port for new proxies
   proxy-start-port: 25565
 
-  # Splitter used in service names
-  splitter: '-'
-
   # Auto updates platform jars to latest build in the same MC version.
   # Also updates MC version if using 'platform-latest'
   auto-update-platforms: true
 
-  # Maximum number of services that can run at the same time (-1 = unlimited)
-  max-services: -1
-
-  # Maximum number of services that can start at the same time (-1 = unlimited)
-  max-starting-services: -1
-
   # Timeout in seconds before forcibly killing a service after normal stop attempt
-  kill-timeout: 10
+  kill-timeout: 15
 
   # Enables checking available system memory before starting new services
   memory-check-enabled: false
@@ -58,5 +43,4 @@ node:
   # Node communication port
   port: 16000
 
-disable-update-checker: false
-debug: false
+debug: true

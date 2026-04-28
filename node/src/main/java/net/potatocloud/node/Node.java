@@ -1,5 +1,7 @@
 package net.potatocloud.node;
 
+import com.google.gson.Gson;
+import com.zaxxer.hikari.HikariConfig;
 import lombok.Getter;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.event.EventManager;
@@ -7,10 +9,9 @@ import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.player.CloudPlayerManager;
 import net.potatocloud.api.property.PropertyHolder;
-import net.potatocloud.api.utils.version.Version;
+import net.potatocloud.api.translation.TranslationManager;
 import net.potatocloud.common.FileUtils;
 import net.potatocloud.core.event.ServerEventManager;
-import net.potatocloud.core.migration.MigrationManager;
 import net.potatocloud.core.networking.NetworkServer;
 import net.potatocloud.core.networking.netty.server.NettyNetworkServer;
 import net.potatocloud.core.networking.packet.PacketManager;
@@ -19,11 +20,9 @@ import net.potatocloud.node.command.CommandManager;
 import net.potatocloud.node.command.commands.*;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.console.Console;
+import net.potatocloud.node.database.MySQLHandler;
 import net.potatocloud.node.group.ServiceGroupManagerImpl;
 import net.potatocloud.node.logging.NodeLogger;
-import net.potatocloud.node.migration.Migration_1_4_3;
-import net.potatocloud.node.migration.Migration_1_4_4;
-import net.potatocloud.node.migration.Migration_1_5_0;
 import net.potatocloud.node.module.ModuleLoader;
 import net.potatocloud.node.module.ModuleManager;
 import net.potatocloud.node.platform.DownloadManager;
@@ -39,10 +38,9 @@ import net.potatocloud.node.service.ServiceManagerImpl;
 import net.potatocloud.node.service.start.ServiceStartScheduler;
 import net.potatocloud.node.setup.SetupManager;
 import net.potatocloud.node.template.TemplateManager;
+import net.potatocloud.node.translation.TranslationManagerImpl;
 import net.potatocloud.node.utils.HardwareUtils;
 import net.potatocloud.node.utils.NetworkUtils;
-import net.potatocloud.node.version.UpdateChecker;
-import net.potatocloud.node.version.VersionFile;
 
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
@@ -58,7 +56,6 @@ public class Node extends CloudAPI {
     private final ScreenManager screenManager;
     private final CommandManager commandManager;
 
-    private final MigrationManager migrationManager;
     private final PacketManager packetManager;
     private final NetworkServer server;
     private final EventManager eventManager;
@@ -76,12 +73,14 @@ public class Node extends CloudAPI {
     private final ServiceStartScheduler serviceStartScheduler;
 
     private final SetupManager setupManager;
-    private final UpdateChecker updateChecker;
+
+    private final TranslationManager translationManager;
+    private final MySQLHandler mySQLHandler = new MySQLHandler();
 
     private final ModuleManager moduleManager;
     private final ModuleLoader moduleLoader;
 
-    private final Version previousVersion;
+    private final Gson gson = new Gson();
     private boolean ready = false;
     private boolean stopping;
 
@@ -90,13 +89,6 @@ public class Node extends CloudAPI {
 
         config = new NodeConfig();
         config.load();
-
-        previousVersion = VersionFile.read();
-        migrationManager = new MigrationManager(previousVersion);
-        registerMigrations();
-        migrationManager.migrate();
-
-        VersionFile.write(CloudAPI.VERSION);
 
         config.reload();
 
@@ -124,12 +116,6 @@ public class Node extends CloudAPI {
 
         setupManager = new SetupManager();
 
-        updateChecker = new UpdateChecker(logger);
-
-        if (!config.isDisableUpdateChecker()) {
-            updateChecker.checkForUpdates();
-        }
-
         packetManager = new PacketManager();
         server = new NettyNetworkServer(packetManager);
         server.start(config.getNodeHost(), config.getNodePort());
@@ -141,6 +127,7 @@ public class Node extends CloudAPI {
             logger.log(Logger.Level.valueOf(packet.getLevel()), packet.getMessage());
         });
 
+        translationManager = new TranslationManagerImpl(server);
         eventManager = new ServerEventManager(server);
         propertiesHolder = new NodePropertiesHolder(server);
         playerManager = new CloudPlayerManagerImpl(server);
@@ -192,16 +179,17 @@ public class Node extends CloudAPI {
 
         serviceStartScheduler.start();
         ready = true;
+
+        if (!groupManager.existsServiceGroup("debug")) {
+            groupManager.createServiceGroup("debug", "paper", "1.21.8", 1, 3,50,2048,true, true, 100, 10);
+        }
+        if (!groupManager.existsServiceGroup("velocity")) {
+            groupManager.createServiceGroup("velocity", "velocity", "latest", 1, 2,1000,1024, false, true, 100, 10);
+        }
     }
 
     public static Node getInstance() {
         return (Node) CloudAPI.getInstance();
-    }
-
-    private void registerMigrations() {
-        new Migration_1_4_3(Path.of(config.getGroupsFolder()), migrationManager);
-        new Migration_1_4_4(migrationManager);
-        new Migration_1_5_0(migrationManager);
     }
 
     private void registerCommands() {
@@ -212,7 +200,6 @@ public class Node extends CloudAPI {
         commandManager.registerCommand(new PlatformCommand(logger, platformManager));
         commandManager.registerCommand(new PlayerCommand(logger, playerManager));
         commandManager.registerCommand(new ServiceCommand(logger, serviceManager, screenManager));
-        commandManager.registerCommand(new ShutdownCommand(this));
     }
 
     public void shutdown() {
@@ -240,6 +227,9 @@ public class Node extends CloudAPI {
         logger.info("Stopping network server&8...");
         server.close();
 
+        logger.info("Disconnecting from database server&8...");
+        mySQLHandler.close();
+
         logger.info("Cleaning up temporary files&8...");
         FileUtils.deleteDirectory(Path.of(config.getTempServicesFolder()));
 
@@ -256,6 +246,11 @@ public class Node extends CloudAPI {
     @Override
     public ServiceGroupManager getServiceGroupManager() {
         return groupManager;
+    }
+
+    @Override
+    public TranslationManager getTranslationManager() {
+        return null;
     }
 
     @Override

@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "net.potatocloud"
-version = "1.5.1"
+version = "1.0.0"
 
 allprojects {
     apply(plugin = "java")
@@ -14,7 +14,7 @@ allprojects {
 
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(21))
+            languageVersion.set(JavaLanguageVersion.of(25))
         }
     }
 

@@ -61,8 +61,8 @@ public class GroupSubCommand {
                         .replacement(String.valueOf(CloudAPI.getInstance().getPlayerManager().getOnlinePlayersByGroup(group).size()))));
         player.sendMessage(messages.get("group.info.max-players")
                 .replaceText(text -> text.match("%maxPlayers%").replacement(String.valueOf(group.getMaxPlayers()))));
-        player.sendMessage(messages.get("group.info.fallback")
-                .replaceText(text -> text.match("%fallback%").replacement(MiniMessage.miniMessage().deserialize(group.isFallback() ? "<green>Yes" : "<red>No"))));
+        player.sendMessage(messages.get("group.info.primary")
+                .replaceText(text -> text.match("%primary%").replacement(MiniMessage.miniMessage().deserialize(group.isPrimary() ? "<green>Yes" : "<red>No"))));
         player.sendMessage(messages.get("group.info.static")
                 .replaceText(text -> text.match("%static%").replacement(MiniMessage.miniMessage().deserialize((group.isStatic() ? "<green>Yes" : "<red>No")))));
     }
@@ -229,7 +229,7 @@ public class GroupSubCommand {
                 case "maxonlinecount" -> group.setMaxOnlineCount(Integer.parseInt(value));
                 case "maxplayers" -> group.setMaxPlayers(Integer.parseInt(value));
                 case "maxmemory" -> group.setMaxMemory(Integer.parseInt(value));
-                case "fallback" -> group.setFallback(Boolean.parseBoolean(value));
+                case "primary" -> group.setPrimary(Boolean.parseBoolean(value));
                 case "startpercentage" -> group.setStartPercentage(Integer.parseInt(value));
                 case "startpriority" -> group.setStartPriority(Integer.parseInt(value));
                 default -> {
@@ -267,7 +267,7 @@ public class GroupSubCommand {
         }
 
         if (sub.equals("edit") && args.length == 4) {
-            return List.of("minOnlineCount", "maxOnlineCount", "maxPlayers", "maxMemory", "fallback", "startPercentage", "startPriority", "addTemplate", "removeTemplate", "addJvmFlag")
+            return List.of("minOnlineCount", "maxOnlineCount", "maxPlayers", "maxMemory", "primary", "startPercentage", "startPriority", "addTemplate", "removeTemplate", "addJvmFlag")
                     .stream()
                     .filter(key -> key.startsWith(args[3].toLowerCase()))
                     .toList();

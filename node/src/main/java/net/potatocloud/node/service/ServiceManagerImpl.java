@@ -129,6 +129,7 @@ public class ServiceManagerImpl implements ServiceManager {
         server.generateBroadcast().broadcast(new ServiceAddPacket(
                 service.getName(),
                 service.getServiceId(),
+                service.getServiceUuid(),
                 service.getPort(),
                 service.getStartTimestamp(),
                 service.getGroup().getName(),

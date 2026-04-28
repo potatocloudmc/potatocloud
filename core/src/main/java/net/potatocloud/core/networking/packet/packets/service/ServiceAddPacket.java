@@ -9,6 +9,7 @@ import net.potatocloud.core.networking.packet.Packet;
 import net.potatocloud.core.networking.packet.PacketIds;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -17,6 +18,7 @@ public class ServiceAddPacket implements Packet {
 
     private String name;
     private int serviceId;
+    private UUID serviceUuid;
     private int port;
     private long startTimestamp;
     private String groupName;
@@ -34,6 +36,7 @@ public class ServiceAddPacket implements Packet {
     public void write(PacketBuffer buf) {
         buf.writeString(name);
         buf.writeInt(serviceId);
+        buf.writeUUID(serviceUuid);
         buf.writeInt(port);
         buf.writeLong(startTimestamp);
         buf.writeString(groupName);
@@ -47,6 +50,7 @@ public class ServiceAddPacket implements Packet {
     public void read(PacketBuffer buf) {
         name = buf.readString();
         serviceId = buf.readInt();
+        serviceUuid = buf.readUUID();
         port = buf.readInt();
         startTimestamp = buf.readLong();
         groupName = buf.readString();

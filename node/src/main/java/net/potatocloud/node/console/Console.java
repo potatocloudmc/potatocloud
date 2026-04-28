@@ -49,10 +49,6 @@ public class Console {
     public void start() {
         clearScreen();
 
-        if (config.isEnableBanner()) {
-            ConsoleBanner.display(this);
-        }
-
         consoleReader.start();
     }
 

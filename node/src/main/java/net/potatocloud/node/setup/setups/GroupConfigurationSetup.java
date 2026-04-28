@@ -74,7 +74,7 @@ public class GroupConfigurationSetup extends Setup {
                 .suggestions(() -> List.of("256", "512", "1024", "1536", "2048", "3072", "4096", "6144", "8192"))
                 .add();
 
-        bool("fallback", "Is this group a fallback?")
+        bool("primary", "Is this group a primary?")
                 .skipIf(answers -> {
                     final Platform platform = platformManager.getPlatform(answers.get("platform"));
                     return platform != null && platform.isProxy();
@@ -122,7 +122,7 @@ public class GroupConfigurationSetup extends Setup {
                 Integer.parseInt(answers.get("max_online_count")),
                 Integer.parseInt(answers.get("max_players")),
                 Integer.parseInt(answers.get("max_memory")),
-                Boolean.parseBoolean(answers.getOrDefault("fallback", "false")),
+                Boolean.parseBoolean(answers.getOrDefault("primary", "false")),
                 Boolean.parseBoolean(answers.get("static_servers")),
                 Integer.parseInt(answers.get("start_priority")),
                 Integer.parseInt(answers.get("start_percentage"))

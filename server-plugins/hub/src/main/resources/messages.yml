@@ -1,4 +1,4 @@
 prefix: "<dark_gray>» <gradient:#55FF55:#DAF3DA>potatocloud</gradient> <dark_gray>• <reset>"
-alreadyOnFallback: "<red>You are already connected to a fallback server"
-noFallbackFound: "<red>There are no fallback servers online"
+alreadyOnPrimary: "<red>You are already connected to a primary server"
+noPrimaryFound: "<red>There are no primary servers online"
 connect: "<gray>Connecting to <green>%service%<gray>..."

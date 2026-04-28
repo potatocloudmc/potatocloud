@@ -45,6 +45,18 @@ public interface ServiceManager {
     }
 
     /**
+     * Gets all services in the given group.
+     *
+     * @param group the group
+     * @return a list of all services in the given group
+     */
+    default List<Service> getAllServices(ServiceGroup group) {
+        return getAllServices().stream()
+                .filter(service -> service.getServiceGroup().equals(group))
+                .toList();
+    }
+
+    /**
      * Gets all online services in the given group.
      *
      * @param groupName the name of the group

@@ -14,6 +14,7 @@ import net.potatocloud.core.networking.packet.packets.service.ServiceExecuteComm
 import net.potatocloud.core.networking.packet.packets.service.StopServicePacket;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -22,6 +23,7 @@ public class ServiceImpl implements Service {
 
     private final String name;
     private final int serviceId;
+    private final UUID serviceUuid;
     private final int port;
     private final long startTimestamp;
     private final ServiceGroup group;
@@ -31,6 +33,11 @@ public class ServiceImpl implements Service {
     private int usedMemory;
 
     private final NetworkClient client = ConnectorAPI.getInstance().getClient();
+
+    @Override
+    public UUID getServiceUuid() {
+        return serviceUuid;
+    }
 
     @Override
     public ServiceGroup getServiceGroup() {

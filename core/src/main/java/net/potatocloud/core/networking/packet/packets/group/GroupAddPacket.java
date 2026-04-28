@@ -26,7 +26,7 @@ public class GroupAddPacket implements Packet {
     private int minOnlineCount;
     private int maxOnlineCount;
     private boolean isStatic;
-    private boolean fallback;
+    private boolean primary;
     private int startPriority;
     private int startPercentage;
     private List<String> serviceTemplates;
@@ -49,7 +49,7 @@ public class GroupAddPacket implements Packet {
         buf.writeInt(minOnlineCount);
         buf.writeInt(maxOnlineCount);
         buf.writeBoolean(isStatic);
-        buf.writeBoolean(fallback);
+        buf.writeBoolean(primary);
         buf.writeInt(startPriority);
         buf.writeInt(startPercentage);
         buf.writeStringList(serviceTemplates);
@@ -68,7 +68,7 @@ public class GroupAddPacket implements Packet {
         minOnlineCount = buf.readInt();
         maxOnlineCount = buf.readInt();
         isStatic = buf.readBoolean();
-        fallback = buf.readBoolean();
+        primary = buf.readBoolean();
         startPriority = buf.readInt();
         startPercentage = buf.readInt();
         serviceTemplates = buf.readStringList();

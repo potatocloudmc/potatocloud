@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Locale;
+
 @Getter
 @AllArgsConstructor
 public class Property<T> {
@@ -52,6 +54,10 @@ public class Property<T> {
     }
 
     public static Property<Boolean> ofBoolean(String name, boolean defaultValue) {
+        return new Property<>(name, defaultValue, defaultValue);
+    }
+
+    public static Property<Locale> ofLocale(String name, Locale defaultValue) {
         return new Property<>(name, defaultValue, defaultValue);
     }
 

@@ -19,6 +19,7 @@ public class RequestServicesListener implements PacketListener<RequestServicesPa
             connection.send(new ServiceAddPacket(
                     service.getName(),
                     service.getServiceId(),
+                    service.getServiceUuid(),
                     service.getPort(),
                     service.getStartTimestamp(),
                     service.getServiceGroup().getName(),

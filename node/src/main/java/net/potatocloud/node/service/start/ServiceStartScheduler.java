@@ -39,8 +39,8 @@ public class ServiceStartScheduler {
 
         this.rules = List.of(
                 new GroupMaxOnlineRule(),
-                new MaxServicesRule(config, serviceManager),
-                new MaxStartingRule(config, serviceManager),
+                new MaxServicesRule(),
+                new MaxStartingRule(),
                 new MaxMemoryRule(serviceManager)
         );
 

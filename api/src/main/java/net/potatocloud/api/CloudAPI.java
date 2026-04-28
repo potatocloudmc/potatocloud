@@ -9,6 +9,7 @@ import net.potatocloud.api.player.CloudPlayerManager;
 import net.potatocloud.api.property.PropertyHolder;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
+import net.potatocloud.api.translation.TranslationManager;
 import net.potatocloud.api.utils.version.Version;
 
 public abstract class CloudAPI {
@@ -22,7 +23,7 @@ public abstract class CloudAPI {
     /**
      * The current version.
      */
-    public static final Version VERSION = Version.of(1, 5, 1);
+    public static final Version VERSION = Version.of(1, 0, 0);
 
     public CloudAPI() {
         instance = this;
@@ -48,6 +49,13 @@ public abstract class CloudAPI {
      * @return the service manager
      */
     public abstract ServiceManager getServiceManager();
+
+    /**
+     * Gets the translation manager.
+     *
+     * @return the translation manager
+     */
+    public abstract TranslationManager getTranslationManager();
 
     /**
      * Gets the platform manager.

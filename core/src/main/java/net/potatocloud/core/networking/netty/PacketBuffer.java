@@ -9,15 +9,20 @@ import net.potatocloud.api.platform.impl.PlatformVersionImpl;
 import net.potatocloud.api.property.Property;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RequiredArgsConstructor
 public class PacketBuffer {
 
     private final ByteBuf buf;
+
+    public void writeLocale(Locale locale) {
+        writeString(locale.toLanguageTag());
+    }
+
+    public Locale readLocale() {
+        return Locale.forLanguageTag(readString());
+    }
 
     public void writeString(String string) {
         if (string == null) {
@@ -215,5 +220,14 @@ public class PacketBuffer {
         }
 
         return platform;
+    }
+
+    public void writeUUID(UUID uuid) {
+        buf.writeLong(uuid.getMostSignificantBits());
+        buf.writeLong(uuid.getLeastSignificantBits());
+    }
+
+    public UUID readUUID() {
+        return new UUID(buf.readLong(), buf.readLong());
     }
 }

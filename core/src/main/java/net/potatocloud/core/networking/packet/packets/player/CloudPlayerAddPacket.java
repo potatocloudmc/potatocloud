@@ -30,7 +30,7 @@ public class CloudPlayerAddPacket implements Packet {
     @Override
     public void write(PacketBuffer buf) {
         buf.writeString(username);
-        buf.writeString(uniqueId.toString());
+        buf.writeUUID(uniqueId);
         buf.writeString(connectedProxyName);
         buf.writeString(connectedServiceName);
         buf.writePropertyMap(propertyMap);
@@ -39,7 +39,7 @@ public class CloudPlayerAddPacket implements Packet {
     @Override
     public void read(PacketBuffer buf) {
         username = buf.readString();
-        uniqueId = UUID.fromString(buf.readString());
+        uniqueId = buf.readUUID();
         connectedProxyName = buf.readString();
         connectedServiceName = buf.readString();
         propertyMap = buf.readPropertyMap();

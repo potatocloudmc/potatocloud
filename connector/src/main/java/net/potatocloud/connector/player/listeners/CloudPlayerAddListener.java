@@ -7,6 +7,8 @@ import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.packet.PacketListener;
 import net.potatocloud.core.networking.packet.packets.player.CloudPlayerAddPacket;
 
+import java.util.Locale;
+
 @RequiredArgsConstructor
 public class CloudPlayerAddListener implements PacketListener<CloudPlayerAddPacket> {
 
@@ -14,6 +16,6 @@ public class CloudPlayerAddListener implements PacketListener<CloudPlayerAddPack
 
     @Override
     public void onPacket(NetworkConnection connection, CloudPlayerAddPacket packet) {
-        playerManager.registerPlayerLocal(new CloudPlayerImpl(packet.getUsername(), packet.getUniqueId(), packet.getConnectedProxyName(), packet.getConnectedServiceName(), packet.getPropertyMap()));
+        playerManager.registerPlayerLocal(new CloudPlayerImpl(packet.getUsername(),"", packet.getUniqueId(), /*packet.getLocale()*/Locale.ENGLISH, packet.getConnectedProxyName(), packet.getConnectedServiceName(), packet.getPropertyMap()));
     }
 }

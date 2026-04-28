@@ -29,26 +29,26 @@ public class HubCommand implements SimpleCommand {
         }
 
         final Service playerService = CloudAPI.getInstance().getPlayerManager().getCloudPlayer(player.getUniqueId()).getConnectedService();
-        if (playerService.getServiceGroup().isFallback()) {
-            player.sendMessage(messagesConfig.get("alreadyOnFallback"));
+        if (playerService.getServiceGroup().isPrimary()) {
+            player.sendMessage(messagesConfig.get("alreadyOnPrimary"));
             return;
         }
 
-        final Optional<RegisteredServer> fallback = getBestFallbackServer();
-        if (fallback.isEmpty()) {
-            player.sendMessage(messagesConfig.get("noFallbackFound"));
+        final Optional<RegisteredServer> primary = getBestPrimaryServer();
+        if (primary.isEmpty()) {
+            player.sendMessage(messagesConfig.get("noPrimaryFound"));
             return;
         }
 
-        final RegisteredServer registeredServer = fallback.get();
+        final RegisteredServer registeredServer = primary.get();
         player.createConnectionRequest(registeredServer).fireAndForget();
         player.sendMessage(messagesConfig.get("connect")
                 .replaceText(text -> text.match("%service%").replacement(registeredServer.getServerInfo().getName())));
     }
 
-    private Optional<RegisteredServer> getBestFallbackServer() {
+    private Optional<RegisteredServer> getBestPrimaryServer() {
         return CloudAPI.getInstance().getServiceManager().getAllServices().stream()
-                .filter(service -> service.getServiceGroup().isFallback())
+                .filter(service -> service.getServiceGroup().isPrimary())
                 .filter(service -> service.getStatus() == ServiceStatus.RUNNING)
                 .sorted(Comparator.comparingInt(Service::getOnlinePlayerCount))
                 .map(service -> server.getServer(service.getName()))

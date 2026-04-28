@@ -22,7 +22,7 @@ To install potatocloud, follow these steps:
 4. **Run the cloud using the start script in the folder**:
     - Windows: `start.bat`
     - Linux/macOS: `start.sh`
-5. **Create a lobby and a proxy group** with the command `group create` (don’t forget to say yes to the fallback question when creating a lobby)
+5. **Create a lobby and a proxy group** with the command `group create` (don’t forget to say yes to the primary question when creating a lobby)
 6. That’s it! You should now be able to join your server
 
 ## Supported Platforms (Server Versions)
@@ -40,7 +40,7 @@ These plugins are separate jars you can drop into your proxy or servers:
 - **Cloud Command** (Velocity) - Adds a `/cloud` command that allows you to manage many things ingame
 - **Notify** (Velocity) - Sends notifications when servers start and stop
 - **Proxy** (Velocity) - Adds MOTD, Tablist (with LabyMod support), Maintenance Mode
-- **Hub Command** (Velocity) - Command for returning to a fallback server 
+- **Hub Command** (Velocity) - Command for returning to a primary server 
 - **LabyMod** (Bukkit / Paper) - Set LabyMod game mode on join to current server
 
 > All plugins are available in the [potatocloud](https://github.com/potatocloudmc/potatocloud/releases) zip file.

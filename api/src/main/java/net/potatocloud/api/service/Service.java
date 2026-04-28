@@ -7,6 +7,7 @@ import net.potatocloud.api.property.PropertyHolder;
 import net.potatocloud.api.utils.TimeFormatter;
 
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public interface Service extends PropertyHolder {
@@ -24,6 +25,13 @@ public interface Service extends PropertyHolder {
      * @return the id of the service
      */
     int getServiceId();
+
+    /**
+     * Gets the uuid of the service.
+     *
+     * @return the uuid of the service
+     */
+    UUID getServiceUuid();
 
     /**
      * Gets whether the service is online or not.

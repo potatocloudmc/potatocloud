@@ -133,18 +133,18 @@ public interface ServiceGroup extends PropertyHolder {
     void setMaxMemory(int maxMemory);
 
     /**
-     * Gets whether the group is a fallback.
+     * Gets whether the group is a primary group.
      *
-     * @return {@code true} if the group is a fallback, otherwise {@code false}
+     * @return {@code true} if the group is a primary group, otherwise {@code false}
      */
-    boolean isFallback();
+    boolean isPrimary();
 
     /**
-     * Sets whether the group is a fallback.
+     * Sets whether the group is a primary group.
      *
-     * @param fallback {@code true} to make the group a fallback, otherwise {@code false}
+     * @param primary {@code true} to make the group a primary group, otherwise {@code false}
      */
-    void setFallback(boolean fallback);
+    void setPrimary(boolean primary);
 
     /**
      * Gets whether the group is static.

@@ -25,7 +25,7 @@ public class GroupUpdateListener implements PacketListener<GroupUpdatePacket> {
         group.setMaxOnlineCount(packet.getMaxOnlineCount());
         group.setMaxPlayers(packet.getMaxPlayers());
         group.setMaxMemory(packet.getMaxMemory());
-        group.setFallback(packet.isFallback());
+        group.setPrimary(packet.isPrimary());
         group.setStartPriority(packet.getStartPriority());
         group.setStartPercentage(packet.getStartPercentage());
 

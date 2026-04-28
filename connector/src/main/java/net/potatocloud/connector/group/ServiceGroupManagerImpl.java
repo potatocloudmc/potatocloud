@@ -54,7 +54,7 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
     }
 
     @Override
-    public void createServiceGroup(String name, String platformName, String platformVersionName, int minOnlineCount, int maxOnlineCount, int maxPlayers, int maxMemory, boolean fallback, boolean isStatic, int startPriority, int startPercentage, String javaCommand, List<String> customJvmFlags, Map<String, Property<?>> propertyMap) {
+    public void createServiceGroup(String name, String platformName, String platformVersionName, int minOnlineCount, int maxOnlineCount, int maxPlayers, int maxMemory, boolean primary, boolean isStatic, int startPriority, int startPercentage, String javaCommand, List<String> customJvmFlags, Map<String, Property<?>> propertyMap) {
         final ServiceGroupImpl group = new ServiceGroupImpl(
                 name,
                 platformName,
@@ -66,7 +66,7 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
                 minOnlineCount,
                 maxOnlineCount,
                 isStatic,
-                fallback,
+                primary,
                 startPriority,
                 startPercentage,
                 propertyMap
@@ -83,7 +83,7 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
                 minOnlineCount,
                 maxOnlineCount,
                 isStatic,
-                fallback,
+                primary,
                 startPriority,
                 startPercentage,
                 group.getServiceTemplates(),
@@ -117,7 +117,7 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
                 group.getMaxMemory(),
                 group.getMinOnlineCount(),
                 group.getMaxOnlineCount(),
-                group.isFallback(),
+                group.isPrimary(),
                 group.getStartPriority(),
                 group.getStartPercentage(),
                 group.getServiceTemplates(),

@@ -22,7 +22,7 @@ public class GroupUpdatePacket implements Packet {
     private int maxMemory;
     private int minOnlineCount;
     private int maxOnlineCount;
-    private boolean fallback;
+    private boolean primary;
     private int startPriority;
     private int startPercentage;
     private List<String> serviceTemplates;
@@ -41,7 +41,7 @@ public class GroupUpdatePacket implements Packet {
         buf.writeInt(maxOnlineCount);
         buf.writeInt(maxPlayers);
         buf.writeInt(maxMemory);
-        buf.writeBoolean(fallback);
+        buf.writeBoolean(primary);
         buf.writeInt(startPriority);
         buf.writeInt(startPercentage);
         buf.writeStringList(serviceTemplates);
@@ -56,7 +56,7 @@ public class GroupUpdatePacket implements Packet {
         maxOnlineCount = buf.readInt();
         maxPlayers = buf.readInt();
         maxMemory = buf.readInt();
-        fallback = buf.readBoolean();
+        primary = buf.readBoolean();
         startPriority = buf.readInt();
         startPercentage = buf.readInt();
         serviceTemplates = buf.readStringList();

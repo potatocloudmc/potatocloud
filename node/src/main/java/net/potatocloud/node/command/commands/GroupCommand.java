@@ -73,7 +73,7 @@ public class GroupCommand extends Command {
                     logger.info("&8» &7Online Players: &a" + node.getPlayerManager().getOnlinePlayersByGroup(group).size());
                     logger.info("&8» &7Max Players: &a" + group.getMaxPlayers());
                     logger.info("&8» &7Max Memory: &a" + group.getMaxMemory() + "MB");
-                    logger.info("&8» &7Fallback: " + (group.isFallback() ? "&aYes" : "&cNo"));
+                    logger.info("&8» &7Primary: " + (group.isPrimary() ? "&aYes" : "&cNo"));
                     logger.info("&8» &7Static: " + (group.isStatic() ? "&aYes" : "&cNo"));
                 });
 
@@ -192,7 +192,7 @@ public class GroupCommand extends Command {
                             "maxOnlineCount",
                             "maxPlayers",
                             "maxMemory",
-                            "fallback",
+                            "primary",
                             "startPercentage",
                             "startPriority"
                     );
@@ -238,7 +238,7 @@ public class GroupCommand extends Command {
                             case "maxonlinecount" -> group.setMaxOnlineCount(Integer.parseInt(value));
                             case "maxplayers" -> group.setMaxPlayers(Integer.parseInt(value));
                             case "maxmemory" -> group.setMaxMemory(Integer.parseInt(value));
-                            case "fallback" -> group.setFallback(Boolean.parseBoolean(value));
+                            case "primary" -> group.setPrimary(Boolean.parseBoolean(value));
                             case "startpercentage" -> group.setStartPercentage(Integer.parseInt(value));
                             case "startpriority" -> group.setStartPriority(Integer.parseInt(value));
 

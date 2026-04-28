@@ -16,9 +16,12 @@ import net.potatocloud.core.networking.packet.packets.property.PropertyRemovePac
 import net.potatocloud.core.networking.packet.packets.property.PropertyUpdatePacket;
 import net.potatocloud.core.networking.packet.packets.property.RequestPropertiesPacket;
 import net.potatocloud.core.networking.packet.packets.service.*;
+import net.potatocloud.core.networking.packet.packets.translation.RequestTranslationPacket;
+import net.potatocloud.core.networking.packet.packets.translation.TranslationAddPacket;
+import net.potatocloud.core.networking.packet.packets.translation.TranslationRemovePacket;
+import net.potatocloud.core.networking.packet.packets.translation.TranslationUpdatePacket;
 
 public class PacketRegistry {
-
     public static void registerPackets(PacketManager manager) {
         manager.register(PacketIds.SERVICE_ADD, ServiceAddPacket::new);
         manager.register(PacketIds.SERVICE_REMOVE, ServiceRemovePacket::new);
@@ -55,5 +58,10 @@ public class PacketRegistry {
         manager.register(PacketIds.PROPERTY_UPDATE, PropertyUpdatePacket::new);
 
         manager.register(PacketIds.LOG_MESSAGE, LogMessagePacket::new);
+
+        manager.register(PacketIds.TRANSLATION_ADD, TranslationAddPacket::new);
+        manager.register(PacketIds.TRANSLATION_REMOVE, TranslationRemovePacket::new);
+        manager.register(PacketIds.TRANSLATION_UPDATE, TranslationUpdatePacket::new);
+        manager.register(PacketIds.REQUEST_TRANSLATION, RequestTranslationPacket::new);
     }
 }

@@ -27,7 +27,7 @@ public class ServiceGroupImpl implements ServiceGroup {
     private int minOnlineCount;
     private int maxOnlineCount;
     private boolean isStatic;
-    private boolean fallback;
+    private boolean primary;
     private int startPriority;
     private int startPercentage;
     private final List<String> serviceTemplates;
@@ -44,7 +44,7 @@ public class ServiceGroupImpl implements ServiceGroup {
             int minOnlineCount,
             int maxOnlineCount,
             boolean isStatic,
-            boolean fallback,
+            boolean primary,
             int startPriority,
             int startPercentage,
             Map<String, Property<?>> propertyMap
@@ -59,7 +59,7 @@ public class ServiceGroupImpl implements ServiceGroup {
         this.minOnlineCount = minOnlineCount;
         this.maxOnlineCount = maxOnlineCount;
         this.isStatic = isStatic;
-        this.fallback = fallback;
+        this.primary = primary;
         this.startPriority = startPriority;
         this.startPercentage = startPercentage;
         this.serviceTemplates = new ArrayList<>();

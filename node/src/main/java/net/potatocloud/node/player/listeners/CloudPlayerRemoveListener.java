@@ -27,7 +27,7 @@ public class CloudPlayerRemoveListener implements PacketListener<CloudPlayerRemo
                 .filter(networkConnection -> !networkConnection.equals(connection))
                 .forEach(networkConnection -> networkConnection.send(packet));
 
-        if (node.getConfig().isLogPlayerConnections() && !node.isStopping()) {
+        if (node.getConfig().isDebug() && !node.isStopping()) {
             node.getLogger().info("Player &a" + player.getUsername()
                     + " &7disconnected &7from the network &8[&7UUID&8: &a" + player.getUniqueId() + "&8]");
         }

@@ -3,6 +3,7 @@ package net.potatocloud.plugin.platform.spigot;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.connector.ConnectorAPI;
 import net.potatocloud.connector.utils.PlatformPlugin;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -14,6 +15,16 @@ public class SpigotPlugin extends JavaPlugin implements Listener, PlatformPlugin
     private ConnectorAPI api;
     private Service currentService;
 
+    public ConnectorAPI getApi() {
+        return api;
+    }
+
+    private static SpigotPlugin instance;
+
+    public static SpigotPlugin getInstance() {
+        return instance;
+    }
+
     @Override
     public void onLoad() {
         api = new ConnectorAPI();
@@ -21,6 +32,7 @@ public class SpigotPlugin extends JavaPlugin implements Listener, PlatformPlugin
 
     @Override
     public void onEnable() {
+        instance = this;
         initCurrentService();
         getServer().getPluginManager().registerEvents(this, this);
     }
@@ -28,6 +40,12 @@ public class SpigotPlugin extends JavaPlugin implements Listener, PlatformPlugin
     @Override
     public void onServiceReady(Service service) {
         currentService = service;
+
+        CoreAPI.getInstance().requestTranslations("debug");
+        CoreAPI.getInstance().requestTranslations("group");
+        CoreAPI.getInstance().getHookManager().getHooks().forEach(iCloudHook -> {
+            iCloudHook.example();
+        });
     }
 
     @EventHandler

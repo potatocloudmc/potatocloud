@@ -33,7 +33,7 @@ public final class ServiceGroupStorage {
         config.set("max-online-count", group.getMaxOnlineCount());
 
         config.set("static", group.isStatic());
-        config.set("fallback", group.isFallback());
+        config.set("primary", group.isPrimary());
         config.set("start-priority", group.getStartPriority());
         config.set("start-percentage", group.getStartPercentage());
 
@@ -72,7 +72,7 @@ public final class ServiceGroupStorage {
                 config.getInt("min-online-count"),
                 config.getInt("max-online-count"),
                 config.getBoolean("static"),
-                config.getBoolean("fallback"),
+                config.getBoolean("primary"),
                 config.getInt("start-priority"),
                 config.getInt("start-percentage"),
                 config.getStringList("templates"),

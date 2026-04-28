@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.player.CloudPlayerManager;
+import net.potatocloud.api.property.Property;
 import net.potatocloud.connector.event.ConnectPlayerWithServiceEvent;
 import net.potatocloud.connector.player.listeners.CloudPlayerAddListener;
 import net.potatocloud.connector.player.listeners.CloudPlayerRemoveListener;
@@ -37,6 +38,11 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
             return;
         }
         registerPlayerLocal(player);
+
+        if (!player.getNickname().isEmpty()) player.getPropertyMap().put("nickname", Property.ofString("nickname", player.getNickname()));
+        player.getPropertyMap().put("locale", Property.ofLocale("locale", player.getLocale()));
+        player.getPropertyMap().put("sessionId", Property.ofString("sessionId", player.getSessionId().toString()));
+        player.getPropertyMap().put("sessionStartTime", Property.ofString("sessionStartTime", player.getSessionStartTime().toString()));
 
         // The service of the player is null here because the player has just connected to the proxy and has not joined a service yet
         // The service will be set later by the proxy plugin once the player successfully connects to a service

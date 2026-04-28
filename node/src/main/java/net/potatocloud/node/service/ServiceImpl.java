@@ -44,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 public class ServiceImpl implements Service {
 
     private final int serviceId;
+    private final UUID serviceUUID = UUID.randomUUID();
     private final int port;
     private final ServiceGroup group;
     private final NodeConfig config;
@@ -125,8 +126,13 @@ public class ServiceImpl implements Service {
     }
 
     @Override
+    public UUID getServiceUuid() {
+        return serviceUUID;
+    }
+
+    @Override
     public String getName() {
-        return group.getName() + config.getSplitter() + serviceId;
+        return group.getName() + "-" + serviceId;
     }
 
     @Override
@@ -278,6 +284,8 @@ public class ServiceImpl implements Service {
     public void addLog(String log) {
         logs.add(log);
         screen.addLog(log);
+
+        console.println(log);
 
         if (screenManager.getCurrentScreen().name().equals(getName())) {
             console.println(log);

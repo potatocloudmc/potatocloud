@@ -4,6 +4,7 @@ import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.property.PropertyHolder;
 import net.potatocloud.api.service.Service;
 
+import java.util.Locale;
 import java.util.UUID;
 
 public interface CloudPlayer extends PropertyHolder {
@@ -16,11 +17,39 @@ public interface CloudPlayer extends PropertyHolder {
     String getUsername();
 
     /**
+     * Gets the nickname of the player.
+     *
+     * @return the nickname of the player
+     */
+    String getNickname();
+
+    /**
      * Gets the unique id of the player.
      *
      * @return the unique id of the player
      */
     UUID getUniqueId();
+
+    /**
+     * Gets the locale of the player.
+     *
+     * @return the locale of the player
+     */
+    Locale getLocale();
+
+    /**
+     * Gets the session start unix timestamp.
+     *
+     * @return the unix timestamp of the session start
+     */
+    Long getSessionStartTime();
+
+    /**
+     * Gets the session id of the player.
+     *
+     * @return random session id that belongs to the player
+     */
+    UUID getSessionId();
 
     /**
      * Gets the connected proxy name of the player.

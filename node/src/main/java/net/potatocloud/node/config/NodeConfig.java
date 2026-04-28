@@ -16,16 +16,11 @@ public class NodeConfig {
     private final YamlFile config;
 
     private String prompt;
-    private boolean enableBanner;
     private int primaryColorCode;
-    private boolean logPlayerConnections;
 
     private int serviceStartPort;
     private int proxyStartPort;
-    private String splitter;
     private boolean platformAutoUpdate;
-    private int maxServices;
-    private int maxStartingServices;
     private int killTimeout;
     private boolean memoryCheckEnabled;
     private int maxMemory;
@@ -43,7 +38,6 @@ public class NodeConfig {
     private String nodeHost;
     private int nodePort;
 
-    private boolean disableUpdateChecker;
     private boolean debug;
 
     public NodeConfig() {
@@ -66,16 +60,11 @@ public class NodeConfig {
 
     public void load() {
         prompt = config.getString("console.prompt");
-        enableBanner = config.getBoolean("console.enable-banner");
         primaryColorCode = config.getInt("console.primary-color");
-        logPlayerConnections = config.getBoolean("console.log-player-connections");
 
         serviceStartPort = config.getInt("service.service-start-port");
         proxyStartPort = config.getInt("service.proxy-start-port");
-        splitter = config.getString("service.splitter");
         platformAutoUpdate = config.getBoolean("service.auto-update-platforms");
-        maxServices = config.getInt("service.max-services");
-        maxStartingServices = config.getInt("service.max-starting-services");
         killTimeout = config.getInt("service.kill-timeout");
         memoryCheckEnabled = config.getBoolean("service.memory-check-enabled");
         maxMemory = config.getInt("service.max-memory");
@@ -93,7 +82,6 @@ public class NodeConfig {
         nodeHost = config.getString("node.host");
         nodePort = config.getInt("node.port");
 
-        disableUpdateChecker = config.getBoolean("disable-update-checker");
         debug = config.getBoolean("debug");
     }
 

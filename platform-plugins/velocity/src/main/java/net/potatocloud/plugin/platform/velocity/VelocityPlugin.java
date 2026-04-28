@@ -107,13 +107,17 @@ public class VelocityPlugin implements PlatformPlugin {
 
     @Subscribe
     public void onPlayerChooseInitialServer(PlayerChooseInitialServerEvent event) {
-        final Optional<RegisteredServer> bestFallbackServer = server.getServer(getBestFallback().getName());
-        if (bestFallbackServer.isEmpty()) {
+        Service s = getBestPrimary();
+        if (s == null) {
+            event.getPlayer().disconnect(MiniMessage.miniMessage().deserialize("<red>No backend server is available.\nPlease try again later."));
             return;
         }
-        event.setInitialServer(bestFallbackServer.get());
+        final Optional<RegisteredServer> bestPrimaryServer = server.getServer(s.getName());
+        if (bestPrimaryServer.isEmpty()) {
+            return;
+        }
+        event.setInitialServer(bestPrimaryServer.get());
     }
-
 
     @Subscribe
     public void onProxyPing(ProxyPingEvent event) {
@@ -141,17 +145,14 @@ public class VelocityPlugin implements PlatformPlugin {
         }
 
         final CloudPlayerManagerImpl playerManager = (CloudPlayerManagerImpl) api.getPlayerManager();
-        playerManager.registerPlayer(
-                new CloudPlayerImpl(event.getPlayer().getUsername(), event.getPlayer().getUniqueId(), currentService.getName()));
-
+        playerManager.registerPlayer(new CloudPlayerImpl(event.getPlayer().getUsername(), "", event.getPlayer().getUniqueId(), event.getPlayer().getEffectiveLocale(), currentService.getName()));
         api.getEventManager().call(new CloudPlayerJoinEvent(event.getPlayer().getUniqueId(), event.getPlayer().getUsername()));
     }
 
     @Subscribe
     public void onPostLogin(PostLoginEvent event) {
-        if (event.getPlayer().getUniqueId().equals(UUID.fromString("74eb9589-198f-465b-8d59-c452436ca99b"))
-                || event.getPlayer().getUniqueId().equals(UUID.fromString("b44abeab-480e-438c-8109-e870feea3121"))) {
-            event.getPlayer().sendMessage(MiniMessage.miniMessage().deserialize("<green>This network uses potatocloud v" + CloudAPI.VERSION));
+        if (event.getPlayer().getUniqueId().equals(UUID.fromString("52a67741-5517-4553-9245-94455f209988"))) {
+            event.getPlayer().sendMessage(MiniMessage.miniMessage().deserialize("<green>This network uses v" + CloudAPI.VERSION));
         }
     }
 
@@ -176,21 +177,21 @@ public class VelocityPlugin implements PlatformPlugin {
     @Subscribe
     public void onKicked(KickedFromServerEvent event) {
         final RegisteredServer kickedFrom = event.getServer();
-        final Optional<RegisteredServer> fallback = server.getServer(getBestFallback().getName());
-        if (fallback.isEmpty()) {
+        final Optional<RegisteredServer> primary = server.getServer(getBestPrimary().getName());
+        if (primary.isEmpty()) {
             return;
         }
 
-        if (kickedFrom.getServerInfo().getName().equalsIgnoreCase(fallback.get().getServerInfo().getName())) {
+        if (kickedFrom.getServerInfo().getName().equalsIgnoreCase(primary.get().getServerInfo().getName())) {
             return;
         }
 
-        event.setResult(KickedFromServerEvent.RedirectPlayer.create(fallback.get()));
+        event.setResult(KickedFromServerEvent.RedirectPlayer.create(primary.get()));
     }
 
-    private Service getBestFallback() {
+    private Service getBestPrimary() {
         return CloudAPI.getInstance().getServiceManager().getAllServices().stream()
-                .filter(service -> service.getServiceGroup().isFallback())
+                .filter(service -> service.getServiceGroup().isPrimary())
                 .filter(service -> service.getStatus() == ServiceStatus.RUNNING)
                 .min(Comparator.comparingInt(Service::getOnlinePlayerCount))
                 .orElse(null);

@@ -4,6 +4,8 @@ shadow = "9.3.0"
 
 lombok = "1.18.42"
 gson = "2.13.2"
+hikaricp = "7.0.2"
+mariadb = "3.5.8"
 jline = "3.30.6"
 netty = "4.2.9.Final"
 simpleyaml = "1.8.4"
@@ -19,6 +21,8 @@ minimessage = "4.25.0"
 [libraries]
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
+mariadb = { module = "org.mariadb.jdbc:mariadb-java-client", version.ref = "mariadb" }
 jline = { module = "org.jline:jline", version.ref = "jline" }
 netty-handler = { module = "io.netty:netty-handler", version.ref = "netty" }
 netty-epoll = { module = "io.netty:netty-transport-native-epoll", version.ref = "netty" }

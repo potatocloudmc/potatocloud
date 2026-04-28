@@ -27,7 +27,7 @@ public class RequestGroupsListener implements PacketListener<RequestGroupsPacket
                     group.getMinOnlineCount(),
                     group.getMaxOnlineCount(),
                     group.isStatic(),
-                    group.isFallback(),
+                    group.isPrimary(),
                     group.getStartPriority(),
                     group.getStartPercentage(),
                     group.getServiceTemplates(),
