@@ -1,7 +1,5 @@
 package net.potatocloud.connector.translation;
 
-import lombok.Getter;
-import net.potatocloud.api.service.Service;
 import net.potatocloud.api.translation.Translation;
 import net.potatocloud.api.translation.TranslationManager;
 import net.potatocloud.connector.translation.listeners.TranslationAddListener;
@@ -30,7 +28,7 @@ public class TranslationManagerImpl implements TranslationManager {
         client.on(TranslationAddPacket.class, new TranslationAddListener(this));
         client.on(TranslationRemovePacket.class, new TranslationRemoveListener(this));
 
-        client.on(TranslationUpdatePacket.class, new TranslationUpdateListener(this));;
+        client.on(TranslationUpdatePacket.class, new TranslationUpdateListener(this));
     }
 
     public void addTranslation(Translation translation) {

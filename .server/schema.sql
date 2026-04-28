@@ -20,19 +20,19 @@ CREATE TABLE IF NOT EXISTS `potato_player_settings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `potato_player_relations` (
-    `uuid_a` CHAR(36) NOT NULL,
-    `uuid_b` CHAR(36) NOT NULL,
+    `player_a` CHAR(36) NOT NULL,
+    `player_b` CHAR(36) NOT NULL,
     `relation` TINYINT NOT NULL,
     `last_changed` bigint(20) NOT NULL,
-    PRIMARY KEY (`uuid_a`, `uuid_b`),
-    KEY `idx_uuid_a` (`uuid_a`),
-    KEY `idx_uuid_b` (`uuid_b`)
+    PRIMARY KEY (`player_a`, `player_b`),
+    KEY `idx_player_a` (`player_a`),
+    KEY `idx_player_b` (`player_b`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `potato_requests` (
-    `uuid_from` CHAR(36) NOT NULL,
-    `uuid_to` CHAR(36) NOT NULL,
+    `player_from` CHAR(36) NOT NULL,
+    `player_to` CHAR(36) NOT NULL,
     `created_at` bigint(20) NOT NULL,
-    PRIMARY KEY (`uuid_from`, `uuid_to`),
-    KEY `idx_to` (`uuid_to`)
+    PRIMARY KEY (`player_from`, `player_to`),
+    KEY `idx_to` (`player_to`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -1,17 +1,8 @@
 [
   {
-    "debug.test.example.value": "moino",
-    "generic.title.title.timesup": "<green>Die Zeit</green>",
-    "generic.title.subtitle.timesup": "ist abgelaufen"
-  },
-  {
-    "upstack.item.shovel.name": "Knockback Schaufel",
-    "upstack.subtitle.targetheight": "<color:#ff8e8e>Erreiche Höhe <gray>{0}</gray></color>",
-    "upstack.item.firecharge.description": "Rechtsklicke zum schießen",
-    "upstack.item.tnt.description": "Rechtsklicke zum schießen",
-    "upstack.item.tnt.name": "Schießbares TNT",
-    "upstack.bossbar.wincountdown": "<white>{0} hat Höhe {1} erreicht</white>",
-    "upstack.subtitle.win": "<green>hat gewonnen</green>"
+    "debug.test.example.value": "example",
+    "generic.title.title.timesup": "<green>example</green>",
+    "generic.title.subtitle.timesup": ""
   },
   {
     "group.name": "example",

@@ -12,7 +12,7 @@ import net.potatocloud.core.networking.packet.PacketIds;
 public class RequestTranslationPacket implements Packet {
 
     @Getter
-    private String translationParent;
+    private String translationGroup;
 
     @Override
     public int getId() {
@@ -21,11 +21,11 @@ public class RequestTranslationPacket implements Packet {
 
     @Override
     public void write(PacketBuffer buf) {
-        buf.writeString(translationParent);
+        buf.writeString(translationGroup);
     }
 
     @Override
     public void read(PacketBuffer buf) {
-        translationParent = buf.readString();
+        translationGroup = buf.readString();
     }
 }

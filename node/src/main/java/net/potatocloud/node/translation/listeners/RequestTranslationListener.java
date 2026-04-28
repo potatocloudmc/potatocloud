@@ -15,7 +15,7 @@ public class RequestTranslationListener implements PacketListener<RequestTransla
 
     @Override
     public void onPacket(NetworkConnection connection, RequestTranslationPacket packet) {
-        for (Translation translation : translationManager.getAllTranslations().stream().filter(translation -> translation.getGroup().equals(packet.getTranslationParent())).toList()) {
+        for (Translation translation : translationManager.getAllTranslations().stream().filter(translation -> translation.getGroup().equals(packet.getTranslationGroup())).toList()) {
             connection.send(new TranslationAddPacket(
                     translation.getGroup(),
                     translation.getLocale(),

@@ -1,7 +1,6 @@
 package net.potatocloud.node;
 
 import com.google.gson.Gson;
-import com.zaxxer.hikari.HikariConfig;
 import lombok.Getter;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.event.EventManager;
@@ -123,9 +122,7 @@ public class Node extends CloudAPI {
 
         // TODO: Maybe move this somewhere else
         // Handle logs from Connector
-        server.on(LogMessagePacket.class, (connection, packet) -> {
-            logger.log(Logger.Level.valueOf(packet.getLevel()), packet.getMessage());
-        });
+        server.on(LogMessagePacket.class, (_, packet) -> logger.log(Logger.Level.valueOf(packet.getLevel()), packet.getMessage()));
 
         translationManager = new TranslationManagerImpl(server);
         eventManager = new ServerEventManager(server);
