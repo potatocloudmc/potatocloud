@@ -241,7 +241,7 @@ public class ServiceManagerImpl implements ServiceManager {
         service.state(ServiceState.STARTING);
         runtime.start(service);
 
-        final String nodeInfo = config.cluster().enabled() ? " on Node &a" + clusterManager.localNode().name() + "&7" : "";
+        final String nodeInfo = config.cluster().enabled() ? " on node &a" + clusterManager.localNode().name() + "&7" : "";
         logger.info("Service &a" + service.name() + "&7 is starting" + nodeInfo
                 + " &8[&7Port&8: &a" + service.port()
                 + "&8, &7Group&8: &a" + groupName + "&8]");
