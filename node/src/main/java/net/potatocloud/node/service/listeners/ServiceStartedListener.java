@@ -1,6 +1,5 @@
 package net.potatocloud.node.service.listeners;
 
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.api.event.EventBus;
 import net.potatocloud.api.event.events.service.ServiceStartedEvent;
@@ -15,9 +14,6 @@ import net.potatocloud.network.packet.PacketListener;
 import net.potatocloud.network.packet.packets.service.ServiceStartedPacket;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
-import net.potatocloud.node.service.NodeService;
-import net.potatocloud.node.service.runtime.ServiceMemoryUpdateTask;
-import net.potatocloud.node.service.runtime.ServiceProcessChecker;
 
 import java.util.Optional;
 
@@ -62,13 +58,6 @@ public class ServiceStartedListener implements PacketListener<ServiceStartedPack
             server.broadcast().connectors().send(new ServiceStartedPacket(packet.serviceName()));
 
             eventBus.publish(new ServiceStartedEvent(packet.serviceName()));
-
-            if (clusterManager.isLocal(node.get().name())) {
-                if (service instanceof NodeService nodeService) {
-                    nodeService.setProcessChecker(new ServiceProcessChecker(nodeService));
-                }
-                new ServiceMemoryUpdateTask(service, server, clusterManager);
-            }
         });
     }
 }

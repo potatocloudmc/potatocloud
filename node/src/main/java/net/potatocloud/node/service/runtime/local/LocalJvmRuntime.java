@@ -5,12 +5,13 @@ import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformVersion;
 import net.potatocloud.api.platform.PrepareStep;
+import net.potatocloud.api.service.Service;
+import net.potatocloud.common.FileUtils;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.platform.DownloadManager;
 import net.potatocloud.node.platform.PlatformPrepareSteps;
 import net.potatocloud.node.platform.PlatformUtils;
 import net.potatocloud.node.platform.cache.CacheManager;
-import net.potatocloud.node.service.NodeService;
 import net.potatocloud.node.service.runtime.ServiceRuntime;
 import net.potatocloud.node.template.TemplateManager;
 import oshi.ffm.SystemInfo;
@@ -22,7 +23,10 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 public final class LocalJvmRuntime implements ServiceRuntime {
 
@@ -33,6 +37,7 @@ public final class LocalJvmRuntime implements ServiceRuntime {
     private final DownloadManager downloadManager;
     private final CacheManager cacheManager;
 
+    private Path directory;
     private Process process;
     private OSProcess osProcess;
     private BufferedWriter processWriter;
@@ -55,8 +60,8 @@ public final class LocalJvmRuntime implements ServiceRuntime {
     }
 
     @Override
-    public void prepare(NodeService service) {
-        final Path directory = service.getDirectory();
+    public void prepare(Service service) {
+        this.directory = resolveDirectory(service.name());
 
         try {
             Files.createDirectories(directory);
@@ -115,8 +120,7 @@ public final class LocalJvmRuntime implements ServiceRuntime {
     }
 
     @Override
-    public void start(NodeService service) {
-        final Path directory = service.getDirectory();
+    public void start(Service service, Consumer<String> logOutput) {
         final List<String> args = buildArguments(directory, service.name());
 
         try {
@@ -136,7 +140,7 @@ public final class LocalJvmRuntime implements ServiceRuntime {
             try {
                 String line;
                 while (process.isAlive() && (line = processReader.readLine()) != null) {
-                    service.log(line);
+                    logOutput.accept(line);
                 }
             } catch (IOException ignored) {
             }
@@ -144,7 +148,7 @@ public final class LocalJvmRuntime implements ServiceRuntime {
     }
 
     @Override
-    public void stop(NodeService service) {
+    public void stop(Service service) {
         if (process == null) {
             return;
         }
@@ -163,6 +167,11 @@ public final class LocalJvmRuntime implements ServiceRuntime {
             process = null;
             osProcess = null;
             processWriter = null;
+            processReader = null;
+        }
+
+        if (!group.staticServices() && directory != null && Files.exists(directory)) {
+            FileUtils.deleteDirectory(directory);
         }
     }
 
@@ -179,7 +188,6 @@ public final class LocalJvmRuntime implements ServiceRuntime {
         } catch (IOException e) {
             logger.error("Failed to send command to process " + e.getMessage());
         }
-
     }
 
     @Override
@@ -193,6 +201,18 @@ public final class LocalJvmRuntime implements ServiceRuntime {
             return 0;
         }
         return (int) (osProcess.getResidentMemory() / 1024 / 1024);
+    }
+
+    @Override
+    public Optional<Path> directory() {
+        return Optional.ofNullable(directory);
+    }
+
+    private Path resolveDirectory(String name) {
+        if (group.staticServices()) {
+            return Path.of(config.folders().staticServices()).resolve(name);
+        }
+        return Path.of(config.folders().tempServices()).resolve(name + "-" + UUID.randomUUID());
     }
 
     private List<String> buildArguments(Path directory, String name) {

@@ -22,6 +22,12 @@ public class ScreenManager {
 
     public void register(Screen screen) {
         screens.put(screen.name(), screen);
+
+        screen.subscribe(line -> {
+            if (screen == currentScreen) {
+                console.println(line);
+            }
+        });
     }
 
     public void unregister(String name) {

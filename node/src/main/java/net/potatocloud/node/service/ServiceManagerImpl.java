@@ -1,36 +1,46 @@
 package net.potatocloud.node.service;
 
 import net.potatocloud.api.event.EventBus;
+import net.potatocloud.api.event.events.service.ServiceStartingEvent;
+import net.potatocloud.api.event.events.service.ServiceStoppedEvent;
+import net.potatocloud.api.event.events.service.ServiceStoppingEvent;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.group.GroupManager;
 import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
+import net.potatocloud.api.service.ServiceState;
+import net.potatocloud.api.service.impl.ServiceImpl;
+
+import net.potatocloud.common.FileUtils;
 import net.potatocloud.network.NetworkServer;
 import net.potatocloud.network.packet.packets.service.*;
-import net.potatocloud.node.Node;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.platform.DownloadManager;
 import net.potatocloud.node.platform.cache.CacheManager;
+import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.service.helper.ServiceIds;
 import net.potatocloud.node.service.helper.ServicePorts;
 import net.potatocloud.node.service.listeners.*;
+import net.potatocloud.node.service.runtime.ServiceProcessMonitor;
+import net.potatocloud.node.service.runtime.ServiceMemoryMonitor;
+import net.potatocloud.node.service.runtime.ServiceRuntime;
 import net.potatocloud.node.service.runtime.local.LocalJvmRuntime;
 import net.potatocloud.node.service.runtime.local.ServiceDefaultFiles;
 import net.potatocloud.node.template.TemplateManager;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.time.Instant;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class ServiceManagerImpl implements ServiceManager {
 
     private final List<Service> services = new CopyOnWriteArrayList<>();
+    private final Map<String, ServiceRuntime> runtimes = new ConcurrentHashMap<>();
 
     private final NetworkServer server;
     private final Logger logger;
@@ -42,6 +52,9 @@ public class ServiceManagerImpl implements ServiceManager {
     private final DownloadManager downloadManager;
     private final CacheManager cacheManager;
     private final ClusterManagerImpl clusterManager;
+
+    private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(Thread.ofVirtual().factory());
 
     public ServiceManagerImpl(
             NodeConfig config,
@@ -79,6 +92,9 @@ public class ServiceManagerImpl implements ServiceManager {
         server.on(ServiceExecuteCommandPacket.class, new ServiceExecuteCommandListener(this, clusterManager));
         server.on(ServiceCopyPacket.class, new ServiceCopyListener(this, clusterManager));
         server.on(ServiceMemoryUpdatePacket.class, new ServiceMemoryUpdateListener(this, server));
+
+        scheduler.scheduleAtFixedRate(new ServiceProcessMonitor(runtimes, this), 0, 1, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(new ServiceMemoryMonitor(runtimes, this, server, clusterManager), 0, 2, TimeUnit.SECONDS);
     }
 
     @Override
@@ -124,41 +140,60 @@ public class ServiceManagerImpl implements ServiceManager {
 
     @Override
     public CompletableFuture<Void> stop(Service service) {
-        // todo
+        // todo use optionals correct
         if (!clusterManager.isLocal(service.node().get().name())) {
             clusterManager.sendTo(service.node().get().name(), new StopServicePacket(service.name()));
             return CompletableFuture.completedFuture(null);
         }
 
-        if (!(service instanceof NodeService nodeService)) {
-            return CompletableFuture.completedFuture(null);
-        }
-
-        return nodeService.shutdown();
+        return stopService(service);
     }
 
     @Override
     public void copyTo(Service service, String template, String filter) {
+        // todo optionals
         if (!clusterManager.isLocal(service.node().get().name())) {
             clusterManager.sendTo(service.node().get().name(), new ServiceCopyPacket(service.name(), template, filter));
             return;
         }
 
-        if (service instanceof NodeService nodeService) {
-            nodeService.copy(template, filter);
+        final ServiceRuntime runtime = runtimes.get(service.name());
+        if (runtime == null) {
+            return;
         }
+
+        runtime.directory().ifPresent(serviceDir -> {
+            final Path templatesDirectory = Path.of(config.folders().templates());
+            Path sourcePath = serviceDir;
+            Path targetPath = templatesDirectory.resolve(template);
+
+            if (filter != null && filter.startsWith("/")) {
+                sourcePath = serviceDir.resolve(filter.substring(1));
+                targetPath = targetPath.resolve(filter.substring(1));
+            }
+
+            if (!Files.exists(sourcePath)) {
+                return;
+            }
+
+            if (!Files.exists(targetPath)) {
+                templateManager.createTemplate(targetPath.getFileName().toString());
+            }
+
+            FileUtils.copyDirectory(sourcePath, targetPath);
+        });
     }
 
     @Override
     public void execute(Service service, String command) {
-        // todo
         if (!clusterManager.isLocal(service.node().get().name())) {
             clusterManager.sendTo(service.node().get().name(), new ServiceExecuteCommandPacket(service.name(), command));
             return;
         }
 
-        if (service instanceof NodeService nodeService) {
-            nodeService.executeCommand(command);
+        final ServiceRuntime runtime = runtimes.get(service.name());
+        if (runtime != null) {
+            runtime.executeCommand(command);
         }
     }
 
@@ -170,24 +205,84 @@ public class ServiceManagerImpl implements ServiceManager {
 
         final int serviceId = ServiceIds.nextId(group.get(), services);
         final int port = ServicePorts.nextPort(group.get(), config, services);
+        final String name = group.get().name() + config.service().splitter() + serviceId;
+
+        final ServiceImpl service = new ServiceImpl(
+                serviceId,
+                clusterManager.localNode().host(),
+                port,
+                name,
+                group.get().name(),
+                new HashMap<>(group.get().propertyMap()),
+                Instant.ofEpochSecond(0L),
+                ServiceState.STOPPED,
+                group.get().maxPlayers(),
+                0
+        );
 
         final LocalJvmRuntime runtime = new LocalJvmRuntime(
                 group.get(), config, logger, templateManager, downloadManager, cacheManager
         );
 
-        final NodeService service = new NodeService(
-                serviceId, port, group.get(),
-                config, logger, server, eventBus, this, templateManager,
-                screenManager, Node.getInstance().console(), runtime, clusterManager // TODO Remove console
-        );
+        final Screen screen = new Screen(name);
+        screenManager.register(screen);
 
         addService(service);
+        runtimes.put(name, runtime);
 
         server.broadcast().connectors().send(new ServiceAddPacket(service, requestId));
         clusterManager.broadcast(new ServiceAddPacket(service, null));
 
-        service.start();
+        service.startedAt(Instant.now());
+
+        service.state(ServiceState.PREPARING);
+        runtime.prepare(service);
+
+        service.state(ServiceState.STARTING);
+        runtime.start(service, screen::addLog);
+
+        final String nodeInfo = config.cluster().enabled() ? " on Node &a" + clusterManager.localNode().name() + "&7" : "";
+        logger.info("Service &a" + service.name() + "&7 is starting" + nodeInfo
+                + " &8[&7Port&8: &a" + service.port()
+                + "&8, &7Group&8: &a" + groupName + "&8]");
+
+        clusterManager.broadcast(new ServiceStartingPacket(service.name()));
+        eventBus.publish(new ServiceStartingEvent(service.name()));
         return service;
+    }
+
+    private CompletableFuture<Void> stopService(Service service) {
+        if (service.state() == ServiceState.STOPPED || service.state() == ServiceState.STOPPING) {
+            return CompletableFuture.completedFuture(null);
+        }
+
+        service.state(ServiceState.STOPPING);
+        logger.info("Service &a" + service.name() + "&7 is now stopping&8...");
+        eventBus.publish(new ServiceStoppingEvent(service.name()));
+
+        return CompletableFuture.runAsync(() -> {
+            final ServiceRuntime runtime = runtimes.remove(service.name());
+            if (runtime != null) {
+                runtime.stop(service);
+            }
+
+            services.remove(service);
+            screenManager.unregister(service.name());
+
+            if (screenManager.getCurrentScreen().name().equals(service.name())) {
+                screenManager.switchTo(Screen.NODE_SCREEN);
+            }
+
+            server.broadcast().connectors().send(new ServiceRemovePacket(service.name(), service.port()));
+            clusterManager.broadcast(new ServiceRemovePacket(service.name(), service.port()));
+            eventBus.publish(new ServiceStoppedEvent(service.name()));
+
+            synchronized (service) {
+                service.state(ServiceState.STOPPED);
+            }
+
+            logger.info("Service &a" + service.name() + " &7has been stopped");
+        }, executor);
     }
 
     public void addService(Service service) {
