@@ -1,6 +1,5 @@
 package net.potatocloud.node.service.listeners;
 
-import lombok.AllArgsConstructor;
 import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.network.packet.PacketContext;
@@ -11,11 +10,15 @@ import net.potatocloud.node.service.NodeService;
 
 import java.util.Optional;
 
-@AllArgsConstructor
 public class StopServiceListener implements PacketListener<StopServicePacket> {
 
     private final ServiceManager serviceManager;
     private final ClusterManagerImpl clusterManager;
+
+    public StopServiceListener(ServiceManager serviceManager, ClusterManagerImpl clusterManager) {
+        this.serviceManager = serviceManager;
+        this.clusterManager = clusterManager;
+    }
 
     @Override
     public void handle(PacketContext<StopServicePacket> ctx) {

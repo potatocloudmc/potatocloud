@@ -9,11 +9,15 @@ import net.potatocloud.network.packet.PacketContext;
 import net.potatocloud.network.packet.PacketListener;
 import net.potatocloud.network.packet.packets.service.ServiceMemoryUpdatePacket;
 
-@RequiredArgsConstructor
 public class ServiceMemoryUpdateListener implements PacketListener<ServiceMemoryUpdatePacket> {
 
     private final ServiceManager serviceManager;
     private final NetworkServer server;
+
+    public ServiceMemoryUpdateListener(ServiceManager serviceManager, NetworkServer server) {
+        this.serviceManager = serviceManager;
+        this.server = server;
+    }
 
     @Override
     public void handle(PacketContext<ServiceMemoryUpdatePacket> ctx) {

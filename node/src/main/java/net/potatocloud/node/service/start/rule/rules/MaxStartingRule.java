@@ -1,17 +1,20 @@
 package net.potatocloud.node.service.start.rule.rules;
 
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.ServiceState;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.service.start.rule.ServiceStartRule;
 
-@RequiredArgsConstructor
 public class MaxStartingRule implements ServiceStartRule {
 
     private final NodeConfig config;
     private final ServiceManager serviceManager;
+
+    public MaxStartingRule(NodeConfig config, ServiceManager serviceManager) {
+        this.config = config;
+        this.serviceManager = serviceManager;
+    }
 
     @Override
     public boolean allows(Group group) {

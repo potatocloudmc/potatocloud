@@ -1,6 +1,5 @@
 package net.potatocloud.node.service.listeners;
 
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.network.packet.PacketContext;
@@ -10,11 +9,15 @@ import net.potatocloud.node.cluster.ClusterManagerImpl;
 
 import java.util.Optional;
 
-@RequiredArgsConstructor
 public class ServiceExecuteCommandListener implements PacketListener<ServiceExecuteCommandPacket> {
 
     private final ServiceManager serviceManager;
     private final ClusterManagerImpl clusterManager;
+
+    public ServiceExecuteCommandListener(ServiceManager serviceManager, ClusterManagerImpl clusterManager) {
+        this.serviceManager = serviceManager;
+        this.clusterManager = clusterManager;
+    }
 
     @Override
     public void handle(PacketContext<ServiceExecuteCommandPacket> ctx) {

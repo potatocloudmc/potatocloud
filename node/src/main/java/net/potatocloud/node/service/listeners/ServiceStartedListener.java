@@ -21,7 +21,6 @@ import net.potatocloud.node.service.runtime.ServiceProcessChecker;
 
 import java.util.Optional;
 
-@RequiredArgsConstructor
 public class ServiceStartedListener implements PacketListener<ServiceStartedPacket> {
 
     private final ServiceManager serviceManager;
@@ -29,6 +28,14 @@ public class ServiceStartedListener implements PacketListener<ServiceStartedPack
     private final EventBus eventBus;
     private final ClusterManagerImpl clusterManager;
     private final NetworkServer server;
+
+    public ServiceStartedListener(ServiceManager serviceManager, Logger logger, EventBus eventBus, ClusterManagerImpl clusterManager, NetworkServer server) {
+        this.serviceManager = serviceManager;
+        this.logger = logger;
+        this.eventBus = eventBus;
+        this.clusterManager = clusterManager;
+        this.server = server;
+    }
 
     @Override
     public void handle(PacketContext<ServiceStartedPacket> ctx) {
