@@ -1,4 +1,4 @@
-package net.potatocloud.node.service.config;
+package net.potatocloud.node.service.runtime.local;
 
 import net.potatocloud.common.ResourceFileUtils;
 

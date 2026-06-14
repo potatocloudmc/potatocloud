@@ -37,6 +37,6 @@ public class StartServiceListener implements PacketListener<StartServicePacket> 
             return;
         }
 
-        serviceManager.startServiceInternal(group.get().name(), ctx.packet().requestId());
+        serviceManager.startService(group.get().name(), ctx.packet().requestId());
     }
 }

@@ -1,7 +1,7 @@
 package net.potatocloud.node.service.runtime;
 
 import net.potatocloud.common.Closeable;
-import net.potatocloud.node.service.AbstractService;
+import net.potatocloud.node.service.NodeService;
 
 public final class ServiceProcessChecker implements Closeable {
 
@@ -9,7 +9,7 @@ public final class ServiceProcessChecker implements Closeable {
 
     private final Thread thread;
 
-    public ServiceProcessChecker(AbstractService service) {
+    public ServiceProcessChecker(NodeService service) {
         thread = Thread.startVirtualThread(() -> {
             try {
                 while (!Thread.currentThread().isInterrupted() && service.running()) {

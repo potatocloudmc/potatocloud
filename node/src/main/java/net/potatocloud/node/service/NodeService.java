@@ -18,7 +18,6 @@ import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.console.Console;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.screen.ScreenManager;
-import net.potatocloud.node.service.prepare.ServicePreparer;
 import net.potatocloud.node.service.runtime.ServiceProcessChecker;
 import net.potatocloud.node.service.runtime.ServiceRuntime;
 import net.potatocloud.node.template.TemplateManager;
@@ -34,13 +33,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public abstract class AbstractService extends ServiceImpl {
+public final class NodeService extends ServiceImpl {
 
-    protected final Group group;
-    protected final Path directory;
-    protected final NodeConfig config;
-    protected final Logger logger;
-    protected final TemplateManager templateManager;
+    private final Group group;
+    private final Path directory;
+    private final NodeConfig config;
+    private final Logger logger;
+    private final TemplateManager templateManager;
 
     private final NetworkServer server;
     private final EventBus eventBus;
@@ -52,12 +51,11 @@ public abstract class AbstractService extends ServiceImpl {
     private final List<String> logs = new ArrayList<>();
     private final ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
 
-    private final ServicePreparer preparer;
     private final ServiceRuntime runtime;
 
-    protected ServiceProcessChecker processChecker;
+    private ServiceProcessChecker processChecker;
 
-    protected AbstractService(
+    public NodeService(
             int serviceId,
             int port,
             Group group,
@@ -69,7 +67,6 @@ public abstract class AbstractService extends ServiceImpl {
             TemplateManager templateManager,
             ScreenManager screenManager,
             Console console,
-            ServicePreparer preparer,
             ServiceRuntime runtime,
             ClusterManagerImpl clusterManager
     ) {
@@ -83,7 +80,6 @@ public abstract class AbstractService extends ServiceImpl {
         this.templateManager = templateManager;
         this.screenManager = screenManager;
         this.console = console;
-        this.preparer = preparer;
         this.runtime = runtime;
         this.clusterManager = clusterManager;
         this.screen = new Screen(name());
@@ -99,10 +95,10 @@ public abstract class AbstractService extends ServiceImpl {
         screenManager.register(screen);
 
         state(ServiceState.PREPARING);
-        preparer.prepare(directory, name(), port());
+        runtime.prepare(this);
 
         state(ServiceState.STARTING);
-        runtime.start(directory, this);
+        runtime.start(this);
 
         // todo
         final String nodeInfo = config.cluster().enabled() ? " on Node &a" + node().get().name() + "&7" : "";
@@ -130,7 +126,7 @@ public abstract class AbstractService extends ServiceImpl {
                 processChecker.close();
             }
 
-            runtime.stop();
+            runtime.stop(this);
 
             ((ServiceManagerImpl) serviceManager).removeService(this);
             screenManager.unregister(screen.name());
@@ -182,7 +178,7 @@ public abstract class AbstractService extends ServiceImpl {
     }
 
     public boolean alive() {
-        return runtime.alive();
+        return runtime.isAlive();
     }
 
     @Override
@@ -196,6 +192,10 @@ public abstract class AbstractService extends ServiceImpl {
 
     public Screen getScreen() {
         return screen;
+    }
+
+    public Path getDirectory() {
+        return directory;
     }
 
     public void setProcessChecker(ServiceProcessChecker processChecker) {

@@ -15,7 +15,7 @@ import net.potatocloud.network.packet.PacketListener;
 import net.potatocloud.network.packet.packets.service.ServiceStartedPacket;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
-import net.potatocloud.node.service.AbstractService;
+import net.potatocloud.node.service.NodeService;
 import net.potatocloud.node.service.runtime.ServiceMemoryUpdateTask;
 import net.potatocloud.node.service.runtime.ServiceProcessChecker;
 
@@ -57,10 +57,10 @@ public class ServiceStartedListener implements PacketListener<ServiceStartedPack
             eventBus.publish(new ServiceStartedEvent(packet.serviceName()));
 
             if (clusterManager.isLocal(node.get().name())) {
-                if (service instanceof AbstractService abstractService) {
-                    abstractService.setProcessChecker(new ServiceProcessChecker(abstractService));
+                if (service instanceof NodeService nodeService) {
+                    nodeService.setProcessChecker(new ServiceProcessChecker(nodeService));
                 }
-                new ServiceMemoryUpdateTask(service, Node.getInstance().server(), clusterManager);
+                new ServiceMemoryUpdateTask(service, server, clusterManager);
             }
         });
     }

@@ -1,18 +1,18 @@
 package net.potatocloud.node.service.runtime;
 
-import net.potatocloud.node.service.AbstractService;
-
-import java.nio.file.Path;
+import net.potatocloud.node.service.NodeService;
 
 public interface ServiceRuntime {
 
-    void start(Path directory, AbstractService service);
+    void prepare(NodeService service);
 
-    void stop();
+    void start(NodeService service);
 
-    boolean executeCommand(String command);
+    void stop(NodeService service);
 
-    boolean alive();
+    void executeCommand(String command);
+
+    boolean isAlive();
 
     int usedMemory();
 

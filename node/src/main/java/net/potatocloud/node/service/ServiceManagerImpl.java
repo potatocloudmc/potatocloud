@@ -8,14 +8,17 @@ import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.network.NetworkServer;
 import net.potatocloud.network.packet.packets.service.*;
+import net.potatocloud.node.Node;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.platform.DownloadManager;
 import net.potatocloud.node.platform.cache.CacheManager;
 import net.potatocloud.node.screen.ScreenManager;
-import net.potatocloud.node.service.config.ServiceDefaultFiles;
+import net.potatocloud.node.service.helper.ServiceIds;
+import net.potatocloud.node.service.helper.ServicePorts;
 import net.potatocloud.node.service.listeners.*;
-import net.potatocloud.node.service.runtime.ServiceLauncher;
+import net.potatocloud.node.service.runtime.local.LocalJvmRuntime;
+import net.potatocloud.node.service.runtime.local.ServiceDefaultFiles;
 import net.potatocloud.node.template.TemplateManager;
 
 import java.nio.file.Path;
@@ -29,10 +32,15 @@ public class ServiceManagerImpl implements ServiceManager {
 
     private final List<Service> services = new CopyOnWriteArrayList<>();
 
-    private final ServiceLauncher launcher;
     private final NetworkServer server;
     private final Logger logger;
     private final NodeConfig config;
+    private final EventBus eventBus;
+    private final GroupManager groupManager;
+    private final ScreenManager screenManager;
+    private final TemplateManager templateManager;
+    private final DownloadManager downloadManager;
+    private final CacheManager cacheManager;
     private final ClusterManagerImpl clusterManager;
 
     public ServiceManagerImpl(
@@ -50,13 +58,15 @@ public class ServiceManagerImpl implements ServiceManager {
         this.config = config;
         this.logger = logger;
         this.server = server;
+        this.eventBus = eventBus;
+        this.groupManager = groupManager;
+        this.screenManager = screenManager;
+        this.templateManager = templateManager;
+        this.downloadManager = downloadManager;
+        this.cacheManager = cacheManager;
         this.clusterManager = clusterManager;
 
         ServiceDefaultFiles.copyDefaultFiles(Path.of(config.folders().data()));
-
-        final ServiceFactory factory = new ServiceFactory(config, logger, server, eventBus, this, screenManager, templateManager, downloadManager, cacheManager, clusterManager);
-
-        this.launcher = new ServiceLauncher(this, groupManager, factory, config, server, clusterManager);
 
         server.on(RequestServicesPacket.class, new RequestServicesListener(this));
         server.on(ServiceAddPacket.class, new ServiceAddListener(this, server));
@@ -102,11 +112,11 @@ public class ServiceManagerImpl implements ServiceManager {
         return group.node()
                 .map(node -> {
                     if (!clusterManager.isLocal(node.name())) {
-                        clusterManager.sendTo(node.name(),new StartServicePacket(group.name(), null));
+                        clusterManager.sendTo(node.name(), new StartServicePacket(group.name(), null));
                         return null;
                     }
 
-                    return launcher.start(group.name(), null);
+                    return startService(group.name(), null);
                 })
                 .map(CompletableFuture::completedFuture)
                 .orElseGet(() -> CompletableFuture.completedFuture(null));
@@ -120,11 +130,11 @@ public class ServiceManagerImpl implements ServiceManager {
             return CompletableFuture.completedFuture(null);
         }
 
-        if (!(service instanceof AbstractService abstractService)) {
+        if (!(service instanceof NodeService nodeService)) {
             return CompletableFuture.completedFuture(null);
         }
 
-        return abstractService.shutdown();
+        return nodeService.shutdown();
     }
 
     @Override
@@ -134,8 +144,8 @@ public class ServiceManagerImpl implements ServiceManager {
             return;
         }
 
-        if (service instanceof AbstractService abstractService) {
-            abstractService.copy(template, filter);
+        if (service instanceof NodeService nodeService) {
+            nodeService.copy(template, filter);
         }
     }
 
@@ -147,13 +157,37 @@ public class ServiceManagerImpl implements ServiceManager {
             return;
         }
 
-        if (service instanceof AbstractService abstractService) {
-            abstractService.executeCommand(command);
+        if (service instanceof NodeService nodeService) {
+            nodeService.executeCommand(command);
         }
     }
 
-    public void startServiceInternal(String groupName, String requestId) {
-        launcher.start(groupName, requestId);
+    public Service startService(String groupName, String requestId) {
+        final Optional<Group> group = groupManager.find(groupName);
+        if (group.isEmpty()) {
+            return null;
+        }
+
+        final int serviceId = ServiceIds.nextId(group.get(), services);
+        final int port = ServicePorts.nextPort(group.get(), config, services);
+
+        final LocalJvmRuntime runtime = new LocalJvmRuntime(
+                group.get(), config, logger, templateManager, downloadManager, cacheManager
+        );
+
+        final NodeService service = new NodeService(
+                serviceId, port, group.get(),
+                config, logger, server, eventBus, this, templateManager,
+                screenManager, Node.getInstance().console(), runtime, clusterManager // TODO Remove console
+        );
+
+        addService(service);
+
+        server.broadcast().connectors().send(new ServiceAddPacket(service, requestId));
+        clusterManager.broadcast(new ServiceAddPacket(service, null));
+
+        service.start();
+        return service;
     }
 
     public void addService(Service service) {
