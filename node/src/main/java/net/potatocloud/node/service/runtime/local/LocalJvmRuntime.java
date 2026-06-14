@@ -12,6 +12,7 @@ import net.potatocloud.node.platform.DownloadManager;
 import net.potatocloud.node.platform.PlatformPrepareSteps;
 import net.potatocloud.node.platform.PlatformUtils;
 import net.potatocloud.node.platform.cache.CacheManager;
+import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.service.runtime.ServiceRuntime;
 import net.potatocloud.node.template.TemplateManager;
 import oshi.ffm.SystemInfo;
@@ -26,7 +27,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 public final class LocalJvmRuntime implements ServiceRuntime {
 
@@ -36,6 +36,7 @@ public final class LocalJvmRuntime implements ServiceRuntime {
     private final TemplateManager templateManager;
     private final DownloadManager downloadManager;
     private final CacheManager cacheManager;
+    private final Screen screen;
 
     private Path directory;
     private Process process;
@@ -49,7 +50,8 @@ public final class LocalJvmRuntime implements ServiceRuntime {
             Logger logger,
             TemplateManager templateManager,
             DownloadManager downloadManager,
-            CacheManager cacheManager
+            CacheManager cacheManager,
+            Screen screen
     ) {
         this.group = group;
         this.config = config;
@@ -57,6 +59,7 @@ public final class LocalJvmRuntime implements ServiceRuntime {
         this.templateManager = templateManager;
         this.downloadManager = downloadManager;
         this.cacheManager = cacheManager;
+        this.screen = screen;
     }
 
     @Override
@@ -120,7 +123,7 @@ public final class LocalJvmRuntime implements ServiceRuntime {
     }
 
     @Override
-    public void start(Service service, Consumer<String> logOutput) {
+    public void start(Service service) {
         final List<String> args = buildArguments(directory, service.name());
 
         try {
@@ -140,7 +143,7 @@ public final class LocalJvmRuntime implements ServiceRuntime {
             try {
                 String line;
                 while (process.isAlive() && (line = processReader.readLine()) != null) {
-                    logOutput.accept(line);
+                    screen.addLog(line);
                 }
             } catch (IOException ignored) {
             }

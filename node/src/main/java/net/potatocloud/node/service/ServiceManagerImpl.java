@@ -220,12 +220,12 @@ public class ServiceManagerImpl implements ServiceManager {
                 0
         );
 
-        final LocalJvmRuntime runtime = new LocalJvmRuntime(
-                group.get(), config, logger, templateManager, downloadManager, cacheManager
-        );
-
         final Screen screen = new Screen(name);
         screenManager.register(screen);
+
+        final LocalJvmRuntime runtime = new LocalJvmRuntime(
+                group.get(), config, logger, templateManager, downloadManager, cacheManager, screen
+        );
 
         addService(service);
         runtimes.put(name, runtime);
@@ -239,7 +239,7 @@ public class ServiceManagerImpl implements ServiceManager {
         runtime.prepare(service);
 
         service.state(ServiceState.STARTING);
-        runtime.start(service, screen::addLog);
+        runtime.start(service);
 
         final String nodeInfo = config.cluster().enabled() ? " on Node &a" + clusterManager.localNode().name() + "&7" : "";
         logger.info("Service &a" + service.name() + "&7 is starting" + nodeInfo

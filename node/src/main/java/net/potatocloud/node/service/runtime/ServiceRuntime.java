@@ -4,13 +4,12 @@ import net.potatocloud.api.service.Service;
 
 import java.nio.file.Path;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 public interface ServiceRuntime {
 
     void prepare(Service service);
 
-    void start(Service service, Consumer<String> logOutput);
+    void start(Service service);
 
     void stop(Service service);
 
