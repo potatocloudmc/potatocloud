@@ -7,11 +7,15 @@ import net.potatocloud.network.packet.PacketListener;
 import net.potatocloud.network.packet.packets.service.ServiceAddPacket;
 import net.potatocloud.node.service.ServiceManagerImpl;
 
-@RequiredArgsConstructor
 public class ServiceAddListener implements PacketListener<ServiceAddPacket> {
 
     private final ServiceManagerImpl serviceManager;
     private final NetworkServer server;
+
+    public ServiceAddListener(ServiceManagerImpl serviceManager, NetworkServer server) {
+        this.serviceManager = serviceManager;
+        this.server = server;
+    }
 
     @Override
     public void handle(PacketContext<ServiceAddPacket> ctx) {

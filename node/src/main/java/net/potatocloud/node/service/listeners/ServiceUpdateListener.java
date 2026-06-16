@@ -12,12 +12,17 @@ import net.potatocloud.network.packet.PacketListener;
 import net.potatocloud.network.packet.packets.service.ServiceUpdatePacket;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 
-@RequiredArgsConstructor
 public class ServiceUpdateListener implements PacketListener<ServiceUpdatePacket> {
 
     private final ServiceManager serviceManager;
     private final NetworkServer server;
     private final ClusterManagerImpl clusterManager;
+
+    public ServiceUpdateListener(ServiceManager serviceManager, NetworkServer server, ClusterManagerImpl clusterManager) {
+        this.serviceManager = serviceManager;
+        this.server = server;
+        this.clusterManager = clusterManager;
+    }
 
     @Override
     public void handle(PacketContext<ServiceUpdatePacket> ctx) {

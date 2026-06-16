@@ -12,12 +12,17 @@ import net.potatocloud.node.service.ServiceManagerImpl;
 
 import java.util.Optional;
 
-@RequiredArgsConstructor
 public class StartServiceListener implements PacketListener<StartServicePacket> {
 
     private final ServiceManagerImpl serviceManager;
     private final GroupManager groupManager;
     private final ClusterManagerImpl clusterManager;
+
+    public StartServiceListener(ServiceManagerImpl serviceManager, GroupManager groupManager, ClusterManagerImpl clusterManager) {
+        this.serviceManager = serviceManager;
+        this.groupManager = groupManager;
+        this.clusterManager = clusterManager;
+    }
 
     @Override
     public void handle(PacketContext<StartServicePacket> ctx) {
@@ -37,6 +42,6 @@ public class StartServiceListener implements PacketListener<StartServicePacket> 
             return;
         }
 
-        serviceManager.startServiceInternal(group.get().name(), ctx.packet().requestId());
+        serviceManager.startService(group.get().name(), ctx.packet().requestId());
     }
 }

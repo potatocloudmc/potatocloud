@@ -1,6 +1,5 @@
 package net.potatocloud.node.service.listeners;
 
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.api.event.EventBus;
 import net.potatocloud.api.event.events.service.ServiceStartedEvent;
@@ -15,13 +14,9 @@ import net.potatocloud.network.packet.PacketListener;
 import net.potatocloud.network.packet.packets.service.ServiceStartedPacket;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
-import net.potatocloud.node.service.AbstractService;
-import net.potatocloud.node.service.runtime.ServiceMemoryUpdateTask;
-import net.potatocloud.node.service.runtime.ServiceProcessChecker;
 
 import java.util.Optional;
 
-@RequiredArgsConstructor
 public class ServiceStartedListener implements PacketListener<ServiceStartedPacket> {
 
     private final ServiceManager serviceManager;
@@ -29,6 +24,14 @@ public class ServiceStartedListener implements PacketListener<ServiceStartedPack
     private final EventBus eventBus;
     private final ClusterManagerImpl clusterManager;
     private final NetworkServer server;
+
+    public ServiceStartedListener(ServiceManager serviceManager, Logger logger, EventBus eventBus, ClusterManagerImpl clusterManager, NetworkServer server) {
+        this.serviceManager = serviceManager;
+        this.logger = logger;
+        this.eventBus = eventBus;
+        this.clusterManager = clusterManager;
+        this.server = server;
+    }
 
     @Override
     public void handle(PacketContext<ServiceStartedPacket> ctx) {
@@ -41,7 +44,7 @@ public class ServiceStartedListener implements PacketListener<ServiceStartedPack
             }
 
             final boolean clustered = Node.getInstance().config().cluster().enabled();
-            logger.info("Service &a" + packet.serviceName() + (clustered ? "&7 started on node &a" + node.get().name() : "&7 started"));
+            logger.info("Service &a" + packet.serviceName() + (clustered ? "&7 is now &aonline &7on node &a" + node.get().name() : "&7 is now &aonline"));
 
             logger.debug("Service &a" + packet.serviceName() + "&7 took &a" + TimeFormatter.formatAsDuration(System.currentTimeMillis() - service.startedAt().toEpochMilli()) + "&7 to start");
 
@@ -55,13 +58,6 @@ public class ServiceStartedListener implements PacketListener<ServiceStartedPack
             server.broadcast().connectors().send(new ServiceStartedPacket(packet.serviceName()));
 
             eventBus.publish(new ServiceStartedEvent(packet.serviceName()));
-
-            if (clusterManager.isLocal(node.get().name())) {
-                if (service instanceof AbstractService abstractService) {
-                    abstractService.setProcessChecker(new ServiceProcessChecker(abstractService));
-                }
-                new ServiceMemoryUpdateTask(service, Node.getInstance().server(), clusterManager);
-            }
         });
     }
 }
