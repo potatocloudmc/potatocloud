@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.shadow)
+    kotlin("jvm")
+    kotlin("plugin.lombok")
 }
 
 group = "net.potatocloud.module.webinterface"
@@ -15,6 +17,8 @@ dependencies {
     compileOnly(project(":node"))
 
     implementation("io.javalin:javalin:7.1.0")
+    runtimeOnly("io.javalin.community.openapi:javalin-swagger-plugin:7.2.2")
+    implementation("io.javalin.community.openapi:javalin-openapi-plugin:7.1.0")
 
     implementation("org.bitbucket.b_c:jose4j:0.9.6")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.21.2")
@@ -24,6 +28,7 @@ dependencies {
     annotationProcessor(libs.lombok)
 
     implementation("org.slf4j:slf4j-simple:2.0.17")
+    testImplementation(kotlin("test"))
 }
 
 tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
@@ -49,3 +54,6 @@ tasks.named("build") {
     dependsOn(tasks.named("shadowJar"))
 }
 
+kotlin {
+    jvmToolchain(25)
+}
