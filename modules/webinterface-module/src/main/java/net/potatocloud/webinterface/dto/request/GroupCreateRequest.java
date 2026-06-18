@@ -112,7 +112,7 @@ public class GroupCreateRequest {
 
     @Schema(
             description = "Custom Java command used to start services",
-            examples = "java -Xmx{memory}M -jar server.jar"
+            examples = "java"
     )
     private String javaCommand;
 
