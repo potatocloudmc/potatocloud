@@ -17,6 +17,7 @@ public class CloudLogHandler extends Handler {
     @Override
     public void publish(LogRecord record) {
         if (!isLoggable(record)) {
+            return;
         }
 
         String message = getFormatter() != null
@@ -47,6 +48,6 @@ public class CloudLogHandler extends Handler {
 
     @Override
     public void close() {
-        
+
     }
 }

@@ -17,7 +17,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import java.util.List;
 import java.util.Map;
 
-@Path("/api/v1/platform")
+@Path("/api/v1/platforms")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Authenticated

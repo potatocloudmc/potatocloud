@@ -18,9 +18,8 @@ public class ApiGroup {
     private String javaCommand;
     private ApiPlatform platform;
     private ApiPlatformVersion platformVersion;
-    private boolean isStatic;
+    private boolean staticServices;
     private boolean fallback;
-    private boolean localNodeReady;
     private int onlineServicesCount;
     private int onlinePlayerCount;
     private int minOnlineCount;
@@ -33,5 +32,5 @@ public class ApiGroup {
     private Set<String> serviceTemplates;
     private List<ApiProperty> properties;
     private boolean useModernVelocityForwarding;
-    
+
 }

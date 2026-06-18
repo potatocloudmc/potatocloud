@@ -2,30 +2,39 @@ package net.potatocloud.webinterface.exception;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @Provider
-public class ValidationExceptionMapper implements ExceptionMapper<ConstraintViolationException> {
+public class ValidationExceptionMapper
+        implements ExceptionMapper<ConstraintViolationException> {
 
     @Override
     public Response toResponse(ConstraintViolationException exception) {
-        String message = exception.getConstraintViolations().stream()
-                .map(this::formatValidation)
-                .collect(Collectors.joining(", "));
 
-        ApiError apiError = new ApiError("VALIDATION_ERROR", message.isBlank() ? "Validation failed" : message);
+        var errors = exception.getConstraintViolations()
+                .stream()
+                .map(v -> new ApiValidationError(
+                        extractField(v),
+                        v.getMessage()
+                ))
+                .toList();
+
         return Response.status(Response.Status.BAD_REQUEST)
-                .entity(apiError)
-                .type(MediaType.APPLICATION_JSON)
+                .entity(Map.of("errors", errors))
                 .build();
     }
 
-    private String formatValidation(ConstraintViolation<?> violation) {
-        return violation.getPropertyPath() + ": " + violation.getMessage();
+    private String extractField(ConstraintViolation<?> v) {
+        String path = v.getPropertyPath().toString();
+
+        if (path.contains(".")) {
+            return path.substring(path.lastIndexOf('.') + 1);
+        }
+
+        return path;
     }
 }

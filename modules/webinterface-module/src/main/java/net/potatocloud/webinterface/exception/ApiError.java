@@ -3,6 +3,7 @@ package net.potatocloud.webinterface.exception;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import lombok.extern.jackson.Jacksonized;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.time.Instant;
@@ -11,6 +12,7 @@ import java.time.Instant;
 @Getter
 @Setter
 @Accessors(fluent = true, chain = true)
+@Jacksonized
 public class ApiError {
 
     private String code;
