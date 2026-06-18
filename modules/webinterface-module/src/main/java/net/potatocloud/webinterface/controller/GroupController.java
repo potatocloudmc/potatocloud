@@ -8,7 +8,9 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import net.potatocloud.webinterface.dto.request.GroupCreateRequest;
 import net.potatocloud.webinterface.dto.request.GroupUpdateRequest;
+import net.potatocloud.webinterface.dto.response.GroupSummaryResponse;
 import net.potatocloud.webinterface.exception.ApiError;
+import net.potatocloud.webinterface.mapper.GroupMapper;
 import net.potatocloud.webinterface.model.ApiGroup;
 import net.potatocloud.webinterface.service.GroupService;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -32,8 +34,19 @@ public class GroupController {
     @Inject
     GroupService groupService;
 
+    @Inject
+    GroupMapper groupMapper;
+
     @GET
-    public List<ApiGroup> allGroups() {
+    @Schema(name = "GroupSummaryResponse", description = "Summary information about a group, including name, platform version, online services and players count")
+    public List<GroupSummaryResponse> allGroups() {
+        return groupMapper.toSummary(groupService.findAll());
+    }
+
+    @Path("/details")
+    @GET
+    @Schema(name = "GroupDetailsResponse", description = "Detailed information about a group, including all platform informations and configurations")
+    public List<ApiGroup> allGroupsDetails() {
         return groupService.findAll();
     }
 

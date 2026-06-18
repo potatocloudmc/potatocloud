@@ -8,8 +8,11 @@ import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.node.Node;
 import net.potatocloud.webinterface.dto.request.GroupCreateRequest;
+import net.potatocloud.webinterface.dto.response.GroupSummaryResponse;
 import net.potatocloud.webinterface.model.ApiGroup;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -63,4 +66,33 @@ public class GroupMapper {
                 .build();
     }
 
+    public GroupSummaryResponse toSummary(ApiGroup group) {
+        return new GroupSummaryResponse()
+                .name(group.name())
+                .javaCommand(group.javaCommand())
+                .platformName(group.platform().name())
+                .platformVersion(group.platformVersion())
+                .staticServices(group.staticServices())
+                .fallback(group.fallback())
+                .onlineServicesCount(group.onlineServicesCount())
+                .onlinePlayerCount(group.onlinePlayerCount())
+                .minOnlineCount(group.minOnlineCount())
+                .maxOnlineCount(group.maxOnlineCount())
+                .maxPlayerCount(group.maxPlayerCount())
+                .maxMemory(group.maxMemory())
+                .startPriority(group.startPriority())
+                .newServicePercentage(group.newServicePercentage())
+                .customJvmFlags(group.customJvmFlags())
+                .serviceTemplates(group.serviceTemplates())
+                .properties(group.properties())
+                .useModernVelocityForwarding(group.useModernVelocityForwarding());
+    }
+
+    public List<GroupSummaryResponse> toSummary(List<ApiGroup> groups) {
+        List<GroupSummaryResponse> summary = new ArrayList<>();
+        for (ApiGroup group : groups) {
+            summary.add(toSummary(group));
+        }
+        return summary;
+    }
 }

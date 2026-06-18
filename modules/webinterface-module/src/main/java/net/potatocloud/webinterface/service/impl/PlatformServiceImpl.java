@@ -23,6 +23,16 @@ public class PlatformServiceImpl implements PlatformService {
     }
 
     @Override
+    public List<Platform> findAllRaw() {
+        return CloudAPI.instance().platformManager().platforms();
+    }
+
+    @Override
+    public Platform findByNameRaw(String name) {
+        return CloudAPI.instance().platformManager().find(name).orElse(null);
+    }
+
+    @Override
     public ApiPlatform findByName(String name) {
         return CloudAPI.instance().platformManager().find(name)
                 .map(platformMapper::toApi)

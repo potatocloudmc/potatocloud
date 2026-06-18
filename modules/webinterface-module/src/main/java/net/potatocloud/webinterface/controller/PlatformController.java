@@ -8,7 +8,10 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import net.potatocloud.webinterface.model.ApiPlatform;
+import net.potatocloud.api.platform.Platform;
+import net.potatocloud.webinterface.dto.response.PlatformDetailResponse;
+import net.potatocloud.webinterface.dto.response.PlatformSummaryResponse;
+import net.potatocloud.webinterface.mapper.PlatformMapper;
 import net.potatocloud.webinterface.service.impl.PlatformServiceImpl;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
@@ -28,10 +31,14 @@ public class PlatformController {
     @Inject
     PlatformServiceImpl platformService;
 
+    @Inject
+    PlatformMapper platformMapper;
+
     @GET
-    @Operation(summary = "List all platforms", description = "Returns a list of all platforms available in the cloud environment.")
-    public List<ApiPlatform> allPlatforms() {
-        return platformService.findAll();
+    @Operation(summary = "List all platforms", description = "Returns a summry list of all platforms available in the cloud environment.")
+    public List<PlatformSummaryResponse> allPlatforms() {
+        List<Platform> platforms = platformService.findAllRaw();
+        return platformMapper.toSummaryApi(platforms);
     }
 
     @Path("/{name}")
@@ -44,7 +51,10 @@ public class PlatformController {
                     .build();
         }
 
-        return Response.ok(platformService.findByName(name)).build();
+        Platform platform = platformService.findByNameRaw(name);
+        PlatformDetailResponse response = platformMapper.toDetailApi(platform);
+
+        return Response.ok(response).build();
     }
 
 }
