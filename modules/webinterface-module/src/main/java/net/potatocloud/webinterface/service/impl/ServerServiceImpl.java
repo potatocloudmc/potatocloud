@@ -37,4 +37,16 @@ public class ServerServiceImpl implements ServerService {
                 .anyMatch(service -> service.name().equals(name));
     }
 
+    @Override
+    public boolean shutdown(String name) {
+        return CloudAPI.instance().serviceManager().services().stream()
+                .filter(service -> service.name().equals(name))
+                .findFirst()
+                .map(service -> {
+                    CloudAPI.instance().serviceManager().stop(service);
+                    return true;
+                })
+                .orElse(false);
+    }
+
 }

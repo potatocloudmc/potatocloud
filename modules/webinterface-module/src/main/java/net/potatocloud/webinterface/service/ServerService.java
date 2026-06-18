@@ -12,4 +12,6 @@ public interface ServerService {
 
     boolean exists(String name);
 
+    boolean shutdown(String name);
+
 }

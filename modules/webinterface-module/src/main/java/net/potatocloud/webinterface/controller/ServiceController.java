@@ -73,4 +73,27 @@ public class ServiceController {
         return Response.ok(service).build();
     }
 
+    @Path("/{name}/stop")
+    @GET
+    @Operation(summary = "Stop a service", description = "Stops the service with the specified name.")
+    @APIResponses(value = {
+            @APIResponse(
+                    responseCode = "204",
+                    description = "Service stopped successfully"
+            ),
+            @APIResponse(
+                    responseCode = "404",
+                    description = "Service not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class))
+            )
+    })
+    public Response stopService(String name) {
+        if (!serverService.shutdown(name)) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(new ApiError("NOT_FOUND", "Service with name '" + name + "' not found"))
+                    .build();
+        }
+        return Response.ok().build();
+    }
+
 }
