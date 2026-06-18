@@ -13,6 +13,7 @@ import net.potatocloud.webinterface.exception.ApiError;
 import net.potatocloud.webinterface.mapper.GroupMapper;
 import net.potatocloud.webinterface.model.ApiGroup;
 import net.potatocloud.webinterface.service.GroupService;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -38,14 +39,14 @@ public class GroupController {
     GroupMapper groupMapper;
 
     @GET
-    @Schema(name = "GroupSummaryResponse", description = "Summary information about a group, including name, platform version, online services and players count")
+    @Operation(summary = "List all groups in a summary", description = "Summary information about a group, including name, platform version, online services and players count")
     public List<GroupSummaryResponse> allGroups() {
         return groupMapper.toSummary(groupService.findAll());
     }
 
     @Path("/details")
     @GET
-    @Schema(name = "GroupDetailsResponse", description = "Detailed information about a group, including all platform informations and configurations")
+    @Operation(summary = "List all groups with a more detailed description", description = "Detailed information about a group, including all platform informations and configurations")
     public List<ApiGroup> allGroupsDetails() {
         return groupService.findAll();
     }
@@ -65,6 +66,7 @@ public class GroupController {
                     )
             )
     })
+    @Operation(summary = "Create a new group", description = "Creates a new group with the provided configuration. The group name must be unique and not already exist.")
     public Response createGroup(@Valid @RequestBody GroupCreateRequest request) {
         if (!groupService.create(request)) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -96,6 +98,7 @@ public class GroupController {
                     )
             )
     })
+    @Operation(summary = "Update an existing group", description = "Updates the configuration of an existing group. The group is identified by its name in the path parameter. The request body contains the new configuration for the group. If the group with the specified name does not exist, a 404 error is returned. If the update fails due to invalid configuration or other reasons, a 400 error is returned.")
     @Path("/{groupName}")
     @PUT
     public Response updateGroup(@Valid @RequestBody GroupUpdateRequest request, @PathParam("groupName") String groupName) {
@@ -114,6 +117,7 @@ public class GroupController {
         return Response.status(Response.Status.OK).build();
     }
 
+    @Operation(summary = "Get group information by name", description = "Returns the group information for the specified group name. If the group with the specified name does not exist, a 404 error is returned.")
     @Path("/{groupName}")
     @GET
     @APIResponses({
@@ -145,6 +149,7 @@ public class GroupController {
     }
 
     @Path("/{groupName}/start")
+    @Operation(summary = "Start a group", description = "Starts the group with the specified name. If the group is already running, has reached its maximum number of services or does not exist, a 400 error is returned.")
     @APIResponses(value = {
             @APIResponse(
                     responseCode = "200",
@@ -183,6 +188,7 @@ public class GroupController {
     }
 
     @Path("/{groupName}/shutdown")
+    @Operation(summary = "Shutdown a group", description = "Shuts down the group with the specified name. If the group is already stopped or does not exist, a 400 error is returned.")
     @APIResponses(value = {
             @APIResponse(
                     responseCode = "200",

@@ -29,7 +29,7 @@ dependencies {
     compileOnly(project(":common"))
     compileOnly(project(":api"))
     compileOnly(project(":node"))
-
+    
     // REST layer
     implementation("io.quarkus:quarkus-rest:3.36.2")
     implementation("io.quarkus:quarkus-rest-jackson:3.36.2")

@@ -10,7 +10,6 @@ import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
 import org.eclipse.microprofile.openapi.annotations.info.Contact;
 import org.eclipse.microprofile.openapi.annotations.info.Info;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
-import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @OpenAPIDefinition(
         info = @Info(
@@ -18,11 +17,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
                 version = "1.0.0",
                 description = "API documentation for the PotatoCloud WebInterface Module",
                 contact = @Contact(name = "Fedox", email = "f3dox@proton.me", url = "https://fedox.ovh")
-        ),
-        tags = {
-                @Tag(name = "Test", description = "Endpoints for testing purposes"),
-                @Tag(name = "Platform", description = "Endpoints related to platform information and management")
-        }
+        )
 )
 @SecurityScheme(
         securitySchemeName = "ApiKeyAuth",
@@ -39,4 +34,5 @@ public class WebInterfaceQuarkusApp extends Application implements QuarkusApplic
         Quarkus.waitForExit();
         return 0;
     }
+
 }
