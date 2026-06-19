@@ -70,7 +70,7 @@ public class WebInterfaceModule extends AbstractModule {
 
         setIfPresent(config, "api-keys", "app.security.api-keys");
         setIfPresent(config, "webhook-secret", "app.security.webhook.secret");
-        setIfPresent(config, "jwt-secret", "app.security.jwt.secret");
+        setIfPresent(config, "jwt-secret", "app.security.jwt-secret");
     }
 
     private void setIfPresent(Config config, String yamlKey, String quarkusProperty) {
