@@ -42,13 +42,13 @@ public class GroupSummaryResponse {
     private int onlinePlayerCount;
 
     @Schema(description = "Minimum number of services that should be online in the group")
-    private int minOnlineCount;
+    private int minServices;
 
     @Schema(description = "Maximum number of services that can be online in the group")
-    private int maxOnlineCount;
+    private int maxServices;
 
     @Schema(description = "Maximum number of players allowed in each service of the group")
-    private int maxPlayerCount;
+    private int maxPlayers;
 
     @Schema(description = "Amount of memory allocated to each service of the group in megabytes")
     private int maxMemory;
@@ -57,13 +57,13 @@ public class GroupSummaryResponse {
     private int startPriority;
 
     @Schema(description = "Percentage of new services that should be started in this group (used for load balancing between multiple groups with the same priority)")
-    private int newServicePercentage;
+    private int startPercentage;
 
     @Schema(description = "Custom JVM flags that are added when starting a service of the group", examples = {"-Xmx1024M", "-Xms512M"})
     private Set<String> customJvmFlags;
 
     @Schema(description = "Custom service templates that are used when starting a service of the group", examples = {"template1", "template2"})
-    private Set<String> serviceTemplates;
+    private Set<String> templates;
 
     @Schema(description = "Custom properties that are added to each service of the group")
     private List<ApiProperty> properties;
