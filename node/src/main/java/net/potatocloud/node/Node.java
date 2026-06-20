@@ -150,7 +150,7 @@ public class Node extends CloudAPI {
 
         commandManager.setLogger(logger);
 
-        final Screen nodeScreen = new NodeScreen(console, logger);
+        final Screen nodeScreen = new NodeScreen(console);
         screenManager.register(nodeScreen);
         screenManager.current(nodeScreen);
         screenManager.init(server);
