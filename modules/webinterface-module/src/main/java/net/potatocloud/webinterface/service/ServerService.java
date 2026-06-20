@@ -14,4 +14,6 @@ public interface ServerService {
 
     boolean shutdown(String name);
 
+    void execute(String serviceName, String command);
+
 }

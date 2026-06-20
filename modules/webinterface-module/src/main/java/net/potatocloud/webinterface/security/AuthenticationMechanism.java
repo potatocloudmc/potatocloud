@@ -13,7 +13,7 @@ import jakarta.inject.Inject;
 import java.util.Set;
 
 @ApplicationScoped
-public class ApiKeyAndJwtAuthMechanism implements HttpAuthenticationMechanism {
+public class AuthenticationMechanism implements HttpAuthenticationMechanism {
 
     @Inject
     IdentityProviderManager identityProviderManager;
@@ -32,6 +32,15 @@ public class ApiKeyAndJwtAuthMechanism implements HttpAuthenticationMechanism {
             String token = authHeader.substring(7);
             return identityProviderManager
                     .authenticate(new JwtAuthenticationRequest(token));
+        }
+
+        String wsProtocol = context.request().getHeader("Sec-WebSocket-Protocol");
+        if (wsProtocol != null) {
+            String[] parts = wsProtocol.split(",\\s*");
+            if (parts.length == 2 && "bearer".equals(parts[0])) {
+                return identityProviderManager
+                        .authenticate(new JwtAuthenticationRequest(parts[1]));
+            }
         }
 
         return Uni.createFrom().nullItem();

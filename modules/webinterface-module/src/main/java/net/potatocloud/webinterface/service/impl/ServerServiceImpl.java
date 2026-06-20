@@ -3,6 +3,7 @@ package net.potatocloud.webinterface.service.impl;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import net.potatocloud.api.CloudAPI;
+import net.potatocloud.api.service.Service;
 import net.potatocloud.webinterface.mapper.ServerMapper;
 import net.potatocloud.webinterface.model.ApiService;
 import net.potatocloud.webinterface.service.ServerService;
@@ -47,6 +48,19 @@ public class ServerServiceImpl implements ServerService {
                     return true;
                 })
                 .orElse(false);
+    }
+
+    @Override
+    public void execute(String screenName, String command) {
+        CloudAPI api = CloudAPI.instance();
+        Service service = api.serviceManager().services().stream()
+                .filter(s -> s.name().equals(screenName))
+                .findFirst()
+                .orElse(null);
+
+        if (service == null) return;
+
+        api.serviceManager().execute(service, command);
     }
 
 }
