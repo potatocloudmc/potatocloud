@@ -25,7 +25,7 @@ public class ConsoleReader extends Thread {
         try {
             while (!isInterrupted()) {
 
-                final Node node = Node.getInstance();
+                final Node node = Node.instance();
 
                 if (!node.ready()) {
                     continue;
@@ -68,7 +68,7 @@ public class ConsoleReader extends Thread {
 
             }
         } catch (UserInterruptException e) {
-            Node.getInstance().shutdown();
+            Node.instance().shutdown();
         } catch (EndOfFileException e) {
             console.clearScreen();
             console.updateScreen();

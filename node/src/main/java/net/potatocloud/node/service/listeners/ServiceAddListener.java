@@ -38,7 +38,7 @@ public class ServiceAddListener implements PacketListener<ServiceAddPacket> {
         serviceManager.addService(packet.service());
 
         if (ctx.connection().type() == ConnectionType.NODE) {
-            final Console console = Node.getInstance().console();
+            final Console console = Node.instance().console();
             final Screen screen = new RemoteServiceScreen(packet.service(), console, clusterManager);
             screenManager.register(screen);
         }

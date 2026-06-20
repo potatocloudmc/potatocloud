@@ -104,7 +104,7 @@ public class AddVersionToPlatformSetup extends Setup {
         );
 
         platform.addVersion(version);
-        Node.getInstance().platformManager().update(platform);
+        Node.instance().platformManager().update(platform);
 
         logger.info("Version &a" + version.name() + " &7was added to platform &a" + platform.name());
     }

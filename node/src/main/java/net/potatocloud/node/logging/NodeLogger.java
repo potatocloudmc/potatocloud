@@ -71,8 +71,8 @@ public class NodeLogger implements Logger {
         appendLine(dayLogPath, raw);
         appendLine(latestLogPath, raw);
 
-        if (Node.getInstance().screenManager().current() != null) {
-            final boolean nodeScreen = Node.getInstance()
+        if (Node.instance().screenManager().current() != null) {
+            final boolean nodeScreen = Node.instance()
                     .screenManager()
                     .current()
                     .name()
@@ -85,7 +85,7 @@ public class NodeLogger implements Logger {
             console.println(colored);
         }
 
-        final Screen nodeScreen = Node.getInstance().screenManager().get(NodeScreen.NODE_SCREEN_NAME);
+        final Screen nodeScreen = Node.instance().screenManager().get(NodeScreen.NODE_SCREEN_NAME);
         if (nodeScreen != null) {
             nodeScreen.append(colored);
         }

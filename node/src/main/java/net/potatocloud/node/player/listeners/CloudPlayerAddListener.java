@@ -24,7 +24,7 @@ public class CloudPlayerAddListener implements PacketListener<CloudPlayerAddPack
 
         playerManager.registerPlayer(packet.player());
 
-        final Node node = Node.getInstance();
+        final Node node = Node.instance();
 
         server.broadcast().connectors().exclude(ctx.connection()).send(packet);
 

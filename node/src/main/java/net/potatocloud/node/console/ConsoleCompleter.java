@@ -23,7 +23,7 @@ public class ConsoleCompleter implements Completer {
 
     @Override
     public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
-        final ScreenManager screenManager = Node.getInstance().screenManager();
+        final ScreenManager screenManager = Node.instance().screenManager();
         final Screen currentScreen = screenManager.current();
 
         if (currentScreen != null && !currentScreen.name().equals(NodeScreen.NODE_SCREEN_NAME) && !currentScreen.name().startsWith("setup_")) {
@@ -32,7 +32,7 @@ public class ConsoleCompleter implements Completer {
             return;
         }
 
-        final Setup currentSetup = Node.getInstance().setupManager().getCurrentSetup();
+        final Setup currentSetup = Node.instance().setupManager().getCurrentSetup();
         if (currentSetup != null) {
             if (currentSetup.isInSummary()) {
                 candidates.add(new Candidate("back"));

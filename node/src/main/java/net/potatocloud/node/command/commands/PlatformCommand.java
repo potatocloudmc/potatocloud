@@ -20,7 +20,7 @@ import java.util.Optional;
 public class PlatformCommand extends Command {
 
     public PlatformCommand(Logger logger, PlatformManager platformManager) {
-        final Node node = Node.getInstance();
+        final Node node = Node.instance();
 
         defaultExecutor(ctx -> sendHelp());
 

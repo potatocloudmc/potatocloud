@@ -15,7 +15,7 @@ public class DefaultFilesStep extends AbstractPrepareStep {
     @Override
     public void execute(String serviceName, Platform platform, Path serverDirectory) {
         try {
-            final NodeConfig config = Node.getInstance().config();
+            final NodeConfig config = Node.instance().config();
 
             if (platform.bukkitBased()) {
                 final Path serverProperties = serverDirectory.resolve("server.properties");

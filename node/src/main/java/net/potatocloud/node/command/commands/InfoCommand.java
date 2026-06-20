@@ -21,8 +21,8 @@ public class InfoCommand extends Command {
             logger.info("OS&8: &a" + System.getProperty("os.name") + " &8(&a" + System.getProperty("os.version") + "&8, &a" + System.getProperty("os.arch") + "&8)");
             logger.info("User&8: &a" + System.getProperty("user.name"));
             logger.info("Java version&8: &a" + System.getProperty("java.version") + " &8(&a" + System.getProperty("java.vendor") + "&8)");
-            logger.info("Uptime&8: &a" + TimeFormatter.formatAsDuration(Node.getInstance().getUptime()));
-            logger.info("Started At&8: &a" + TimeFormatter.formatAsDateAndTime(Node.getInstance().startupTime()));
+            logger.info("Uptime&8: &a" + TimeFormatter.formatAsDuration(Node.instance().uptime()));
+            logger.info("Started At&8: &a" + TimeFormatter.formatAsDateAndTime(Node.instance().startupTime()));
 
             final double totalMemory = memory.getTotal() / (1024.0 * 1024 * 1024);
             final double availableMemory = memory.getAvailable() / (1024.0 * 1024 * 1024);

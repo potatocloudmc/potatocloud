@@ -74,7 +74,7 @@ public class SubCommand {
                 sendHelp();
                 return;
             }
-            Node.getInstance().logger().info(errorMessage);
+            Node.instance().logger().info(errorMessage);
             return;
         }
 
@@ -143,7 +143,7 @@ public class SubCommand {
     }
 
     public void sendHelp() {
-        Node.getInstance().logger().info(getUsageMessage());
+        Node.instance().logger().info(getUsageMessage());
     }
 
     public String getUsageMessage() {

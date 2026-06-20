@@ -62,7 +62,7 @@ public abstract class Setup {
     public void handleInput(String input) {
         input = input.strip();
 
-        final Node node = Node.getInstance();
+        final Node node = Node.instance();
         final SetupManager setupManager = node.setupManager();
         final Logger logger = node.logger();
 

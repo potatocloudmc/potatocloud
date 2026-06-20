@@ -56,7 +56,7 @@ public class ClusterSyncListener implements PacketListener<ClusterSyncPacket> {
             }
             serviceManager.addService(service);
 
-            final Console console = Node.getInstance().console();
+            final Console console = Node.instance().console();
             final Screen screen = new RemoteServiceScreen(service, console, clusterManager);
             screenManager.register(screen);
 
