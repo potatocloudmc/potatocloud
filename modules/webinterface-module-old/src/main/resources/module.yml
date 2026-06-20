@@ -1,4 +1,0 @@
-name: "WebInterfaceModule"
-version: "1.0.0"
-main: "net.potatocloud.webinterface.WebInterfaceModule"
-
