@@ -69,7 +69,6 @@ public class WebInterfaceModule extends AbstractModule {
         setIfPresent(config, "bind-address", "quarkus.http.host");
 
         setIfPresent(config, "api-keys", "app.security.api-keys");
-        setIfPresent(config, "webhook-secret", "app.security.webhook.secret");
         setIfPresent(config, "jwt-secret", "app.security.jwt-secret");
     }
 
