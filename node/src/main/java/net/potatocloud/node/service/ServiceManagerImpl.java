@@ -11,21 +11,23 @@ import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.ServiceState;
 import net.potatocloud.api.service.impl.ServiceImpl;
-
 import net.potatocloud.common.FileUtils;
 import net.potatocloud.network.NetworkServer;
 import net.potatocloud.network.packet.packets.service.*;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.config.NodeConfig;
+import net.potatocloud.node.console.Console;
 import net.potatocloud.node.platform.DownloadManager;
 import net.potatocloud.node.platform.cache.CacheManager;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.screen.ScreenManager;
+import net.potatocloud.node.screen.impl.LocalServiceScreen;
+import net.potatocloud.node.screen.impl.NodeScreen;
 import net.potatocloud.node.service.helper.ServiceIds;
 import net.potatocloud.node.service.helper.ServicePorts;
 import net.potatocloud.node.service.listeners.*;
-import net.potatocloud.node.service.runtime.ServiceProcessMonitor;
 import net.potatocloud.node.service.runtime.ServiceMemoryMonitor;
+import net.potatocloud.node.service.runtime.ServiceProcessMonitor;
 import net.potatocloud.node.service.runtime.ServiceRuntime;
 import net.potatocloud.node.service.runtime.local.LocalJvmRuntime;
 import net.potatocloud.node.service.runtime.local.ServiceDefaultFiles;
@@ -52,6 +54,7 @@ public class ServiceManagerImpl implements ServiceManager {
     private final DownloadManager downloadManager;
     private final CacheManager cacheManager;
     private final ClusterManagerImpl clusterManager;
+    private final Console console;
 
     private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(Thread.ofVirtual().factory());
@@ -66,7 +69,8 @@ public class ServiceManagerImpl implements ServiceManager {
             TemplateManager templateManager,
             DownloadManager downloadManager,
             CacheManager cacheManager,
-            ClusterManagerImpl clusterManager
+            ClusterManagerImpl clusterManager,
+            Console console
     ) {
         this.config = config;
         this.logger = logger;
@@ -78,12 +82,13 @@ public class ServiceManagerImpl implements ServiceManager {
         this.downloadManager = downloadManager;
         this.cacheManager = cacheManager;
         this.clusterManager = clusterManager;
+        this.console = console;
 
         ServiceDefaultFiles.copyDefaultFiles(Path.of(config.folders().data()));
 
         server.on(RequestServicesPacket.class, new RequestServicesListener(this));
-        server.on(ServiceAddPacket.class, new ServiceAddListener(this, server));
-        server.on(ServiceRemovePacket.class, new ServiceRemoveListener(this, server));
+        server.on(ServiceAddPacket.class, new ServiceAddListener(this, server, screenManager, clusterManager));
+        server.on(ServiceRemovePacket.class, new ServiceRemoveListener(this, server, screenManager));
         server.on(ServiceStartedPacket.class, new ServiceStartedListener(this, logger, eventBus, clusterManager, server));
         server.on(ServiceUpdatePacket.class, new ServiceUpdateListener(this, server, clusterManager));
         server.on(ServiceStartingPacket.class, new ServiceStartingListener(logger, this));
@@ -220,7 +225,7 @@ public class ServiceManagerImpl implements ServiceManager {
                 0
         );
 
-        final Screen screen = new Screen(name);
+        final Screen screen = new LocalServiceScreen(service, console);
         screenManager.register(screen);
 
         final LocalJvmRuntime runtime = new LocalJvmRuntime(
@@ -269,8 +274,8 @@ public class ServiceManagerImpl implements ServiceManager {
             services.remove(service);
             screenManager.unregister(service.name());
 
-            if (screenManager.getCurrentScreen().name().equals(service.name())) {
-                screenManager.switchTo(Screen.NODE_SCREEN);
+            if (screenManager.current().name().equals(service.name())) {
+                screenManager.open(screenManager.get(NodeScreen.NODE_SCREEN_NAME));
             }
 
             server.broadcast().connectors().send(new ServiceRemovePacket(service.name(), service.port()));

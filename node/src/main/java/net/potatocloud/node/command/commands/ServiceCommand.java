@@ -6,13 +6,14 @@ import net.potatocloud.api.property.DefaultProperties;
 import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceState;
+import net.potatocloud.api.utils.TimeFormatter;
 import net.potatocloud.common.PropertyUtil;
+import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.command.ArgumentType;
 import net.potatocloud.node.command.Command;
 import net.potatocloud.node.command.CommandInfo;
 import net.potatocloud.node.command.SubCommand;
 import net.potatocloud.node.screen.ScreenManager;
-import net.potatocloud.api.utils.TimeFormatter;
 import net.potatocloud.node.service.ServiceManagerImpl;
 
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ import java.util.List;
 @CommandInfo(name = "service", description = "Manage services", aliases = {"ser", "serv", "s"})
 public class ServiceCommand extends Command {
 
-    public ServiceCommand(Logger logger, ServiceManagerImpl serviceManager, ScreenManager screenManager) {
+    public ServiceCommand(Logger logger, ServiceManagerImpl serviceManager, ScreenManager screenManager, ClusterManagerImpl clusterManager) {
         defaultExecutor(_ -> sendHelp());
 
         sub("copy", "Copy files from a service to a template")
@@ -239,9 +240,7 @@ public class ServiceCommand extends Command {
                 .executes(ctx -> {
                     final Service service = ctx.get("service");
 
-                    if (screenManager.get(service.name()) != null) {
-                        screenManager.switchTo(service.name());
-                    }
+                    screenManager.open(service.name());
                 });
 
         sub("start", "Start new services")

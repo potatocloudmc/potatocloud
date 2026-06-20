@@ -143,7 +143,7 @@ public final class LocalJvmRuntime implements ServiceRuntime {
             try {
                 String line;
                 while (process.isAlive() && (line = processReader.readLine()) != null) {
-                    screen.addLog(line);
+                    screen.append(line);
                 }
             } catch (IOException ignored) {
             }

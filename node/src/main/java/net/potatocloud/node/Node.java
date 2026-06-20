@@ -42,6 +42,7 @@ import net.potatocloud.node.player.CloudPlayerManagerImpl;
 import net.potatocloud.node.properties.NodePropertiesHolder;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.screen.ScreenManager;
+import net.potatocloud.node.screen.impl.NodeScreen;
 import net.potatocloud.node.service.ServiceManagerImpl;
 import net.potatocloud.node.service.start.ServiceStartScheduler;
 import net.potatocloud.node.setup.SetupManager;
@@ -111,7 +112,7 @@ public class Node extends CloudAPI {
         this.commandManager = new CommandManager();
         this.console = new Console(config, commandManager);
         this.logger = new NodeLogger(config, console, Path.of(config.folders().logs()));
-        this.screenManager = new ScreenManager(console, logger);
+        this.screenManager = new ScreenManager(console);
         this.setupManager = new SetupManager();
         this.updateChecker = new UpdateChecker(logger);
 
@@ -136,7 +137,7 @@ public class Node extends CloudAPI {
         this.moduleLoader = new ModuleLoader(moduleManager);
 
         this.serviceManager = new ServiceManagerImpl(
-                config, logger, server, eventBus, groupManager, screenManager, templateManager, downloadManager, cacheManager, this.clusterManager
+                config, logger, server, eventBus, groupManager, screenManager, templateManager, downloadManager, cacheManager, this.clusterManager, console
         );
         this.serviceStartScheduler = new ServiceStartScheduler(config, groupManager, serviceManager, eventBus);
     }
@@ -149,9 +150,10 @@ public class Node extends CloudAPI {
 
         commandManager.setLogger(logger);
 
-        final Screen nodeScreen = new Screen(Screen.NODE_SCREEN);
+        final Screen nodeScreen = new NodeScreen(console, logger);
         screenManager.register(nodeScreen);
-        screenManager.setCurrentScreen(nodeScreen);
+        screenManager.current(nodeScreen);
+        screenManager.init(server);
 
         console.start();
 
@@ -176,7 +178,7 @@ public class Node extends CloudAPI {
                 server.on(EventPacket.class, new ClusterEventListener(clusterBus));
             }
 
-            clusterManager.start((GroupManagerImpl) groupManager, serviceManager, (CloudPlayerManagerImpl) playerManager);
+            clusterManager.start((GroupManagerImpl) groupManager, serviceManager, (CloudPlayerManagerImpl) playerManager, screenManager);
         }
 
         final List<Group> groups = groupManager.groups();
@@ -227,7 +229,7 @@ public class Node extends CloudAPI {
         commandManager.registerCommand(new InfoCommand(logger));
         commandManager.registerCommand(new PlatformCommand(logger, platformManager));
         commandManager.registerCommand(new PlayerCommand(logger, playerManager));
-        commandManager.registerCommand(new ServiceCommand(logger, serviceManager, screenManager));
+        commandManager.registerCommand(new ServiceCommand(logger, serviceManager, screenManager, clusterManager));
         commandManager.registerCommand(new ShutdownCommand(this));
 
         if (config.cluster().enabled()) {
