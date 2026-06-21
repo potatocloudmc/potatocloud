@@ -5,6 +5,7 @@ import net.potatocloud.api.event.EventBus;
 import net.potatocloud.api.event.EventHandler;
 import net.potatocloud.api.event.PublishTarget;
 import net.potatocloud.network.NetworkServer;
+import net.potatocloud.network.packet.packets.event.EventPacket;
 
 public class ServerEventBus implements EventBus {
 
@@ -13,6 +14,10 @@ public class ServerEventBus implements EventBus {
 
     public ServerEventBus(NetworkServer server) {
         this.server = server;
+        server.on(EventPacket.class, ctx -> {
+            Event event = JsonEventCodec.decode(ctx.packet());
+            local.publish(event);
+        });
     }
 
     @Override
