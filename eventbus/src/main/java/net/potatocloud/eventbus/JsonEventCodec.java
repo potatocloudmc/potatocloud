@@ -18,6 +18,11 @@ public final class JsonEventCodec {
     public static Event decode(EventPacket packet) {
         try {
             final Class<?> clazz = Class.forName(packet.eventClass());
+
+            if (!Event.class.isAssignableFrom(clazz)) {
+                throw new RuntimeException("Class " + packet.eventClass() + " does not implement Event");
+            }
+
             return (Event) MAPPER.readValue(packet.eventJson(), clazz);
         } catch (Exception e) {
             throw new RuntimeException("Failed to deserialize event: " + packet.eventClass(), e);

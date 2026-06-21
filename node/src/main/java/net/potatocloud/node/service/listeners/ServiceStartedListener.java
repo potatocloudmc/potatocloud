@@ -55,6 +55,7 @@ public class ServiceStartedListener implements PacketListener<ServiceStartedPack
                 clusterManager.broadcast(new ServiceStartedPacket(packet.serviceName()));
             }
 
+            // needed for velocity plugin to register servers on start
             server.broadcast().connectors().send(new ServiceStartedPacket(packet.serviceName()));
 
             eventBus.publish(new ServiceStartedEvent(packet.serviceName()));

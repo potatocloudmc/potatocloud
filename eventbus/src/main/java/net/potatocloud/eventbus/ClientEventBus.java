@@ -7,7 +7,7 @@ import net.potatocloud.api.event.PublishTarget;
 import net.potatocloud.network.NetworkClient;
 import net.potatocloud.network.packet.packets.event.EventPacket;
 
-public final class ClientEventBus implements EventBus {
+public class ClientEventBus implements EventBus {
 
     private final DefaultEventBus local = new DefaultEventBus();
     private final NetworkClient client;
