@@ -5,7 +5,6 @@ plugins {
 }
 
 repositories {
-    maven("https://jitpack.io")
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven("https://dist.labymod.net/api/v1/maven/release/")
 }

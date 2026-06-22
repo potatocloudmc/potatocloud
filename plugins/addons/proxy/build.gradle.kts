@@ -5,7 +5,6 @@ plugins {
 }
 
 repositories {
-    maven("https://jitpack.io")
     maven("https://repo.papermc.io/repository/maven-public")
     maven("https://dist.labymod.net/api/v1/maven/release/")
 }

@@ -6,10 +6,6 @@ plugins {
 
 group = "net.potatocloud.node"
 
-repositories {
-    maven("https://jitpack.io")
-}
-
 dependencies {
     implementation(project(":api"))
     implementation(project(":connector"))
