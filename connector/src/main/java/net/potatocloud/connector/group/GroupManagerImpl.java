@@ -2,7 +2,7 @@ package net.potatocloud.connector.group;
 
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.group.GroupManager;
-import net.potatocloud.connector.group.listeners.GroupUpdateListener;
+import net.potatocloud.connector.group.handlers.GroupUpdateHandler;
 import net.potatocloud.network.packet.packets.group.GroupsResponsePacket;
 import net.potatocloud.network.NetworkClient;
 import net.potatocloud.network.packet.packets.group.GroupAddPacket;
@@ -27,7 +27,7 @@ public class GroupManagerImpl implements GroupManager {
         });
 
         client.on(GroupDeletePacket.class, ctx -> deleteLocal(ctx.packet().groupName()));
-        client.on(GroupUpdatePacket.class, new GroupUpdateListener(this));
+        client.on(GroupUpdatePacket.class, new GroupUpdateHandler(this));
 
         client.request(new RequestGroupsPacket(), GroupsResponsePacket.class).thenAccept(response -> response.groups().forEach(this::addGroup));
     }

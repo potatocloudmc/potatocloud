@@ -14,11 +14,11 @@ import net.potatocloud.network.packet.packets.cluster.*;
 import net.potatocloud.network.packet.packets.group.GroupDeletePacket;
 import net.potatocloud.network.packet.packets.player.CloudPlayerRemovePacket;
 import net.potatocloud.network.packet.packets.service.ServiceRemovePacket;
-import net.potatocloud.node.cluster.listeners.NodeDisconnectListener;
-import net.potatocloud.node.cluster.listeners.NodeDiscoveryListener;
-import net.potatocloud.node.cluster.listeners.NodeJoinListener;
-import net.potatocloud.node.cluster.listeners.NodeLeaveListener;
-import net.potatocloud.node.cluster.listeners.ClusterSyncListener;
+import net.potatocloud.node.cluster.handlers.NodeDisconnectHandler;
+import net.potatocloud.node.cluster.handlers.NodeDiscoveryHandler;
+import net.potatocloud.node.cluster.handlers.NodeJoinHandler;
+import net.potatocloud.node.cluster.handlers.NodeLeaveHandler;
+import net.potatocloud.node.cluster.handlers.ClusterSyncHandler;
 import net.potatocloud.node.config.ClusterConfig;
 import net.potatocloud.node.group.GroupManagerImpl;
 import net.potatocloud.node.player.CloudPlayerManagerImpl;
@@ -64,13 +64,13 @@ public class ClusterManagerImpl implements ClusterManager {
         this.serviceManager = serviceManager;
         this.playerManager = playerManager;
 
-        server.on(NodeJoinPacket.class, new NodeJoinListener(localNode, this, config.token(), logger, groupManager, serviceManager, playerManager));
+        server.on(NodeJoinPacket.class, new NodeJoinHandler(localNode, this, config.token(), logger, groupManager, serviceManager, playerManager));
         server.on(NodeJoinRejectPacket.class, ctx -> logger.warn("Could not join the cluster&8: &c" + ctx.packet().reason()));
-        server.on(NodeLeavePacket.class, new NodeLeaveListener(this, logger));
+        server.on(NodeLeavePacket.class, new NodeLeaveHandler(this, logger));
         server.on(HeartbeatPacket.class, ctx -> remoteNode(ctx.packet().nodeName()).ifPresent(ClusterNodeImpl::updateHeartbeat));
-        server.on(NodeDiscoveryPacket.class, new NodeDiscoveryListener(this));
-        server.on(ClusterSyncPacket.class, new ClusterSyncListener(groupManager, serviceManager, playerManager, server, screenManager, this));
-        server.addDisconnectListener(new NodeDisconnectListener(this, logger));
+        server.on(NodeDiscoveryPacket.class, new NodeDiscoveryHandler(this));
+        server.on(ClusterSyncPacket.class, new ClusterSyncHandler(groupManager, serviceManager, playerManager, server, screenManager, this));
+        server.addDisconnectHandler(new NodeDisconnectHandler(this, logger));
 
         heartbeatScheduler = new HeartbeatScheduler(this, localNode, logger);
         heartbeatScheduler.start();
@@ -102,7 +102,7 @@ public class ClusterManagerImpl implements ClusterManager {
 
         final NettyNetworkClient client = new NettyNetworkClient(packetManager);
 
-        client.addConnectionListener(() -> {
+        client.addConnectionHandler(() -> {
             final NetworkConnection connection = client.connection();
             outboundConnections.add(connection);
             connection.send(new NodeJoinPacket(localNode.name(), localNode.host(), localNode.port(), localNode.startedAt().toEpochMilli(), CloudAPI.VERSION.toString(), config.token()));

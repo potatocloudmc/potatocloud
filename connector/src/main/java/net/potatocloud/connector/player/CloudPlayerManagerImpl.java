@@ -6,7 +6,7 @@ import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.player.CloudPlayerManager;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.connector.event.ConnectPlayerWithServiceEvent;
-import net.potatocloud.connector.player.listeners.CloudPlayerUpdateListener;
+import net.potatocloud.connector.player.handlers.CloudPlayerUpdateHandler;
 import net.potatocloud.network.NetworkClient;
 import net.potatocloud.network.packet.packets.player.CloudPlayerAddPacket;
 import net.potatocloud.network.packet.packets.player.CloudPlayerRemovePacket;
@@ -26,7 +26,7 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
 
         client.on(CloudPlayerAddPacket.class, ctx -> registerPlayerLocal(ctx.packet().player()));
         client.on(CloudPlayerRemovePacket.class, ctx -> find(ctx.packet().playerUniqueId()).ifPresent(this::unregisterPlayerLocal));
-        client.on(CloudPlayerUpdatePacket.class, new CloudPlayerUpdateListener(this));
+        client.on(CloudPlayerUpdatePacket.class, new CloudPlayerUpdateHandler(this));
 
         client.request(new RequestCloudPlayersPacket(), CloudPlayersResponsePacket.class).thenAccept(response -> response.players().forEach(this::registerPlayerLocal));
     }

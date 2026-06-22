@@ -11,7 +11,7 @@ import net.potatocloud.network.NetworkConnection;
 import net.potatocloud.network.NetworkServer;
 import net.potatocloud.network.netty.NettyUtils;
 import net.potatocloud.network.packet.Packet;
-import net.potatocloud.network.packet.PacketListener;
+import net.potatocloud.network.packet.PacketHandler;
 import net.potatocloud.network.packet.PacketManager;
 
 import java.net.InetSocketAddress;
@@ -26,7 +26,7 @@ public class NettyNetworkServer implements NetworkServer {
 
     private final PacketManager packetManager;
     private final Map<Channel, NetworkConnection> sessionMap = new ConcurrentHashMap<>();
-    private final List<Consumer<NetworkConnection>> disconnectListeners = new CopyOnWriteArrayList<>();
+    private final List<Consumer<NetworkConnection>> disconnectHandlers = new CopyOnWriteArrayList<>();
 
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
@@ -83,12 +83,12 @@ public class NettyNetworkServer implements NetworkServer {
     }
 
     @Override
-    public void addDisconnectListener(Consumer<NetworkConnection> listener) {
-        disconnectListeners.add(listener);
+    public void addDisconnectHandler(Consumer<NetworkConnection> handler) {
+        disconnectHandlers.add(handler);
     }
 
     public void handleDisconnect(NetworkConnection connection) {
-        disconnectListeners.forEach(listener -> listener.accept(connection));
+        disconnectHandlers.forEach(handler -> handler.accept(connection));
     }
 
     public PacketManager packetManager() {
@@ -96,8 +96,8 @@ public class NettyNetworkServer implements NetworkServer {
     }
 
     @Override
-    public <T extends Packet> void on(Class<T> packetClass, PacketListener<T> listener) {
-        packetManager.on(packetClass, listener);
+    public <T extends Packet> void on(Class<T> packetClass, PacketHandler<T> handler) {
+        packetManager.on(packetClass, handler);
     }
 
     @Override

@@ -8,13 +8,13 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import net.potatocloud.network.ConnectionListener;
+import net.potatocloud.network.ConnectionHandler;
 import net.potatocloud.network.NetworkClient;
 import net.potatocloud.network.NetworkConnection;
 import net.potatocloud.network.netty.NettyNetworkConnection;
 import net.potatocloud.network.netty.NettyUtils;
 import net.potatocloud.network.packet.Packet;
-import net.potatocloud.network.packet.PacketListener;
+import net.potatocloud.network.packet.PacketHandler;
 import net.potatocloud.network.packet.PacketManager;
 import net.potatocloud.network.packet.request.RequestPacket;
 import net.potatocloud.network.packet.request.ResponsePacket;
@@ -31,7 +31,7 @@ public class NettyNetworkClient implements NetworkClient {
     private volatile Channel channel;
     private EventLoopGroup group;
     private volatile NetworkConnection connection;
-    private final List<ConnectionListener> listeners = new ArrayList<>();
+    private final List<ConnectionHandler> connectionHandlers = new ArrayList<>();
 
     public NettyNetworkClient(PacketManager packetManager) {
         this.packetManager = packetManager;
@@ -59,12 +59,12 @@ public class NettyNetworkClient implements NetworkClient {
     }
 
     @Override
-    public void addConnectionListener(ConnectionListener listener) {
-        listeners.add(listener);
+    public void addConnectionHandler(ConnectionHandler handler) {
+        connectionHandlers.add(handler);
     }
 
     public void onConnected() {
-        listeners.forEach(ConnectionListener::onConnected);
+        connectionHandlers.forEach(ConnectionHandler::onConnected);
     }
 
     @Override
@@ -74,8 +74,8 @@ public class NettyNetworkClient implements NetworkClient {
     }
 
     @Override
-    public <T extends Packet> void on(Class<T> packetClass, PacketListener<T> listener) {
-        packetManager.on(packetClass, listener);
+    public <T extends Packet> void on(Class<T> packetClass, PacketHandler<T> handler) {
+        packetManager.on(packetClass, handler);
     }
 
     @Override

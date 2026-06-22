@@ -16,9 +16,9 @@ import net.potatocloud.node.Node;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.group.config.GroupStorage;
 import net.potatocloud.network.packet.packets.group.GroupsResponsePacket;
-import net.potatocloud.node.group.listeners.GroupAddListener;
-import net.potatocloud.node.group.listeners.GroupDeleteListener;
-import net.potatocloud.node.group.listeners.GroupUpdateListener;
+import net.potatocloud.node.group.handlers.GroupAddHandler;
+import net.potatocloud.node.group.handlers.GroupDeleteHandler;
+import net.potatocloud.node.group.handlers.GroupUpdateHandler;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -43,9 +43,9 @@ public class GroupManagerImpl implements GroupManager {
         this.clusterManager = clusterManager;
 
         server.on(RequestGroupsPacket.class, ctx -> ctx.reply(new GroupsResponsePacket(groups())));
-        server.on(GroupUpdatePacket.class, new GroupUpdateListener(this, server, clusterManager));
-        server.on(GroupAddPacket.class, new GroupAddListener(this, server, clusterManager));
-        server.on(GroupDeletePacket.class, new GroupDeleteListener(this, server, clusterManager));
+        server.on(GroupUpdatePacket.class, new GroupUpdateHandler(this, server, clusterManager));
+        server.on(GroupAddPacket.class, new GroupAddHandler(this, server, clusterManager));
+        server.on(GroupDeletePacket.class, new GroupDeleteHandler(this, server, clusterManager));
 
         loadGroups();
     }

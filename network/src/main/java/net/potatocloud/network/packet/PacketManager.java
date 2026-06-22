@@ -19,7 +19,7 @@ public final class PacketManager {
     private final Map<Integer, Packet.Codec<? extends Packet>> codecs = new ConcurrentHashMap<>();
     private final Map<Class<? extends Packet>, Integer> packetIds = new ConcurrentHashMap<>();
 
-    private final Map<Class<? extends Packet>, CopyOnWriteArrayList<PacketListener<? extends Packet>>> listeners = new ConcurrentHashMap<>();
+    private final Map<Class<? extends Packet>, CopyOnWriteArrayList<PacketHandler<? extends Packet>>> handlers = new ConcurrentHashMap<>();
 
     private final Map<Integer, PendingRequest<?>> pending = new ConcurrentHashMap<>();
     private final AtomicInteger requestCounter = new AtomicInteger(1);
@@ -66,8 +66,8 @@ public final class PacketManager {
         requestIds.remove(packet);
     }
 
-    public <T extends Packet> void on(Class<T> type, PacketListener<T> listener) {
-        listeners.computeIfAbsent(type, _ -> new CopyOnWriteArrayList<>()).add(listener);
+    public <T extends Packet> void on(Class<T> type, PacketHandler<T> handler) {
+        handlers.computeIfAbsent(type, _ -> new CopyOnWriteArrayList<>()).add(handler);
     }
 
     public <T extends ResponsePacket> CompletableFuture<T> request(NetworkConnection connection, RequestPacket packet, Class<T> type) {
@@ -105,7 +105,7 @@ public final class PacketManager {
             return;
         }
 
-        final List<PacketListener<? extends Packet>> list = listeners.get(packet.getClass());
+        final List<PacketHandler<? extends Packet>> list = handlers.get(packet.getClass());
         if (list == null) {
             return;
         }
@@ -117,8 +117,8 @@ public final class PacketManager {
 
         final PacketContext<T> ctx = new PacketContext<>(connection, this, packet, requestId);
 
-        for (PacketListener<? extends Packet> handler : list) {
-            ((PacketListener<T>) handler).handle(ctx);
+        for (PacketHandler<? extends Packet> handler : list) {
+            ((PacketHandler<T>) handler).handle(ctx);
         }
     }
 }

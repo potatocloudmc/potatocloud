@@ -5,8 +5,8 @@ import net.potatocloud.api.group.Group;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.impl.ServiceImpl;
-import net.potatocloud.connector.service.listeners.ServiceAddListener;
-import net.potatocloud.connector.service.listeners.ServiceUpdateListener;
+import net.potatocloud.connector.service.handlers.ServiceAddHandler;
+import net.potatocloud.connector.service.handlers.ServiceUpdateHandler;
 import net.potatocloud.network.packet.packets.service.ServicesResponsePacket;
 import net.potatocloud.network.NetworkClient;
 import net.potatocloud.network.packet.packets.service.*;
@@ -28,9 +28,9 @@ public class ServiceManagerImpl implements ServiceManager {
     public ServiceManagerImpl(NetworkClient client) {
         this.client = client;
 
-        client.on(ServiceAddPacket.class, new ServiceAddListener(this));
+        client.on(ServiceAddPacket.class, new ServiceAddHandler(this));
         client.on(ServiceRemovePacket.class, ctx -> find(ctx.packet().serviceName()).ifPresent(services::remove));
-        client.on(ServiceUpdatePacket.class, new ServiceUpdateListener(this));
+        client.on(ServiceUpdatePacket.class, new ServiceUpdateHandler(this));
         client.on(ServiceMemoryUpdatePacket.class, ctx -> find(ctx.packet().serviceName()).ifPresent(service -> {
             if (service instanceof ServiceImpl serviceImpl) {
                 serviceImpl.usedMemory(ctx.packet().usedMemory());

@@ -14,7 +14,7 @@ public interface NetworkClient extends NetworkComponent {
 
     void close();
 
-    void addConnectionListener(ConnectionListener listener);
+    void addConnectionHandler(ConnectionHandler handler);
 
     <T extends ResponsePacket> CompletableFuture<T> request(RequestPacket packet, Class<T> type);
 

@@ -47,7 +47,7 @@ public class ConnectorAPI extends CloudAPI {
 
         client = new NettyNetworkClient(packetManager);
 
-        client.addConnectionListener(() -> {
+        client.addConnectionHandler(() -> {
             logger = new ConnectorLogger(client);
             clusterManager = new ClusterManagerImpl(client);
             eventBus = new ClientEventBus(client);
