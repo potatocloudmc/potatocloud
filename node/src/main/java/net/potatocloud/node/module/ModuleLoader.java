@@ -1,6 +1,5 @@
 package net.potatocloud.node.module;
 
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.module.AbstractModule;
 import net.potatocloud.api.module.Module;
 import net.potatocloud.api.version.Version;
@@ -13,10 +12,13 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-@RequiredArgsConstructor
 public class ModuleLoader {
 
     private final ModuleManager moduleManager;
+
+    public ModuleLoader(ModuleManager moduleManager) {
+        this.moduleManager = moduleManager;
+    }
 
     public void load(Path modulesPath) {
         try {
@@ -29,13 +31,15 @@ public class ModuleLoader {
                     .filter(Files::isRegularFile).filter(path -> path.toString().endsWith(".jar"))
                     .forEach(this::loadJar);
         } catch (Exception e) {
-            throw new RuntimeException("Error loading modules: " + e.getMessage());
+            throw new RuntimeException("Error loading modules: " + e);
         }
     }
 
     private void loadJar(Path jar) {
+        URLClassLoader loader = null;
+
         try {
-            URLClassLoader loader = new URLClassLoader(new URL[]{jar.toUri().toURL()}, getClass().getClassLoader());
+            loader = new URLClassLoader(new URL[]{jar.toUri().toURL()}, getClass().getClassLoader());
 
             try (InputStream stream = loader.getResourceAsStream("module.yml")) {
                 if (stream == null) {
@@ -54,9 +58,15 @@ public class ModuleLoader {
                 }
 
                 module.onLoad();
-                moduleManager.register(module);
+                moduleManager.register(new LoadedModule(module, loader));
             }
         } catch (Exception e) {
+            if (loader != null) {
+                try {
+                    loader.close();
+                } catch (Exception ignored) {
+                }
+            }
             throw new RuntimeException("Error loading module " + jar.getFileName() + ": " + e.getMessage(), e);
         }
     }
