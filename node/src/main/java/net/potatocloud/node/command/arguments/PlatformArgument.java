@@ -14,14 +14,14 @@ public class PlatformArgument extends ArgumentType<Platform> {
 
     @Override
     public ParseResult<Platform> parse(String input) {
-        return Node.getInstance().platformManager().find(input)
+        return Node.instance().platformManager().find(input)
                 .map(ParseResult::success)
                 .orElseGet(() -> ParseResult.error("Platform &a" + input + " &7does &cnot &7exist"));
     }
 
     @Override
     public List<String> suggest(String input) {
-        return Node.getInstance()
+        return Node.instance()
                 .platformManager()
                 .platforms()
                 .stream()

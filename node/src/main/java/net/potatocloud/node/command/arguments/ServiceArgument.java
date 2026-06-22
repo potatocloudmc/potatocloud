@@ -14,7 +14,7 @@ public class ServiceArgument extends ArgumentType<Service> {
 
     @Override
     public ParseResult<Service> parse(String input) {
-        return Node.getInstance()
+        return Node.instance()
                 .serviceManager()
                 .find(input)
                 .map(ParseResult::success)
@@ -23,7 +23,7 @@ public class ServiceArgument extends ArgumentType<Service> {
 
     @Override
     public List<String> suggest(String input) {
-        return Node.getInstance()
+        return Node.instance()
                 .serviceManager()
                 .services()
                 .stream()

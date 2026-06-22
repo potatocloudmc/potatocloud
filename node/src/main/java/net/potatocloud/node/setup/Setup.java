@@ -7,6 +7,8 @@ import net.potatocloud.node.Node;
 import net.potatocloud.node.console.Console;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.screen.ScreenManager;
+import net.potatocloud.node.screen.impl.NodeScreen;
+import net.potatocloud.node.screen.impl.SimpleScreen;
 import net.potatocloud.node.setup.answer.AnswerResult;
 import net.potatocloud.node.setup.question.Question;
 import net.potatocloud.node.setup.question.QuestionBuilder;
@@ -60,7 +62,7 @@ public abstract class Setup {
     public void handleInput(String input) {
         input = input.strip();
 
-        final Node node = Node.getInstance();
+        final Node node = Node.instance();
         final SetupManager setupManager = node.setupManager();
         final Logger logger = node.logger();
 
@@ -159,9 +161,9 @@ public abstract class Setup {
         final Question question = questions.get(currentIndex);
         final String screenName = "setup_" + getName().toLowerCase();
 
-        questionScreen = new Screen(screenName);
+        questionScreen = new SimpleScreen(screenName);
         screenManager.register(questionScreen);
-        screenManager.switchTo(screenName, false);
+        screenManager.open(questionScreen);
 
         console.setPrompt("> ");
         console.println("&7Setup: &a" + getName() + " &8(&7Question &a" + (currentIndex + 1) + "&8/&a" + questions.size() + "&8)");
@@ -202,9 +204,9 @@ public abstract class Setup {
         inSummary = true;
         final String screenName = "setup_" + getName().toLowerCase() + "_summary";
 
-        summaryScreen = new Screen(screenName);
+        summaryScreen = new SimpleScreen(screenName);
         screenManager.register(summaryScreen);
-        screenManager.switchTo(screenName, false);
+        screenManager.open(summaryScreen);
 
         console.setPrompt("> ");
         console.println("&7Setup: &a" + getName() + " &8(&7Summary&8)");
@@ -235,7 +237,7 @@ public abstract class Setup {
     }
 
     private void cleanup() {
-        screenManager.switchTo(Screen.NODE_SCREEN);
+        screenManager.open(screenManager.get(NodeScreen.NODE_SCREEN_NAME));
 
         if (questionScreen != null) {
             screenManager.unregister(questionScreen.name());

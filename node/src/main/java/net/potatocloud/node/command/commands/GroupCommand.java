@@ -23,7 +23,7 @@ import java.util.List;
 public class GroupCommand extends Command {
 
     public GroupCommand(Logger logger, GroupManager groupManager) {
-        final Node node = Node.getInstance();
+        final Node node = Node.instance();
 
         defaultExecutor(_ -> sendHelp());
 
@@ -217,7 +217,7 @@ public class GroupCommand extends Command {
                         switch (key) {
                             case "addtemplate" -> {
                                 group.addTemplate(value);
-                                Node.getInstance().templateManager().createTemplate(value);
+                                Node.instance().templateManager().createTemplate(value);
                                 groupManager.update(group);
                                 logger.info("Template &a" + value + " &7was added to group &a" + groupName);
                                 return;

@@ -1,55 +1,21 @@
 package net.potatocloud.node.screen;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.function.Consumer;
 
-public class Screen {
+public interface Screen {
 
-    public static final String NODE_SCREEN = "node_screen";
+    String name();
 
-    private final String name;
-    private final List<String> cachedLogs;
-    private final Set<Consumer<String>> logListeners;
+    void open();
 
-    public Screen(String name) {
-        this.name = name;
-        this.cachedLogs = new CopyOnWriteArrayList<>();
-        this.logListeners = new CopyOnWriteArraySet<>();
-    }
+    void close();
 
-    public String name() {
-        return name;
-    }
+    List<String> logs();
 
-    public List<String> cachedLogs() {
-        return Collections.unmodifiableList(cachedLogs);
-    }
+    void append(String line);
 
-    public void addLog(String log) {
-        synchronized (cachedLogs) {
-            if (cachedLogs.size() >= 1000) {
-                cachedLogs.removeFirst();
-            }
-            cachedLogs.add(log);
-        }
-        for (Consumer<String> listener : logListeners) {
-            try {
-                listener.accept(log);
-            } catch (Exception ignored) {
-            }
-        }
-    }
+    void subscribe(ScreenSubscriber subscriber);
 
-    public void subscribe(Consumer<String> listener) {
-        logListeners.add(listener);
-    }
-
-    public void unsubscribe(Consumer<String> listener) {
-        logListeners.remove(listener);
-    }
+    void unsubscribe(ScreenSubscriber subscriber);
 
 }

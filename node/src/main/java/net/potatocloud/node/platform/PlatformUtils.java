@@ -12,7 +12,7 @@ public final class PlatformUtils {
     }
 
     public static Path getDirectoryOfPlatform(Platform platform, PlatformVersion version) {
-        return Path.of(Node.getInstance().config().folders().platforms())
+        return Path.of(Node.instance().config().folders().platforms())
                 .resolve(platform.name())
                 .resolve(version.name());
     }

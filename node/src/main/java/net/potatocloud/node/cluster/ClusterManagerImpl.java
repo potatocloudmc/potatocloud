@@ -18,6 +18,7 @@ import net.potatocloud.node.cluster.listeners.*;
 import net.potatocloud.node.config.ClusterConfig;
 import net.potatocloud.node.group.GroupManagerImpl;
 import net.potatocloud.node.player.CloudPlayerManagerImpl;
+import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.service.ServiceManagerImpl;
 
 import java.time.Instant;
@@ -54,7 +55,7 @@ public class ClusterManagerImpl implements ClusterManager {
         server.on(RequestClusterNodesPacket.class, new RequestClusterNodesListener(this));
     }
 
-    public void start(GroupManagerImpl groupManager, ServiceManagerImpl serviceManager, CloudPlayerManagerImpl playerManager) {
+    public void start(GroupManagerImpl groupManager, ServiceManagerImpl serviceManager, CloudPlayerManagerImpl playerManager, ScreenManager screenManager) {
         this.groupManager = groupManager;
         this.serviceManager = serviceManager;
         this.playerManager = playerManager;
@@ -64,7 +65,7 @@ public class ClusterManagerImpl implements ClusterManager {
         server.on(NodeLeavePacket.class, new NodeLeaveListener(this, logger));
         server.on(HeartbeatPacket.class, new HeartbeatListener(this));
         server.on(NodeDiscoveryPacket.class, new NodeDiscoveryListener(this));
-        server.on(ClusterSyncPacket.class, new ClusterSyncListener(groupManager, serviceManager, playerManager, server));
+        server.on(ClusterSyncPacket.class, new ClusterSyncListener(groupManager, serviceManager, playerManager, server, screenManager, this));
         server.addDisconnectListener(new NodeDisconnectListener(this, logger));
 
         heartbeatScheduler = new HeartbeatScheduler(this, localNode, logger);

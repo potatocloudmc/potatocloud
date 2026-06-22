@@ -39,13 +39,18 @@ public class UpdateChecker {
     }
 
     public Version getLatestVersion() {
-        final String url = "https://api.github.com/repos/" + REPO_OWNER + "/" + REPO_NAME + "/releases/latest";
-        final JsonNode response = RequestUtil.request(url);
+        try {
+            final String url = "https://api.github.com/repos/" + REPO_OWNER + "/" + REPO_NAME + "/releases/latest";
+            final JsonNode response = RequestUtil.request(url);
 
-        if (response == null || !response.has("tag_name")) {
+            if (response == null || !response.has("tag_name")) {
+                return null;
+            }
+
+            return Version.fromString(response.get("tag_name").stringValue());
+        } catch (Exception exception) {
+            logger.error("Failed to check for updates. Github API might be down or rate limited. Error: " + exception.getMessage());
             return null;
         }
-
-        return Version.fromString(response.get("tag_name").stringValue());
     }
 }

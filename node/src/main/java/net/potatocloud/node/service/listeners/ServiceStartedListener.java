@@ -43,7 +43,7 @@ public class ServiceStartedListener implements PacketListener<ServiceStartedPack
                 return;
             }
 
-            final boolean clustered = Node.getInstance().config().cluster().enabled();
+            final boolean clustered = Node.instance().config().cluster().enabled();
             logger.info("Service &a" + packet.serviceName() + (clustered ? "&7 is now &aonline &7on node &a" + node.get().name() : "&7 is now &aonline"));
 
             logger.debug("Service &a" + packet.serviceName() + "&7 took &a" + TimeFormatter.formatAsDuration(System.currentTimeMillis() - service.startedAt().toEpochMilli()) + "&7 to start");
@@ -55,6 +55,7 @@ public class ServiceStartedListener implements PacketListener<ServiceStartedPack
                 clusterManager.broadcast(new ServiceStartedPacket(packet.serviceName()));
             }
 
+            // needed for velocity plugin to register servers on start
             server.broadcast().connectors().send(new ServiceStartedPacket(packet.serviceName()));
 
             eventBus.publish(new ServiceStartedEvent(packet.serviceName()));

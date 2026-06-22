@@ -1,29 +1,32 @@
 package net.potatocloud.node.console;
 
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.command.CommandManager;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.screen.ScreenManager;
+import net.potatocloud.node.screen.impl.NodeScreen;
 import net.potatocloud.node.setup.Setup;
 import org.jline.jansi.Ansi;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.UserInterruptException;
 
-@RequiredArgsConstructor
 public class ConsoleReader extends Thread {
 
     private final Console console;
     private final CommandManager commandManager;
+
+    public ConsoleReader(Console console, CommandManager commandManager) {
+        this.console = console;
+        this.commandManager = commandManager;
+    }
 
     @Override
     public void run() {
         try {
             while (!isInterrupted()) {
 
-                final Node node = Node.getInstance();
+                final Node node = Node.instance();
 
-                // Wait until the node is ready
                 if (!node.ready()) {
                     continue;
                 }
@@ -31,24 +34,21 @@ public class ConsoleReader extends Thread {
                 final String input = console.getLineReader().readLine(console.getPrompt());
 
                 final ScreenManager screenManager = node.screenManager();
-                final Screen currentScreen = screenManager.getCurrentScreen();
-                final boolean isNodeScreen = currentScreen.name().equals(Screen.NODE_SCREEN);
+                final Screen currentScreen = screenManager.current();
+                final boolean isNodeScreen = currentScreen.name().equals(NodeScreen.NODE_SCREEN_NAME);
 
                 if (isNodeScreen && input.isBlank()) {
-                    // remove blank inputs
                     console.println(Ansi.ansi().cursorUpLine().eraseLine().cursorUp(1).toString());
                     continue;
                 }
 
                 if (isNodeScreen) {
-                    // add executed commands into log file
                     node.logger().logCommand(input);
 
                     commandManager.executeCommand(input);
                     continue;
                 }
 
-                // the user is in a setup currently
                 if (currentScreen.name().contains("setup")) {
                     final Setup currentSetup = node.setupManager().getCurrentSetup();
                     if (currentSetup != null) {
@@ -58,7 +58,7 @@ public class ConsoleReader extends Thread {
                 }
 
                 if (input.strip().equalsIgnoreCase("leave") || input.strip().equalsIgnoreCase("exit")) {
-                    Node.getInstance().screenManager().switchTo(Screen.NODE_SCREEN);
+                    screenManager.open(screenManager.get(NodeScreen.NODE_SCREEN_NAME));
                     continue;
                 }
 
@@ -68,7 +68,7 @@ public class ConsoleReader extends Thread {
 
             }
         } catch (UserInterruptException e) {
-            Node.getInstance().shutdown();
+            Node.instance().shutdown();
         } catch (EndOfFileException e) {
             console.clearScreen();
             console.updateScreen();

@@ -5,6 +5,7 @@ import net.potatocloud.node.Node;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.console.Console;
 import net.potatocloud.node.screen.Screen;
+import net.potatocloud.node.screen.impl.NodeScreen;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -13,9 +14,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 
 public class NodeLogger implements Logger {
@@ -25,13 +23,10 @@ public class NodeLogger implements Logger {
     private static final Pattern COLOR_PATTERN = Pattern.compile("(&.)|\u001B\\[[;\\d]*m");
 
     private static final String LATEST_LOG = "latest.log";
-    private static final int MAX_CACHED_LOGS = 1000;
 
     private final NodeConfig config;
     private final Console console;
     private final Path logsDirectory;
-
-    private final List<String> cache = new CopyOnWriteArrayList<>();
 
     public NodeLogger(NodeConfig config, Console console, Path logsDirectory) {
         this.config = config;
@@ -76,27 +71,23 @@ public class NodeLogger implements Logger {
         appendLine(dayLogPath, raw);
         appendLine(latestLogPath, raw);
 
-        // Make sure the cached logs list will not get too big
-        synchronized (cache) {
-            if (cache.size() >= MAX_CACHED_LOGS) {
-                cache.remove(0);
-            }
-        }
-
-        cache.add(colored);
-
-        if (Node.getInstance().screenManager().getCurrentScreen() != null) {
-            final boolean nodeScreen = Node.getInstance()
+        if (Node.instance().screenManager().current() != null) {
+            final boolean nodeScreen = Node.instance()
                     .screenManager()
-                    .getCurrentScreen()
+                    .current()
                     .name()
-                    .equals(Screen.NODE_SCREEN);
+                    .equals(NodeScreen.NODE_SCREEN_NAME);
 
             if (!level.equals(Level.COMMAND_INPUT) && nodeScreen) {
                 console.println(colored);
             }
         } else {
             console.println(colored);
+        }
+
+        final Screen nodeScreen = Node.instance().screenManager().get(NodeScreen.NODE_SCREEN_NAME);
+        if (nodeScreen != null) {
+            nodeScreen.append(colored);
         }
     }
 
@@ -128,9 +119,5 @@ public class NodeLogger implements Logger {
 
     public void logCommand(String command) {
         log(Level.COMMAND_INPUT, command);
-    }
-
-    public List<String> getCachedLogs() {
-        return Collections.unmodifiableList(cache);
     }
 }

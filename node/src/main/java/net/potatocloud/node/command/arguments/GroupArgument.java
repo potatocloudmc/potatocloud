@@ -14,7 +14,7 @@ public class GroupArgument extends ArgumentType<Group> {
 
     @Override
     public ParseResult<Group> parse(String input) {
-        return Node.getInstance()
+        return Node.instance()
                 .groupManager()
                 .find(input)
                 .map(ParseResult::success)
@@ -23,7 +23,7 @@ public class GroupArgument extends ArgumentType<Group> {
 
     @Override
     public List<String> suggest(String input) {
-        return Node.getInstance()
+        return Node.instance()
                 .groupManager()
                 .groups()
                 .stream()

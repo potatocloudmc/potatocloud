@@ -82,7 +82,7 @@ public class GroupManagerImpl implements GroupManager {
         }
 
         for (String templateName : group.templates()) {
-            Node.getInstance().templateManager().createTemplate(templateName);
+            Node.instance().templateManager().createTemplate(templateName);
         }
 
         GroupStorage.save(group, groupsPath);

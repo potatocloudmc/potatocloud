@@ -4,7 +4,9 @@ import net.potatocloud.api.event.Event;
 import net.potatocloud.api.event.EventBus;
 import net.potatocloud.api.event.EventHandler;
 import net.potatocloud.api.event.PublishTarget;
+import net.potatocloud.network.ConnectionType;
 import net.potatocloud.network.NetworkServer;
+import net.potatocloud.network.packet.packets.event.EventPacket;
 
 public class ServerEventBus implements EventBus {
 
@@ -13,6 +15,12 @@ public class ServerEventBus implements EventBus {
 
     public ServerEventBus(NetworkServer server) {
         this.server = server;
+        server.on(EventPacket.class, ctx -> {
+            if (ctx.connection().type() == ConnectionType.CONNECTOR) {
+                local.publish(JsonEventCodec.decode(ctx.packet()));
+                server.broadcast().connectors().exclude(ctx.connection()).send(ctx.packet());
+            }
+        });
     }
 
     @Override

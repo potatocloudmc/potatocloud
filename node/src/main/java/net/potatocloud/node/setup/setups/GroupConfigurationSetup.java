@@ -103,11 +103,11 @@ public class GroupConfigurationSetup extends Setup {
 
         platformManager.find(platformName)
                 .filter(platform -> platform.proxy() && !ProxyUtils.getProxyGroups().isEmpty())
-                .ifPresent(_ -> Node.getInstance().logger().warn("You have more than one proxy group! This may cause issues"));
+                .ifPresent(_ -> Node.instance().logger().warn("You have more than one proxy group! This may cause issues"));
 
         final String name = answers.get("name");
         final Group group = groupManager.builder(name)
-                .node(Node.getInstance().config().cluster().name()) // todo ugly
+                .node(Node.instance().config().cluster().name()) // todo ugly
                 .platform(answers.get("platform"))
                 .platformVersion(answers.get("platform_version"))
                 .minServices(Integer.parseInt(answers.get("min_online_count")))

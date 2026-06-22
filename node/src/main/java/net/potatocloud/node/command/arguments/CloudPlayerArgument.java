@@ -15,7 +15,7 @@ public class CloudPlayerArgument extends ArgumentType<CloudPlayer> {
     @Override
     public ParseResult<CloudPlayer> parse(String input) {
         // input is the username of the player in this case
-        return Node.getInstance()
+        return Node.instance()
                 .playerManager()
                 .find(input)
                 .map(ParseResult::success)
@@ -24,7 +24,7 @@ public class CloudPlayerArgument extends ArgumentType<CloudPlayer> {
 
     @Override
     public List<String> suggest(String input) {
-        return Node.getInstance()
+        return Node.instance()
                 .playerManager()
                 .players()
                 .stream()

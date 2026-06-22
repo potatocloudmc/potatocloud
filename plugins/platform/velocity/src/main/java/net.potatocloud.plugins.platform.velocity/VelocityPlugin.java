@@ -164,7 +164,6 @@ public class VelocityPlugin implements PlatformPlugin {
             if (player instanceof CloudPlayerImpl playerImpl) {
                 playerImpl.serviceName(event.getServer().getServerInfo().getName());
                 api.playerManager().update(player);
-                api.playerManager().update(player);
             }
         });
     }

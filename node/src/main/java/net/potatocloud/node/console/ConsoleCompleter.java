@@ -1,10 +1,10 @@
 package net.potatocloud.node.console;
 
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.command.*;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.screen.ScreenManager;
+import net.potatocloud.node.screen.impl.NodeScreen;
 import net.potatocloud.node.setup.Setup;
 import org.jline.reader.Candidate;
 import org.jline.reader.Completer;
@@ -13,33 +13,32 @@ import org.jline.reader.ParsedLine;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 public class ConsoleCompleter implements Completer {
 
     private final CommandManager commandManager;
 
+    public ConsoleCompleter(CommandManager commandManager) {
+        this.commandManager = commandManager;
+    }
+
     @Override
     public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
-        final ScreenManager screenManager = Node.getInstance().screenManager();
-        final Screen currentScreen = screenManager.getCurrentScreen();
+        final ScreenManager screenManager = Node.instance().screenManager();
+        final Screen currentScreen = screenManager.current();
 
-        // Add leave and exit options for all screens except node and setup screens
-        if (currentScreen != null && !currentScreen.name().equals(Screen.NODE_SCREEN) && !currentScreen.name().startsWith("setup_")) {
+        if (currentScreen != null && !currentScreen.name().equals(NodeScreen.NODE_SCREEN_NAME) && !currentScreen.name().startsWith("setup_")) {
             candidates.add(new Candidate("leave"));
             candidates.add(new Candidate("exit"));
             return;
         }
 
-        // Show setup options when user is inside a setup
-        final Setup currentSetup = Node.getInstance().setupManager().getCurrentSetup();
+        final Setup currentSetup = Node.instance().setupManager().getCurrentSetup();
         if (currentSetup != null) {
             if (currentSetup.isInSummary()) {
-                // Options for summary page
                 candidates.add(new Candidate("back"));
                 candidates.add(new Candidate("confirm"));
                 candidates.add(new Candidate("cancel"));
             } else {
-                // Options while in a questions
                 candidates.add(new Candidate("back"));
                 candidates.add(new Candidate("cancel"));
 
