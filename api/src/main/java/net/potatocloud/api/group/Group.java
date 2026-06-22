@@ -85,7 +85,7 @@ public interface Group extends PropertyHolder {
      */
     default Set<CloudPlayer> players() {
         return CloudAPI.instance().playerManager().players().stream()
-                .filter(player -> player.service().stream().anyMatch(service -> service.group().name().equals(name())))
+                .filter(player -> player.service().stream().anyMatch(service -> service.group().equals(this)))
                 .collect(Collectors.toSet());
     }
 
@@ -208,7 +208,7 @@ public interface Group extends PropertyHolder {
      */
     default List<Service> services() {
         return CloudAPI.instance().serviceManager().services().stream()
-                .filter(service -> service.group().name().equals(name()))
+                .filter(service -> service.group().equals(this))
                 .toList();
     }
 }

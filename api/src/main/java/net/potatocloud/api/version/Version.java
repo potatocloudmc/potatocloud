@@ -55,7 +55,19 @@ public record Version(int major, int minor, int patch, String tag) implements Co
         if (minor != other.minor) {
             return Integer.compare(minor, other.minor);
         }
-        return Integer.compare(patch, other.patch);
+        if (patch != other.patch) {
+            return Integer.compare(patch, other.patch);
+        }
+        if (tag == null && other.tag == null) {
+            return 0;
+        }
+        if (tag == null) {
+            return 1;
+        }
+        if (other.tag == null) {
+            return -1;
+        }
+        return tag.compareToIgnoreCase(other.tag);
     }
 
     @Override

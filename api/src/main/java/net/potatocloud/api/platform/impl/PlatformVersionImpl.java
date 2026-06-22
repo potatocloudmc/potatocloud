@@ -4,6 +4,8 @@ import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformVersion;
 
+import java.util.Objects;
+
 public class PlatformVersionImpl implements PlatformVersion {
 
     private final String platformName;
@@ -66,5 +68,21 @@ public class PlatformVersionImpl implements PlatformVersion {
     @Override
     public Platform platform() {
         return CloudAPI.instance().platformManager().find(platformName).orElseThrow(() -> new IllegalStateException("Platform not found: " + platformName));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof PlatformVersionImpl that)) {
+            return false;
+        }
+        return platformName.equals(that.platformName) && name.equals(that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(platformName, name);
     }
 }

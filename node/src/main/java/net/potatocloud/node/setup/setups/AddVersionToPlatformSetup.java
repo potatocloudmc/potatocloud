@@ -10,7 +10,8 @@ import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.setup.Setup;
 import net.potatocloud.node.setup.answer.AnswerResult;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -40,9 +41,20 @@ public class AddVersionToPlatformSetup extends Setup {
                 Type 'no' if you want to add the JAR file yourself.
                 """)
                 .answerAction((answers, answer) -> {
-                    final boolean usingLocalFile = answer.equalsIgnoreCase("false") || answer.equalsIgnoreCase("no");
-                    if (usingLocalFile) {
-                        new File("platforms/" + platform.name() + "/" + answers.get("name")).mkdirs();
+                    final boolean useDownload = Boolean.parseBoolean(answer);
+
+                    if (!useDownload) {
+                        try {
+                            final String name = answers.get("name");
+
+                            if (name.contains("..") || name.contains("/") || name.contains("\\")) {
+                                throw new IllegalArgumentException("Can not create version directory with invalid characters");
+                            }
+
+                            Files.createDirectories(Path.of("platforms", platform.name(), name));
+                        } catch (Exception e) {
+                            throw new RuntimeException("Failed to create platform directory", e);
+                        }
                     }
                 })
                 .add();
@@ -54,9 +66,7 @@ public class AddVersionToPlatformSetup extends Setup {
                 .customValidator(input -> input.equalsIgnoreCase("done")
                         ? AnswerResult.success()
                         : AnswerResult.error("Type done if you are ready or cancel to cancel"))
-                .skipIf(answers ->
-                        answers.get("use_download").equalsIgnoreCase("true") || answers.get("use_download").equalsIgnoreCase("yes")
-                )
+                .skipIf(answers -> Boolean.parseBoolean(answers.get("use_download")))
                 .suggestions(() -> List.of("done", "cancel"))
                 .add();
 
@@ -66,8 +76,8 @@ public class AddVersionToPlatformSetup extends Setup {
                 Check the platform file or type 'no' if unsure.
                 """)
                 .skipIf(answers -> {
-                    final String useDownload = answers.getOrDefault("use_download", "false");
-                    return !(useDownload.equalsIgnoreCase("true") || useDownload.equalsIgnoreCase("yes"));
+                    final String useDownload = answers.get("use_download");
+                    return !(useDownload.equalsIgnoreCase("true"));
                 })
                 .add();
 
@@ -79,11 +89,9 @@ public class AddVersionToPlatformSetup extends Setup {
                     return AnswerResult.success();
                 })
                 .skipIf(answers -> {
-                    final String useDownload = answers.getOrDefault("use_download", "false");
-                    final String hasTemplate = answers.getOrDefault("has_template", "false");
-
-                    return !(useDownload.equalsIgnoreCase("true") || useDownload.equalsIgnoreCase("yes"))
-                            || (hasTemplate.equalsIgnoreCase("true") || hasTemplate.equalsIgnoreCase("yes"));
+                    final String useDownload = answers.get("use_download");
+                    final String hasTemplate = answers.get("has_template");
+                    return !(useDownload.equalsIgnoreCase("true") || (hasTemplate.equalsIgnoreCase("true")));
                 })
                 .add();
 

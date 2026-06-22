@@ -167,6 +167,16 @@ public final class LocalJvmRuntime implements ServiceRuntime {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {
+            try {
+                processWriter.close();
+            } catch (IOException ignored) {
+            }
+
+            try {
+                processReader.close();
+            } catch (IOException ignored) {
+            }
+
             process = null;
             osProcess = null;
             processWriter = null;

@@ -8,7 +8,6 @@ import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceState;
 import net.potatocloud.api.utils.TimeFormatter;
 import net.potatocloud.common.PropertyUtil;
-import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.command.ArgumentType;
 import net.potatocloud.node.command.Command;
 import net.potatocloud.node.command.CommandInfo;
@@ -19,11 +18,10 @@ import net.potatocloud.node.service.ServiceManagerImpl;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @CommandInfo(name = "service", description = "Manage services", aliases = {"ser", "serv", "s"})
 public class ServiceCommand extends Command {
 
-    public ServiceCommand(Logger logger, ServiceManagerImpl serviceManager, ScreenManager screenManager, ClusterManagerImpl clusterManager) {
+    public ServiceCommand(Logger logger, ServiceManagerImpl serviceManager, ScreenManager screenManager) {
         defaultExecutor(_ -> sendHelp());
 
         sub("copy", "Copy files from a service to a template")
@@ -100,7 +98,7 @@ public class ServiceCommand extends Command {
                     logger.info("Updated &a" + key + " &7for service &a" + service.name() + "&7 to &a" + value);
                 });
 
-        sub("execute", "Execute a command on a sevice")
+        sub("execute", "Execute a command on a service")
                 .argument(ArgumentType.Service("service"))
                 .argument(ArgumentType.MultiString("command"))
                 .executes(ctx -> {

@@ -238,4 +238,20 @@ public class GroupImpl implements Group {
     public Map<String, Property<?>> propertyMap() {
         return propertyMap;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof GroupImpl group)) {
+            return false;
+        }
+        return name.equals(group.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
 }

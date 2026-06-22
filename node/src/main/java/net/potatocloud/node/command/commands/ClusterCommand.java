@@ -18,10 +18,10 @@ import java.util.List;
 public class ClusterCommand extends Command {
 
     public ClusterCommand(Logger logger, ClusterManagerImpl clusterManager) {
-        defaultExecutor(ctx -> sendHelp());
+        defaultExecutor(_ -> sendHelp());
 
         sub("info", "Show info about the local node")
-                .executes(ctx -> {
+                .executes(_ -> {
                     final ClusterNode local = clusterManager.localNode();
                     final long uptime = Duration.between(local.startedAt(), Instant.now()).toMillis();
 
@@ -30,11 +30,16 @@ public class ClusterCommand extends Command {
                     logger.info("&8» &7Address&8: &a" + local.host() + "&8:&a" + local.port());
                     logger.info("&8» &7Started At&8: &a" + TimeFormatter.formatAsDateAndTime(local.startedAt().toEpochMilli()));
                     logger.info("&8» &7Uptime&8: &a" + TimeFormatter.formatAsDuration(uptime));
-                    logger.info("&8» &7Connected nodes&8: &a" + (clusterManager.nodes().size() - 1));
+
+                    final long connectedNodes = clusterManager.nodes().stream()
+                            .filter(node -> !node.equals(local))
+                            .count();
+
+                    logger.info("&8» &7Connected nodes&8: &a" + connectedNodes);
                 });
 
         sub("list", "List all cluster nodes")
-                .executes(ctx -> {
+                .executes(_ -> {
                     final List<ClusterNode> nodes = clusterManager.nodes().stream()
                             .sorted(Comparator.comparing(ClusterNode::startedAt))
                             .toList();
@@ -43,14 +48,14 @@ public class ClusterCommand extends Command {
 
                     logger.info("&7All connected cluster nodes:");
                     for (ClusterNode node : nodes) {
-                        final boolean isLocal = node.name().equals(local.name());
+                        final boolean isLocal = node.equals(local);
 
                         logger.info("&8» &a" + node.name()+ " &8(&a" + node.host() + "&8:&a" + node.port() + "&8)" + (isLocal ? " &8[&7Local&8]" : ""));
                     }
                 });
 
         final SubCommand nodeSub = sub("node", "Manage a specific cluster node");
-        nodeSub.executes(ctx -> nodeSub.sendHelp());
+        nodeSub.executes(_ -> nodeSub.sendHelp());
 
         nodeSub.sub("info", "Show info about a node")
                 .argument(ArgumentType.ClusterNode("node"))

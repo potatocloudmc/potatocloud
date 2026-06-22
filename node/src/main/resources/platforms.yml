@@ -39,9 +39,6 @@ platforms:
     versions:
       - version: latest
       - version: 3.5.0-SNAPSHOT
-      - version: 3.4.0
-      - version: 3.4.0-SNAPSHOT
-      - version: 3.3.0-SNAPSHOT
   purpur:
     base: paper
     download:

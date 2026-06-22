@@ -132,6 +132,10 @@ public class ScreenManager {
         }
     }
 
+    public Map<String, Screen> screens() {
+        return screens;
+    }
+
     public Screen get(String name) {
         return screens.get(name);
     }

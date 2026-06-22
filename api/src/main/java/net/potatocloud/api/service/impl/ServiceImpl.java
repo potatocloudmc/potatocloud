@@ -120,4 +120,20 @@ public class ServiceImpl implements Service {
     public Map<String, Property<?>> propertyMap() {
         return propertyMap;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ServiceImpl service)) {
+            return false;
+        }
+        return serviceId == service.serviceId;
+    }
+
+    @Override
+    public int hashCode() {
+        return serviceId;
+    }
 }

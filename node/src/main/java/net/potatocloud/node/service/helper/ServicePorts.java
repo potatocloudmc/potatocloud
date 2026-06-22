@@ -19,14 +19,20 @@ public final class ServicePorts {
                 ? config.service().proxyStartPort()
                 : config.service().serviceStartPort();
 
+        final int maxPort = 65535;
+
         final Set<Integer> usedPorts = services.stream()
                 .map(Service::port)
                 .collect(Collectors.toSet());
 
-        while (usedPorts.contains(port) || !NetworkUtils.isPortFree(port)) {
+        while (port <= maxPort) {
+            if (!usedPorts.contains(port) && NetworkUtils.isPortFree(port)) {
+                return port;
+            }
             port++;
         }
-        return port;
+
+        throw new IllegalStateException("No free port available in range " + port + " - " + maxPort);
     }
 
 }

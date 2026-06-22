@@ -17,7 +17,7 @@ public class ClusterNodeArgument extends ArgumentType<ClusterNode> {
         final ClusterNode local = Node.instance().clusterManager().localNode();
 
         return Node.instance().clusterManager().nodes().stream()
-                .filter(node -> !node.name().equals(local.name()))
+                .filter(node -> !node.equals(local))
                 .filter(node -> node.name().equalsIgnoreCase(input))
                 .findFirst()
                 .map(ParseResult::success)

@@ -32,6 +32,7 @@ import net.potatocloud.node.console.Console;
 import net.potatocloud.node.group.GroupManagerImpl;
 import net.potatocloud.node.logging.NodeLogger;
 import net.potatocloud.node.migration.MigrationManager;
+import net.potatocloud.node.module.LoadedModule;
 import net.potatocloud.node.module.ModuleLoader;
 import net.potatocloud.node.module.ModuleManager;
 import net.potatocloud.node.platform.DownloadManager;
@@ -195,10 +196,10 @@ public class Node extends CloudAPI {
 
         moduleLoader.load(Path.of(config.folders().modules()));
 
-        final Collection<Module> modules = moduleManager.getModules().values();
+        final Collection<Module> modules = moduleManager.modules().values().stream().map(LoadedModule::module).toList();
 
         if (!modules.isEmpty()) {
-            final int count = moduleManager.getModules().size();
+            final int count = moduleManager.modules().size();
             final String moduleText = count == 1 ? "module" : "modules";
 
             logger.info("Loaded &a" + count + "&7 " + moduleText + "&8:");
@@ -222,7 +223,7 @@ public class Node extends CloudAPI {
         commandManager.registerCommand(new InfoCommand(logger));
         commandManager.registerCommand(new PlatformCommand(logger, platformManager));
         commandManager.registerCommand(new PlayerCommand(logger, playerManager));
-        commandManager.registerCommand(new ServiceCommand(logger, serviceManager, screenManager, clusterManager));
+        commandManager.registerCommand(new ServiceCommand(logger, serviceManager, screenManager));
         commandManager.registerCommand(new ShutdownCommand(this));
 
         if (config.cluster().enabled()) {
