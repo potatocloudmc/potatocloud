@@ -8,7 +8,7 @@ import net.potatocloud.network.packet.packets.service.ServiceRemovePacket;
 import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.service.ServiceManagerImpl;
 
-public class ServiceRemoveHandler implements PacketHandler<ServiceRemovePacket> {
+public final class ServiceRemoveHandler implements PacketHandler<ServiceRemovePacket> {
 
     private final ServiceManagerImpl serviceManager;
     private final NetworkServer server;

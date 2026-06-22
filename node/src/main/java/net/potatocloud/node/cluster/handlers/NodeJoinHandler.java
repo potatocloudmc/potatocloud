@@ -13,13 +13,13 @@ import net.potatocloud.network.packet.packets.cluster.NodeJoinPacket;
 import net.potatocloud.network.packet.packets.cluster.NodeJoinRejectPacket;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.cluster.ClusterNodeImpl;
-
-import java.time.Instant;
 import net.potatocloud.node.group.GroupManagerImpl;
 import net.potatocloud.node.player.CloudPlayerManagerImpl;
 import net.potatocloud.node.service.ServiceManagerImpl;
 
-public class NodeJoinHandler implements PacketHandler<NodeJoinPacket> {
+import java.time.Instant;
+
+public final class NodeJoinHandler implements PacketHandler<NodeJoinPacket> {
 
     private final ClusterNode localNode;
     private final ClusterManagerImpl clusterManager;

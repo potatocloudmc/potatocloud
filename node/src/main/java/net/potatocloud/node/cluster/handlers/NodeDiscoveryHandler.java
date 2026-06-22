@@ -6,7 +6,7 @@ import net.potatocloud.network.packet.PacketHandler;
 import net.potatocloud.network.packet.packets.cluster.NodeDiscoveryPacket;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 
-public class NodeDiscoveryHandler implements PacketHandler<NodeDiscoveryPacket> {
+public final class NodeDiscoveryHandler implements PacketHandler<NodeDiscoveryPacket> {
 
     private final ClusterManagerImpl clusterManager;
 

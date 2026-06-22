@@ -1,6 +1,5 @@
 package net.potatocloud.node.service.handlers;
 
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.ServiceState;
@@ -12,7 +11,7 @@ import net.potatocloud.network.packet.PacketHandler;
 import net.potatocloud.network.packet.packets.service.ServiceUpdatePacket;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 
-public class ServiceUpdateHandler implements PacketHandler<ServiceUpdatePacket> {
+public final class ServiceUpdateHandler implements PacketHandler<ServiceUpdatePacket> {
 
     private final ServiceManager serviceManager;
     private final NetworkServer server;

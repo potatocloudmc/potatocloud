@@ -20,7 +20,7 @@ import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.screen.impl.RemoteServiceScreen;
 import net.potatocloud.node.service.ServiceManagerImpl;
 
-public class ClusterSyncHandler implements PacketHandler<ClusterSyncPacket> {
+public final class ClusterSyncHandler implements PacketHandler<ClusterSyncPacket> {
 
     private final GroupManagerImpl groupManager;
     private final ServiceManagerImpl serviceManager;

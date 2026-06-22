@@ -17,7 +17,7 @@ import net.potatocloud.node.cluster.ClusterManagerImpl;
 
 import java.util.Optional;
 
-public class ServiceStartedHandler implements PacketHandler<ServiceStartedPacket> {
+public final class ServiceStartedHandler implements PacketHandler<ServiceStartedPacket> {
 
     private final ServiceManager serviceManager;
     private final Logger logger;

@@ -9,7 +9,7 @@ import net.potatocloud.network.packet.packets.service.ServiceStartingPacket;
 
 import java.util.Optional;
 
-public class ServiceStartingHandler implements PacketHandler<ServiceStartingPacket> {
+public final class ServiceStartingHandler implements PacketHandler<ServiceStartingPacket> {
 
     private final Logger logger;
     private final ServiceManager serviceManager;

@@ -9,7 +9,7 @@ import net.potatocloud.node.cluster.ClusterManagerImpl;
 
 import java.util.Optional;
 
-public class ServiceCopyHandler implements PacketHandler<ServiceCopyPacket> {
+public final class ServiceCopyHandler implements PacketHandler<ServiceCopyPacket> {
 
     private final ServiceManager serviceManager;
     private final ClusterManagerImpl clusterManager;

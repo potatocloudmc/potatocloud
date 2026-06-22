@@ -8,7 +8,7 @@ import net.potatocloud.network.packet.PacketContext;
 import net.potatocloud.network.packet.PacketHandler;
 import net.potatocloud.network.packet.packets.service.ServiceMemoryUpdatePacket;
 
-public class ServiceMemoryUpdateHandler implements PacketHandler<ServiceMemoryUpdatePacket> {
+public final class ServiceMemoryUpdateHandler implements PacketHandler<ServiceMemoryUpdatePacket> {
 
     private final ServiceManager serviceManager;
     private final NetworkServer server;

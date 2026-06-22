@@ -8,7 +8,7 @@ import net.potatocloud.network.packet.packets.service.StopServicePacket;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 import java.util.Optional;
 
-public class StopServiceHandler implements PacketHandler<StopServicePacket> {
+public final class StopServiceHandler implements PacketHandler<StopServicePacket> {
 
     private final ServiceManager serviceManager;
     private final ClusterManagerImpl clusterManager;

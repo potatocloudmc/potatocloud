@@ -1,6 +1,5 @@
 package net.potatocloud.node.group.handlers;
 
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.group.GroupManager;
 import net.potatocloud.common.PropertyUtil;
 import net.potatocloud.network.ConnectionType;
@@ -12,12 +11,17 @@ import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.group.GroupManagerImpl;
 import net.potatocloud.node.group.config.GroupStorage;
 
-@RequiredArgsConstructor
-public class GroupUpdateHandler implements PacketHandler<GroupUpdatePacket> {
+public final class GroupUpdateHandler implements PacketHandler<GroupUpdatePacket> {
 
     private final GroupManager groupManager;
     private final NetworkServer server;
     private final ClusterManagerImpl clusterManager;
+
+    public GroupUpdateHandler(GroupManager groupManager, NetworkServer server, ClusterManagerImpl clusterManager) {
+        this.groupManager = groupManager;
+        this.server = server;
+        this.clusterManager = clusterManager;
+    }
 
     @Override
     public void handle(PacketContext<GroupUpdatePacket> ctx) {

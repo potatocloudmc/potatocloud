@@ -6,7 +6,7 @@ import net.potatocloud.network.packet.PacketHandler;
 import net.potatocloud.network.packet.packets.cluster.NodeLeavePacket;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 
-public class NodeLeaveHandler implements PacketHandler<NodeLeavePacket> {
+public final class NodeLeaveHandler implements PacketHandler<NodeLeavePacket> {
 
     private final ClusterManagerImpl clusterManager;
     private final Logger logger;

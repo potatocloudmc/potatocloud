@@ -13,7 +13,7 @@ import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.screen.impl.RemoteServiceScreen;
 import net.potatocloud.node.service.ServiceManagerImpl;
 
-public class ServiceAddHandler implements PacketHandler<ServiceAddPacket> {
+public final class ServiceAddHandler implements PacketHandler<ServiceAddPacket> {
 
     private final ServiceManagerImpl serviceManager;
     private final NetworkServer server;

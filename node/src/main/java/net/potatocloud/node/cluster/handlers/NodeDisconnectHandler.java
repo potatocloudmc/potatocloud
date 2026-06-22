@@ -6,7 +6,7 @@ import net.potatocloud.node.cluster.ClusterManagerImpl;
 
 import java.util.function.Consumer;
 
-public class NodeDisconnectHandler implements Consumer<NetworkConnection> {
+public final class NodeDisconnectHandler implements Consumer<NetworkConnection> {
 
     private final ClusterManagerImpl clusterManager;
     private final Logger logger;

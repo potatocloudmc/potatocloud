@@ -1,6 +1,5 @@
 package net.potatocloud.node.service.handlers;
 
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.group.GroupManager;
@@ -12,7 +11,7 @@ import net.potatocloud.node.service.ServiceManagerImpl;
 
 import java.util.Optional;
 
-public class StartServiceHandler implements PacketHandler<StartServicePacket> {
+public final class StartServiceHandler implements PacketHandler<StartServicePacket> {
 
     private final ServiceManagerImpl serviceManager;
     private final GroupManager groupManager;

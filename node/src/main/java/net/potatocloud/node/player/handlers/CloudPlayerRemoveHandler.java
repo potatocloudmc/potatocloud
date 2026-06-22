@@ -1,6 +1,5 @@
 package net.potatocloud.node.player.handlers;
 
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.network.ConnectionType;
 import net.potatocloud.network.packet.PacketContext;
 import net.potatocloud.network.packet.PacketHandler;
@@ -9,11 +8,15 @@ import net.potatocloud.node.Node;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.player.CloudPlayerManagerImpl;
 
-@RequiredArgsConstructor
-public class CloudPlayerRemoveHandler implements PacketHandler<CloudPlayerRemovePacket> {
+public final class CloudPlayerRemoveHandler implements PacketHandler<CloudPlayerRemovePacket> {
 
     private final CloudPlayerManagerImpl playerManager;
     private final ClusterManagerImpl clusterManager;
+
+    public CloudPlayerRemoveHandler(CloudPlayerManagerImpl playerManager, ClusterManagerImpl clusterManager) {
+        this.playerManager = playerManager;
+        this.clusterManager = clusterManager;
+    }
 
     @Override
     public void handle(PacketContext<CloudPlayerRemovePacket> ctx) {

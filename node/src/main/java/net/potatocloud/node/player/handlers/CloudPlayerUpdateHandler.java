@@ -1,6 +1,5 @@
 package net.potatocloud.node.player.handlers;
 
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.player.CloudPlayerManager;
 import net.potatocloud.api.player.impl.CloudPlayerImpl;
 import net.potatocloud.api.property.Property;
@@ -12,12 +11,17 @@ import net.potatocloud.network.packet.PacketHandler;
 import net.potatocloud.network.packet.packets.player.CloudPlayerUpdatePacket;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 
-@RequiredArgsConstructor
-public class CloudPlayerUpdateHandler implements PacketHandler<CloudPlayerUpdatePacket> {
+public final class CloudPlayerUpdateHandler implements PacketHandler<CloudPlayerUpdatePacket> {
 
     private final CloudPlayerManager playerManager;
     private final NetworkServer server;
     private final ClusterManagerImpl clusterManager;
+
+    public CloudPlayerUpdateHandler(CloudPlayerManager playerManager, NetworkServer server, ClusterManagerImpl clusterManager) {
+        this.playerManager = playerManager;
+        this.server = server;
+        this.clusterManager = clusterManager;
+    }
 
     @Override
     public void handle(PacketContext<CloudPlayerUpdatePacket> ctx) {

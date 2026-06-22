@@ -9,7 +9,7 @@ import net.potatocloud.node.cluster.ClusterManagerImpl;
 
 import java.util.Optional;
 
-public class ServiceExecuteCommandHandler implements PacketHandler<ServiceExecuteCommandPacket> {
+public final class ServiceExecuteCommandHandler implements PacketHandler<ServiceExecuteCommandPacket> {
 
     private final ServiceManager serviceManager;
     private final ClusterManagerImpl clusterManager;

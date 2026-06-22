@@ -1,16 +1,18 @@
 package net.potatocloud.connector.group.handlers;
 
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.group.GroupManager;
 import net.potatocloud.common.PropertyUtil;
 import net.potatocloud.network.packet.PacketContext;
 import net.potatocloud.network.packet.PacketHandler;
 import net.potatocloud.network.packet.packets.group.GroupUpdatePacket;
 
-@RequiredArgsConstructor
-public class GroupUpdateHandler implements PacketHandler<GroupUpdatePacket> {
+public final class GroupUpdateHandler implements PacketHandler<GroupUpdatePacket> {
 
     private final GroupManager groupManager;
+
+    public GroupUpdateHandler(GroupManager groupManager) {
+        this.groupManager = groupManager;
+    }
 
     @Override
     public void handle(PacketContext<GroupUpdatePacket> ctx) {

@@ -1,6 +1,5 @@
 package net.potatocloud.connector.service.handlers;
 
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.connector.service.ServiceManagerImpl;
 import net.potatocloud.network.packet.PacketContext;
@@ -9,10 +8,13 @@ import net.potatocloud.network.packet.packets.service.ServiceAddPacket;
 
 import java.util.concurrent.CompletableFuture;
 
-@RequiredArgsConstructor
-public class ServiceAddHandler implements PacketHandler<ServiceAddPacket> {
+public final class ServiceAddHandler implements PacketHandler<ServiceAddPacket> {
 
     private final ServiceManagerImpl serviceManager;
+
+    public ServiceAddHandler(ServiceManagerImpl serviceManager) {
+        this.serviceManager = serviceManager;
+    }
 
     @Override
     public void handle(PacketContext<ServiceAddPacket> ctx) {
