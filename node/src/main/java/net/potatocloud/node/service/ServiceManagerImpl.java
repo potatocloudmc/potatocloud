@@ -244,6 +244,7 @@ public class ServiceManagerImpl implements ServiceManager {
         runtime.prepare(service);
 
         service.state(ServiceState.STARTING);
+        update(service);
         runtime.start(service);
 
         final String nodeInfo = config.cluster().enabled() ? " on node &a" + clusterManager.localNode().name() + "&7" : "";

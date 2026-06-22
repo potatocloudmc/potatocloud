@@ -3,6 +3,7 @@ package net.potatocloud.node.service.handlers;
 import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.service.ServiceManager;
+import net.potatocloud.api.service.ServiceState;
 import net.potatocloud.network.packet.PacketContext;
 import net.potatocloud.network.packet.PacketHandler;
 import net.potatocloud.network.packet.packets.service.ServiceStartingPacket;
@@ -22,6 +23,8 @@ public final class ServiceStartingHandler implements PacketHandler<ServiceStarti
     @Override
     public void handle(PacketContext<ServiceStartingPacket> ctx) {
         serviceManager.find(ctx.packet().serviceName()).ifPresent(service -> {
+            service.state(ServiceState.STARTING);
+
             final Optional<ClusterNode> node = service.node();
             if (node.isEmpty()) {
                 return;
