@@ -1,9 +1,9 @@
 package net.potatocloud.network.packet.packets.player;
 
 import net.potatocloud.network.netty.PacketBuffer;
-import net.potatocloud.network.packet.Packet;
+import net.potatocloud.network.packet.request.RequestPacket;
 
-public record RequestCloudPlayersPacket() implements Packet {
+public record RequestCloudPlayersPacket() implements RequestPacket {
 
     public static final Codec<RequestCloudPlayersPacket> CODEC = new Codec<>() {
 

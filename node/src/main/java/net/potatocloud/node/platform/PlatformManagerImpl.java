@@ -8,9 +8,7 @@ import net.potatocloud.network.packet.packets.platform.PlatformAddPacket;
 import net.potatocloud.network.packet.packets.platform.PlatformRemovePacket;
 import net.potatocloud.network.packet.packets.platform.PlatformUpdatePacket;
 import net.potatocloud.network.packet.packets.platform.RequestPlatformsPacket;
-import net.potatocloud.node.platform.listeners.PlatformAddListener;
-import net.potatocloud.node.platform.listeners.PlatformUpdateListener;
-import net.potatocloud.node.platform.listeners.RequestPlatformsListener;
+import net.potatocloud.network.packet.packets.platform.PlatformsResponsePacket;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,9 +27,9 @@ public class PlatformManagerImpl implements PlatformManager {
         this.fileHandler = new PlatformFileHandler(logger);
         this.platforms = fileHandler.loadPlatformsFile();
 
-        server.on(RequestPlatformsPacket.class, new RequestPlatformsListener(this));
-        server.on(PlatformUpdatePacket.class, new PlatformUpdateListener(this));
-        server.on(PlatformAddPacket.class, new PlatformAddListener(this));
+        server.on(RequestPlatformsPacket.class, ctx -> ctx.reply(new PlatformsResponsePacket(platforms())));
+        server.on(PlatformUpdatePacket.class, ctx -> find(ctx.packet().platform().name()).ifPresent(platform -> platform.versions(ctx.packet().platform().versions())));
+        server.on(PlatformAddPacket.class, ctx -> addPlatform(ctx.packet().platform()));
     }
 
     @Override

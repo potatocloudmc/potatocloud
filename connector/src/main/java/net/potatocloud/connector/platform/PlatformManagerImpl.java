@@ -6,6 +6,7 @@ import net.potatocloud.network.NetworkClient;
 import net.potatocloud.network.packet.packets.platform.PlatformAddPacket;
 import net.potatocloud.network.packet.packets.platform.PlatformRemovePacket;
 import net.potatocloud.network.packet.packets.platform.PlatformUpdatePacket;
+import net.potatocloud.network.packet.packets.platform.PlatformsResponsePacket;
 import net.potatocloud.network.packet.packets.platform.RequestPlatformsPacket;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class PlatformManagerImpl implements PlatformManager {
         client.on(PlatformUpdatePacket.class, ctx ->
                 find(ctx.packet().platform().name()).ifPresent(platform -> platform.versions(ctx.packet().platform().versions())));
 
-        client.send(new RequestPlatformsPacket());
+        client.request(new RequestPlatformsPacket(), PlatformsResponsePacket.class).thenAccept(response -> platforms.addAll(response.platforms()));
     }
 
     @Override

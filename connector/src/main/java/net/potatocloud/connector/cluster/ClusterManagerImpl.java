@@ -17,16 +17,15 @@ public class ClusterManagerImpl implements ClusterManager {
     private final Map<String, ClusterNode> nodes = new ConcurrentHashMap<>();
 
     public ClusterManagerImpl(NetworkClient client) {
-        client.on(ClusterNodesResponsePacket.class, ctx -> {
-            localNode = ctx.packet().localNode();
-            ctx.packet().remoteNodes().forEach(node -> nodes.put(node.name(), node));
-        });
-
         client.on(ClusterNodeAddPacket.class, ctx -> nodes.put(ctx.packet().node().name(), ctx.packet().node()));
 
         client.on(ClusterNodeRemovePacket.class, ctx -> nodes.remove(ctx.packet().nodeName()));
 
-        client.send(new RequestClusterNodesPacket());
+        client.request(new RequestClusterNodesPacket(), ClusterNodesResponsePacket.class)
+                .thenAccept(response -> {
+                    localNode = response.localNode();
+                    response.remoteNodes().forEach(node -> nodes.put(node.name(), node));
+                });
     }
 
     @Override

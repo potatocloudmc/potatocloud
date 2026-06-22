@@ -15,10 +15,10 @@ import net.potatocloud.network.packet.packets.group.RequestGroupsPacket;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.group.config.GroupStorage;
+import net.potatocloud.network.packet.packets.group.GroupsResponsePacket;
 import net.potatocloud.node.group.listeners.GroupAddListener;
 import net.potatocloud.node.group.listeners.GroupDeleteListener;
 import net.potatocloud.node.group.listeners.GroupUpdateListener;
-import net.potatocloud.node.group.listeners.RequestGroupsListener;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,7 +42,7 @@ public class GroupManagerImpl implements GroupManager {
         this.logger = logger;
         this.clusterManager = clusterManager;
 
-        server.on(RequestGroupsPacket.class, new RequestGroupsListener(this));
+        server.on(RequestGroupsPacket.class, ctx -> ctx.reply(new GroupsResponsePacket(groups())));
         server.on(GroupUpdatePacket.class, new GroupUpdateListener(this, server, clusterManager));
         server.on(GroupAddPacket.class, new GroupAddListener(this, server, clusterManager));
         server.on(GroupDeletePacket.class, new GroupDeleteListener(this, server, clusterManager));

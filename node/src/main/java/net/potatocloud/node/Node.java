@@ -21,9 +21,9 @@ import net.potatocloud.network.packet.PacketManager;
 import net.potatocloud.network.packet.PacketRegistry;
 import net.potatocloud.network.packet.packets.event.EventPacket;
 import net.potatocloud.network.packet.packets.logging.LogMessagePacket;
+import net.potatocloud.network.ConnectionType;
 import net.potatocloud.node.cluster.ClusterEventBus;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
-import net.potatocloud.node.cluster.listeners.ClusterEventListener;
 import net.potatocloud.node.command.CommandManager;
 import net.potatocloud.node.command.commands.*;
 import net.potatocloud.node.config.NodeConfig;
@@ -173,7 +173,11 @@ public class Node extends CloudAPI {
 
         if (config.cluster().enabled()) {
             if (eventBus instanceof ClusterEventBus clusterBus) {
-                server.on(EventPacket.class, new ClusterEventListener(clusterBus));
+                server.on(EventPacket.class, ctx -> {
+                    if (ctx.connection().type() == ConnectionType.NODE) {
+                        clusterBus.publishEventFromCluster(ctx.packet());
+                    }
+                });
             }
 
             clusterManager.start((GroupManagerImpl) groupManager, serviceManager, (CloudPlayerManagerImpl) playerManager, screenManager);

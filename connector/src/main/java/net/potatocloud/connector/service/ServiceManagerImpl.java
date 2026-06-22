@@ -4,9 +4,10 @@ import lombok.Getter;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
+import net.potatocloud.api.service.impl.ServiceImpl;
 import net.potatocloud.connector.service.listeners.ServiceAddListener;
-import net.potatocloud.connector.service.listeners.ServiceMemoryUpdateListener;
 import net.potatocloud.connector.service.listeners.ServiceUpdateListener;
+import net.potatocloud.network.packet.packets.service.ServicesResponsePacket;
 import net.potatocloud.network.NetworkClient;
 import net.potatocloud.network.packet.packets.service.*;
 
@@ -30,9 +31,13 @@ public class ServiceManagerImpl implements ServiceManager {
         client.on(ServiceAddPacket.class, new ServiceAddListener(this));
         client.on(ServiceRemovePacket.class, ctx -> find(ctx.packet().serviceName()).ifPresent(services::remove));
         client.on(ServiceUpdatePacket.class, new ServiceUpdateListener(this));
-        client.on(ServiceMemoryUpdatePacket.class, new ServiceMemoryUpdateListener(this));
+        client.on(ServiceMemoryUpdatePacket.class, ctx -> find(ctx.packet().serviceName()).ifPresent(service -> {
+            if (service instanceof ServiceImpl serviceImpl) {
+                serviceImpl.usedMemory(ctx.packet().usedMemory());
+            }
+        }));
 
-        client.send(new RequestServicesPacket());
+        client.request(new RequestServicesPacket(), ServicesResponsePacket.class).thenAccept(response -> response.services().forEach(this::addService));
     }
 
     public void addService(Service service) {

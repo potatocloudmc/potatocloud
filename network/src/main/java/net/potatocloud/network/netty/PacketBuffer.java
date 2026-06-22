@@ -204,7 +204,7 @@ public class PacketBuffer {
         return new SimpleClusterNode(readString(), readString(), readInt(), Instant.ofEpochMilli(readLong()));
     }
 
-    public void writeClusterNodeList(Collection<? extends ClusterNode> nodes) {
+    public void writeClusterNodeList(List<ClusterNode> nodes) {
         writeInt(nodes.size());
         for (ClusterNode node : nodes) {
             writeClusterNode(node);
@@ -216,6 +216,70 @@ public class PacketBuffer {
         final List<ClusterNode> list = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             list.add(readClusterNode());
+        }
+        return list;
+    }
+
+    public void writeGroupList(List<Group> groups) {
+        writeInt(groups.size());
+        for (Group group : groups) {
+            writeGroup(group);
+        }
+    }
+
+    public List<Group> readGroupList() {
+        final int size = readInt();
+        final List<Group> list = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            list.add(readGroup());
+        }
+        return list;
+    }
+
+    public void writeServiceList(List<Service> services) {
+        writeInt(services.size());
+        for (Service service : services) {
+            writeService(service);
+        }
+    }
+
+    public List<Service> readServiceList() {
+        final int size = readInt();
+        final List<Service> list = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            list.add(readService());
+        }
+        return list;
+    }
+
+    public void writeCloudPlayerList(List<CloudPlayer> players) {
+        writeInt(players.size());
+        for (CloudPlayer player : players) {
+            writeCloudPlayer(player);
+        }
+    }
+
+    public List<CloudPlayer> readCloudPlayerList() {
+        final int size = readInt();
+        final List<CloudPlayer> list = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            list.add(readCloudPlayer());
+        }
+        return list;
+    }
+
+    public void writePlatformList(List<Platform> platforms) {
+        writeInt(platforms.size());
+        for (Platform platform : platforms) {
+            writePlatform(platform);
+        }
+    }
+
+    public List<Platform> readPlatformList() {
+        final int size = readInt();
+        final List<Platform> list = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            list.add(readPlatform());
         }
         return list;
     }

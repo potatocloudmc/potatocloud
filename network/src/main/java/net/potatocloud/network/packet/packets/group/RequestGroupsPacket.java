@@ -1,9 +1,9 @@
 package net.potatocloud.network.packet.packets.group;
 
 import net.potatocloud.network.netty.PacketBuffer;
-import net.potatocloud.network.packet.Packet;
+import net.potatocloud.network.packet.request.RequestPacket;
 
-public record RequestGroupsPacket() implements Packet {
+public record RequestGroupsPacket() implements RequestPacket {
 
     public static final Codec<RequestGroupsPacket> CODEC = new Codec<>() {
 

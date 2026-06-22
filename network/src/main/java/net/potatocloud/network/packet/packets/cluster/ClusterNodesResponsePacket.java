@@ -2,11 +2,11 @@ package net.potatocloud.network.packet.packets.cluster;
 
 import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.network.netty.PacketBuffer;
-import net.potatocloud.network.packet.Packet;
+import net.potatocloud.network.packet.request.ResponsePacket;
 
 import java.util.List;
 
-public record ClusterNodesResponsePacket(ClusterNode localNode, List<ClusterNode> remoteNodes) implements Packet {
+public record ClusterNodesResponsePacket(ClusterNode localNode, List<ClusterNode> remoteNodes) implements ResponsePacket {
 
     public static final Codec<ClusterNodesResponsePacket> CODEC = new Codec<>() {
 

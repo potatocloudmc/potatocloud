@@ -86,7 +86,7 @@ public class ServiceManagerImpl implements ServiceManager {
 
         ServiceDefaultFiles.copyDefaultFiles(Path.of(config.folders().data()));
 
-        server.on(RequestServicesPacket.class, new RequestServicesListener(this));
+        server.on(RequestServicesPacket.class, ctx -> ctx.reply(new ServicesResponsePacket(services())));
         server.on(ServiceAddPacket.class, new ServiceAddListener(this, server, screenManager, clusterManager));
         server.on(ServiceRemovePacket.class, new ServiceRemoveListener(this, server, screenManager));
         server.on(ServiceStartedPacket.class, new ServiceStartedListener(this, logger, eventBus, clusterManager, server));

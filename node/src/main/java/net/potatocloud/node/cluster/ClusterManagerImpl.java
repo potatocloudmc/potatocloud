@@ -14,7 +14,11 @@ import net.potatocloud.network.packet.packets.cluster.*;
 import net.potatocloud.network.packet.packets.group.GroupDeletePacket;
 import net.potatocloud.network.packet.packets.player.CloudPlayerRemovePacket;
 import net.potatocloud.network.packet.packets.service.ServiceRemovePacket;
-import net.potatocloud.node.cluster.listeners.*;
+import net.potatocloud.node.cluster.listeners.NodeDisconnectListener;
+import net.potatocloud.node.cluster.listeners.NodeDiscoveryListener;
+import net.potatocloud.node.cluster.listeners.NodeJoinListener;
+import net.potatocloud.node.cluster.listeners.NodeLeaveListener;
+import net.potatocloud.node.cluster.listeners.ClusterSyncListener;
 import net.potatocloud.node.config.ClusterConfig;
 import net.potatocloud.node.group.GroupManagerImpl;
 import net.potatocloud.node.player.CloudPlayerManagerImpl;
@@ -52,7 +56,7 @@ public class ClusterManagerImpl implements ClusterManager {
         this.logger = logger;
         this.localNode = new ClusterNodeImpl(config.name(), localHost, localPort, Instant.now(), null);
 
-        server.on(RequestClusterNodesPacket.class, new RequestClusterNodesListener(this));
+        server.on(RequestClusterNodesPacket.class, ctx -> ctx.reply(new ClusterNodesResponsePacket(localNode, new ArrayList<>(remoteNodes()))));
     }
 
     public void start(GroupManagerImpl groupManager, ServiceManagerImpl serviceManager, CloudPlayerManagerImpl playerManager, ScreenManager screenManager) {
@@ -63,7 +67,7 @@ public class ClusterManagerImpl implements ClusterManager {
         server.on(NodeJoinPacket.class, new NodeJoinListener(localNode, this, config.token(), logger, groupManager, serviceManager, playerManager));
         server.on(NodeJoinRejectPacket.class, ctx -> logger.warn("Could not join the cluster&8: &c" + ctx.packet().reason()));
         server.on(NodeLeavePacket.class, new NodeLeaveListener(this, logger));
-        server.on(HeartbeatPacket.class, new HeartbeatListener(this));
+        server.on(HeartbeatPacket.class, ctx -> remoteNode(ctx.packet().nodeName()).ifPresent(ClusterNodeImpl::updateHeartbeat));
         server.on(NodeDiscoveryPacket.class, new NodeDiscoveryListener(this));
         server.on(ClusterSyncPacket.class, new ClusterSyncListener(groupManager, serviceManager, playerManager, server, screenManager, this));
         server.addDisconnectListener(new NodeDisconnectListener(this, logger));
