@@ -223,7 +223,7 @@ public class Node extends CloudAPI {
         commandManager.registerCommand(new InfoCommand(logger));
         commandManager.registerCommand(new PlatformCommand(logger, platformManager));
         commandManager.registerCommand(new PlayerCommand(logger, playerManager));
-        commandManager.registerCommand(new ServiceCommand(logger, serviceManager, screenManager, clusterManager));
+        commandManager.registerCommand(new ServiceCommand(logger, serviceManager, screenManager));
         commandManager.registerCommand(new ShutdownCommand(this));
 
         if (config.cluster().enabled()) {
