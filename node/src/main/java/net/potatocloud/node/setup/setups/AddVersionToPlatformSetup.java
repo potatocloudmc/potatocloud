@@ -10,7 +10,6 @@ import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.setup.Setup;
 import net.potatocloud.node.setup.answer.AnswerResult;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -46,7 +45,13 @@ public class AddVersionToPlatformSetup extends Setup {
 
                     if (!useDownload) {
                         try {
-                            Files.createDirectories(Path.of("platforms", platform.name(), answers.get("name")));
+                            final String name = answers.get("name");
+
+                            if (name.contains("..") || name.contains("/") || name.contains("\\")) {
+                                throw new IllegalArgumentException("Can not create version directory with invalid characters");
+                            }
+
+                            Files.createDirectories(Path.of("platforms", platform.name(), name));
                         } catch (Exception e) {
                             throw new RuntimeException("Failed to create platform directory", e);
                         }
