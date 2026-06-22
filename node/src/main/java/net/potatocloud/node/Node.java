@@ -261,6 +261,9 @@ public class Node extends CloudAPI {
 
             for (Service service : serviceManager.services()) {
                 final Group group = service.group();
+                if (group == null) {
+                    continue;
+                }
 
                 if (group.node().isPresent() && group.node().get().name().equals(localNodeName)) {
                     if (service.state() != ServiceState.STOPPING && service.state() != ServiceState.STOPPED) {
