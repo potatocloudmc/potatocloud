@@ -32,7 +32,7 @@ public class ClusterCommand extends Command {
                     logger.info("&8» &7Uptime&8: &a" + TimeFormatter.formatAsDuration(uptime));
 
                     final long connectedNodes = clusterManager.nodes().stream()
-                            .filter(node -> !node.name().equals(local.name()))
+                            .filter(node -> !node.equals(local))
                             .count();
 
                     logger.info("&8» &7Connected nodes&8: &a" + connectedNodes);
@@ -48,7 +48,7 @@ public class ClusterCommand extends Command {
 
                     logger.info("&7All connected cluster nodes:");
                     for (ClusterNode node : nodes) {
-                        final boolean isLocal = node.name().equals(local.name());
+                        final boolean isLocal = node.equals(local);
 
                         logger.info("&8» &a" + node.name()+ " &8(&a" + node.host() + "&8:&a" + node.port() + "&8)" + (isLocal ? " &8[&7Local&8]" : ""));
                     }

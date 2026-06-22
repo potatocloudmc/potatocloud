@@ -93,4 +93,20 @@ public class PlatformImpl implements Platform {
     public void addVersion(PlatformVersion version) {
         versions.add(version);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof PlatformImpl platform)) {
+            return false;
+        }
+        return name.equals(platform.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
 }
