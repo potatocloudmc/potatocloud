@@ -30,7 +30,7 @@ public final class ServiceAddHandler implements PacketHandler<ServiceAddPacket> 
             return;
         }
 
-        final CompletableFuture<Service> future = serviceManager.getPendingStarts().remove(requestId);
+        final CompletableFuture<Service> future = serviceManager.pendingStarts().remove(requestId);
         if (future != null) {
             future.complete(service);
         }

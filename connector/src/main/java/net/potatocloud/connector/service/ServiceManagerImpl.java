@@ -1,6 +1,5 @@
 package net.potatocloud.connector.service;
 
-import lombok.Getter;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
@@ -20,7 +19,6 @@ public class ServiceManagerImpl implements ServiceManager {
 
     private final List<Service> services = new CopyOnWriteArrayList<>();
 
-    @Getter
     private final Map<String, CompletableFuture<Service>> pendingStarts = new ConcurrentHashMap<>();
 
     private final NetworkClient client;
@@ -90,6 +88,10 @@ public class ServiceManagerImpl implements ServiceManager {
     @Override
     public void copyTo(Service service, String template, String filter) {
         client.send(new ServiceCopyPacket(service.name(), template, filter));
+    }
+
+    public Map<String, CompletableFuture<Service>> pendingStarts() {
+        return pendingStarts;
     }
 
     @Override

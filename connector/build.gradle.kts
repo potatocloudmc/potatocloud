@@ -5,7 +5,4 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":network"))
     implementation(project(":eventbus"))
-
-    implementation(libs.lombok)
-    annotationProcessor(libs.lombok)
 }
