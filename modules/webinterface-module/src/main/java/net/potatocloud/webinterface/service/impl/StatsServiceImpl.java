@@ -42,7 +42,7 @@ public class StatsServiceImpl implements StatsService {
     @Override
     public ApiStatsSummary statsSummary() {
         return new ApiStatsSummary()
-                .uptime(Node.getInstance().startupTime())
+                .uptime(Node.instance().startupTime())
                 .groups(cloudAPI.groupManager().groups().size())
                 .services(cloudAPI.serviceManager().services().size())
                 .playerCount(cloudAPI.playerManager().players().size());

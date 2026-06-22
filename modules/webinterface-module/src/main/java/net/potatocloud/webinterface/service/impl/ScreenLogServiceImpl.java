@@ -14,6 +14,7 @@ import net.potatocloud.api.event.events.service.ServiceStoppedEvent;
 import net.potatocloud.api.event.events.service.ServiceStoppingEvent;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.screen.Screen;
+import net.potatocloud.node.screen.ScreenSubscriber;
 import net.potatocloud.webinterface.dto.response.ScreenLogResponse;
 import net.potatocloud.webinterface.dto.response.WsEnvelope;
 import net.potatocloud.webinterface.service.ScreenLogService;
@@ -21,13 +22,12 @@ import net.potatocloud.webinterface.service.ScreenLogService;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 @ApplicationScoped
 public class ScreenLogServiceImpl implements ScreenLogService {
 
     private final Map<String, Set<WebSocketConnection>> connectionsByScreen = new ConcurrentHashMap<>();
-    private final Map<String, Consumer<String>> listenerByScreen = new ConcurrentHashMap<>();
+    private final Map<String, ScreenSubscriber> subscribersByScreen = new ConcurrentHashMap<>();
 
     @Inject
     ObjectMapper objectMapper;
@@ -43,30 +43,19 @@ public class ScreenLogServiceImpl implements ScreenLogService {
     @Override
     public void register(String screenName, WebSocketConnection connection) {
         connectionsByScreen.computeIfAbsent(screenName, key -> ConcurrentHashMap.newKeySet()).add(connection);
-        listenerByScreen.computeIfAbsent(screenName, key -> {
-            Screen screen = Node.getInstance().screenManager().get(key);
-            if (screen == null) {
-                return null;
-            }
-            Consumer<String> listener = line -> broadcast(key, line);
-            screen.subscribe(listener);
-            return listener;
-        });
+        attachListener(screenName);
     }
 
     private void attachListener(String screenName) {
-        if (listenerByScreen.containsKey(screenName)) {
-            return;
-        }
-        
-        listenerByScreen.computeIfAbsent(screenName, key -> {
-            Screen screen = Node.getInstance().screenManager().get(key);
+        subscribersByScreen.computeIfAbsent(screenName, key -> {
+            Screen screen = Node.instance().screenManager().get(key);
             if (screen == null) {
                 return null;
             }
-            Consumer<String> listener = line -> broadcast(key, line);
-            screen.subscribe(listener);
-            return listener;
+
+            ScreenSubscriber subscriber = line -> broadcast(key, line);
+            screen.subscribe(subscriber);
+            return subscriber;
         });
     }
 
@@ -97,7 +86,6 @@ public class ScreenLogServiceImpl implements ScreenLogService {
         }
 
         ScreenLogResponse screenLogDto = new ScreenLogResponse(screenName, line);
-
         WsEnvelope<ScreenLogResponse> event = new WsEnvelope<>("service_screen_log", screenLogDto);
 
         String jsonMessage;
@@ -119,13 +107,13 @@ public class ScreenLogServiceImpl implements ScreenLogService {
 
     @Override
     public void removeScreenListener(String screenName) {
-        Consumer<String> listener = listenerByScreen.remove(screenName);
-        if (listener == null) {
+        ScreenSubscriber subscriber = subscribersByScreen.remove(screenName);
+        if (subscriber == null) {
             return;
         }
-        Screen screen = Node.getInstance().screenManager().get(screenName);
+        Screen screen = Node.instance().screenManager().get(screenName);
         if (screen != null) {
-            screen.unsubscribe(listener);
+            screen.unsubscribe(subscriber);
         }
     }
 }

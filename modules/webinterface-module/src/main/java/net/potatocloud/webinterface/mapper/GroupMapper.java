@@ -49,7 +49,7 @@ public class GroupMapper {
 
     public Group toGroup(GroupCreateRequest request, String javaCommand, Set<String> customJvmFlags, Map<String, Property<?>> propertyMap) {
         return CloudAPI.instance().groupManager().builder(request.name())
-                .node(Node.getInstance().config().cluster().name())
+                .node(Node.instance().config().cluster().name())
                 .platform(request.platform())
                 .platformVersion(request.platformVersion())
                 .minServices(request.minServices())

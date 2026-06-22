@@ -12,11 +12,11 @@ import java.util.List;
 public class NodeServiceImpl implements NodeService {
 
     private final CloudAPI cloudAPI = CloudAPI.instance();
-    private final Node node = Node.getInstance();
+    private final Node node = Node.instance();
 
     @Override
     public List<String> findScreens() {
-        return node.screenManager().getScreens().keySet().stream().sorted().toList();
+        return node.screenManager().screens().keySet().stream().sorted().toList();
     }
 
     @Override
@@ -26,7 +26,7 @@ public class NodeServiceImpl implements NodeService {
             return null;
         }
 
-        List<String> logs = screen.cachedLogs();
+        List<String> logs = screen.logs();
         if (tail != null && tail > 0 && tail < logs.size()) {
             logs = logs.subList(logs.size() - tail, logs.size());
         }
