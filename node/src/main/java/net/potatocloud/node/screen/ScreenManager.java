@@ -132,6 +132,7 @@ public class ScreenManager {
         }
     }
 
+    @SuppressWarnings("unused")
     public Map<String, Screen> screens() {
         return screens;
     }
