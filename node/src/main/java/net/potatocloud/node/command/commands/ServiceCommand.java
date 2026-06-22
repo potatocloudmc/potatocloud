@@ -100,7 +100,7 @@ public class ServiceCommand extends Command {
                     logger.info("Updated &a" + key + " &7for service &a" + service.name() + "&7 to &a" + value);
                 });
 
-        sub("execute", "Execute a command on a sevice")
+        sub("execute", "Execute a command on a service")
                 .argument(ArgumentType.Service("service"))
                 .argument(ArgumentType.MultiString("command"))
                 .executes(ctx -> {
