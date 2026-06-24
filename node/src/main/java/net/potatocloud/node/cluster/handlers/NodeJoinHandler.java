@@ -57,8 +57,7 @@ public final class NodeJoinHandler implements PacketHandler<NodeJoinPacket> {
 
         final String localVersion = CloudAPI.VERSION.toString();
         if (!localVersion.equals(packet.nodeVersion())) {
-            connection.send(new NodeJoinRejectPacket("Version mismatch: Cluster node is running version " + localVersion + " but you are running version " + packet.nodeVersion()
-            ));
+            connection.send(new NodeJoinRejectPacket("Cluster node is running version " + localVersion + " but you are running version " + packet.nodeVersion()));
             connection.close();
             return;
         }
