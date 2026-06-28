@@ -14,6 +14,7 @@ platforms:
       - setup-proxy
     versions:
       - version: latest
+      - version: 26.2
       - version: 26.1.2
       - version: 26.1.1
       - version: 1.21.11
