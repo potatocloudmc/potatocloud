@@ -96,7 +96,8 @@ public class ClusterManagerImpl implements ClusterManager {
     }
 
     public void connect(String host, int port) {
-        if (!connectingAddresses.add(host + ":" + port)) {
+        final String address = host + ":" + port;
+        if (!connectingAddresses.add(address)) {
             return;
         }
 
@@ -113,6 +114,7 @@ public class ClusterManagerImpl implements ClusterManager {
             clients.add(client);
         } catch (Exception e) {
             logger.warn("Failed to connect to cluster node " + host + ":" + port + " &8(&7" + e.getMessage() + "&8)");
+            connectingAddresses.remove(address);
         }
     }
 
