@@ -3,7 +3,7 @@ package net.potatocloud.api.service.impl;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.api.group.Group;
-import net.potatocloud.api.property.Property;
+import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceState;
 
@@ -19,20 +19,20 @@ public class ServiceImpl implements Service {
     private final String host;
     private final String name;
     private final String groupName;
-    private final Map<String, Property<?>> propertyMap;
+    private final Map<PropertyKey<?>, Object> properties;
 
     private Instant startedAt;
     private ServiceState state;
     private int maxPlayers;
     private int usedMemory;
 
-    public ServiceImpl(int serviceId, String host, int port, String name, String groupName, Map<String, Property<?>> propertyMap, Instant startedAt, ServiceState state, int maxPlayers, int usedMemory) {
+    public ServiceImpl(int serviceId, String host, int port, String name, String groupName, Map<PropertyKey<?>, Object> properties, Instant startedAt, ServiceState state, int maxPlayers, int usedMemory) {
         this.serviceId = serviceId;
         this.host = host;
         this.port = port;
         this.name = name;
         this.groupName = groupName;
-        this.propertyMap = propertyMap;
+        this.properties = properties;
         this.startedAt = startedAt;
         this.state = state;
         this.maxPlayers = maxPlayers;
@@ -117,8 +117,8 @@ public class ServiceImpl implements Service {
     }
 
     @Override
-    public Map<String, Property<?>> propertyMap() {
-        return propertyMap;
+    public Map<PropertyKey<?>, Object> properties() {
+        return properties;
     }
 
     @Override

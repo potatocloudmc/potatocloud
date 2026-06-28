@@ -5,7 +5,7 @@ import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformVersion;
-import net.potatocloud.api.property.Property;
+import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.api.service.Service;
 
 import java.util.*;
@@ -27,7 +27,7 @@ public class GroupImpl implements Group {
     private int startPriority;
     private int startPercentage;
     private final Set<String> templates;
-    private final Map<String, Property<?>> propertyMap;
+    private final Map<PropertyKey<?>, Object> properties;
 
     public GroupImpl(
             String name,
@@ -44,10 +44,10 @@ public class GroupImpl implements Group {
             boolean fallback,
             int startPriority,
             int startPercentage,
-            Map<String, Property<?>> propertyMap
+            Map<PropertyKey<?>, Object> properties
     ) {
         this(name, nodeName, platformName, platformVersionName, javaCommand, customJvmFlags, maxPlayers, maxMemory,
-                minServices, maxServices, staticServices, fallback, startPriority, startPercentage, new HashSet<>(), propertyMap);
+                minServices, maxServices, staticServices, fallback, startPriority, startPercentage, new HashSet<>(), properties);
 
         addTemplate("every");
         addTemplate(name);
@@ -74,7 +74,7 @@ public class GroupImpl implements Group {
             int startPriority,
             int startPercentage,
             Set<String> templates,
-            Map<String, Property<?>> propertyMap
+            Map<PropertyKey<?>, Object> properties
     ) {
         this.name = name;
         this.nodeName = nodeName;
@@ -91,7 +91,7 @@ public class GroupImpl implements Group {
         this.startPriority = startPriority;
         this.startPercentage = startPercentage;
         this.templates = templates;
-        this.propertyMap = propertyMap;
+        this.properties = properties;
     }
 
     @Override
@@ -221,13 +221,12 @@ public class GroupImpl implements Group {
     }
 
     @Override
-    public <T> void set(Property<T> property, T value) {
-        Group.super.set(property, value);
+    public <T> void set(PropertyKey<T> key, T value) {
+        Group.super.set(key, value);
 
-        final Property<T> prop = property(property.name());
-        if (prop != null) {
+        if (key != null) {
             for (Service service : services()) {
-                service.set(prop, prop.value(), false);
+                service.set(key, value, false);
 
                 CloudAPI.instance().serviceManager().update(service);
             }
@@ -235,8 +234,8 @@ public class GroupImpl implements Group {
     }
 
     @Override
-    public Map<String, Property<?>> propertyMap() {
-        return propertyMap;
+    public Map<PropertyKey<?>, Object> properties() {
+        return properties;
     }
 
     @Override

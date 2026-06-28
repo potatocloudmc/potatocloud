@@ -3,26 +3,14 @@ package net.potatocloud.api.property;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.event.events.property.PropertyChangedEvent;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
+/**
+ * Represents an object that holds properties.
+ */
 public interface PropertyHolder {
-
-    /**
-     * Gets the map of properties by name.
-     *
-     * @return the property map
-     */
-    Map<String, Property<?>> propertyMap();
-
-    /**
-     * Gets the list of all properties of this holder.
-     *
-     * @return the list of all properties
-     */
-    default List<Property<?>> properties() {
-        return propertyMap().values().stream().toList();
-    }
 
     /**
      * Gets the name of this property holder.
@@ -32,39 +20,34 @@ public interface PropertyHolder {
     String name();
 
     /**
-     * Gets a property object by name.
+     * Gets the map of properties by name.
      *
-     * @param name the name of the property
-     * @param <T>  the type of the property value
-     * @return the property, or {@code null} if not found
+     * @return the property map
+     */
+    Map<PropertyKey<?>, Object> properties();
+
+    /**
+     * Gets the current value of a property.
+     *
+     * @param key the property key
+     * @param <T> the property type
+     * @return the stored value or the property's default value
      */
     @SuppressWarnings("unchecked")
-    default <T> Property<T> property(String name) {
-        return (Property<T>) propertyMap().get(name);
+    default <T> T get(PropertyKey<T> key) {
+        return (T) properties().getOrDefault(key, key.defaultValue());
     }
 
     /**
-     * Gets a property object by reference.
+     * Gets a property key by its name.
      *
-     * @param key the property key
-     * @param <T> the type of the property value
-     * @return the property, or {@code null} if not found
+     * @param name the property name
+     * @return an optional containing the property key if found
      */
-    default <T> Property<T> property(Property<T> key) {
-        return property(key.name());
-    }
-
-    /**
-     * Gets the current value of a property directly.
-     * Returns the property's default value if not set.
-     *
-     * @param key the property key
-     * @param <T> the type of the property value
-     * @return the current value, or the default value if not set
-     */
-    default <T> T get(Property<T> key) {
-        final Property<T> existing = property(key.name());
-        return existing != null ? existing.value() : key.defaultValue();
+    default Optional<PropertyKey<?>> get(String name) {
+        return properties().keySet().stream()
+                .filter(key -> key.name().equals(name))
+                .findFirst();
     }
 
     /**
@@ -75,26 +58,17 @@ public interface PropertyHolder {
      * @param fireEvent {@code true} to fire a PropertyChangedEvent
      * @param <T>       the type of the property value
      */
-    default <T> void set(Property<T> key, T value, boolean fireEvent) {
-        Property<T> existing = property(key.name());
-        Object oldValue = null;
+    default <T> void set(PropertyKey<T> key, T value, boolean fireEvent) {
+        final Object oldValue = properties().get(key);
 
-        if (existing != null) {
-            oldValue = existing.value();
-            if (oldValue.equals(value)) {
-                return;
-            }
-            existing.value(value);
-            key = existing;
-        } else {
-            key.value(value);
-            propertyMap().put(key.name(), key);
+        if (Objects.equals(oldValue, value)) {
+            return;
         }
 
+        properties().put(key, value);
+
         if (fireEvent) {
-            CloudAPI.instance().eventBus().publish(
-                    new PropertyChangedEvent(name(), key.name(), oldValue, value)
-            );
+            CloudAPI.instance().eventBus().publish(new PropertyChangedEvent(name(), key.name(), oldValue, value));
         }
     }
 
@@ -105,37 +79,36 @@ public interface PropertyHolder {
      * @param value the new value
      * @param <T>   the type of the property value
      */
-    default <T> void set(Property<T> key, T value) {
+    default <T> void set(PropertyKey<T> key, T value) {
         set(key, value, true);
     }
 
     /**
-     * Stores a property using its own current value.
+     * Sets a property value using the default value provided by the key.
      *
-     * @param key the property to store
+     * @param key the property key
      * @param <T> the type of the property value
      */
-    default <T> void set(Property<T> key) {
-        set(key, key.value());
+    default <T> void set(PropertyKey<T> key) {
+        set(key, key.defaultValue());
     }
 
     /**
-     * Checks whether a property with the given name exists.
-     *
-     * @param name the name of the property
-     * @return {@code true} if a property with the given name exists
-     */
-    default boolean hasProperty(String name) {
-        return propertyMap().containsKey(name);
-    }
-
-    /**
-     * Checks whether the given property exists.
+     * Checks whether the given key exists.
      *
      * @param key the property key
      * @return {@code true} if the property exists
      */
-    default boolean hasProperty(Property<?> key) {
-        return propertyMap().containsKey(key.name());
+    default boolean hasProperty(PropertyKey<?> key) {
+        return properties().containsKey(key);
+    }
+
+    /**
+     * Removes a property.
+     *
+     * @param key the property key
+     */
+    default void removeProperty(PropertyKey<?> key) {
+        properties().remove(key);
     }
 }

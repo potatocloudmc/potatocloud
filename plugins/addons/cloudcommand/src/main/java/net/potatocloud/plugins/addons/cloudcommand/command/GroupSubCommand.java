@@ -7,13 +7,15 @@ import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.group.GroupManager;
 import net.potatocloud.api.property.DefaultProperties;
-import net.potatocloud.api.property.Property;
+import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.common.PropertyUtil;
 import net.potatocloud.plugins.shared.MessagesConfig;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class GroupSubCommand {
@@ -77,17 +79,17 @@ public class GroupSubCommand {
         groupManager.find(name).ifPresentOrElse(group -> {
             switch (sub) {
                 case "list" -> {
-                    final List<Property<?>> props = group.properties();
+                    final Map<PropertyKey<?>, Object> properties = group.properties();
 
-                    if (props.isEmpty()) {
+                    if (properties.isEmpty()) {
                         player.sendMessage(messages.get("group.property.empty").replaceText(text -> text.match("%name%").replacement(name)));
                         return;
                     }
 
                     player.sendMessage(messages.get("group.property.list.header").replaceText(text -> text.match("%name%").replacement(name)));
 
-                    for (Property<?> property : props) {
-                        player.sendMessage(messages.get("group.property.list.entry").replaceText(text -> text.match("%key%").replacement(property.name())).replaceText(text -> text.match("%value%").replacement(String.valueOf(property.value()))));
+                    for (Map.Entry<PropertyKey<?>, Object> entry : properties.entrySet()) {
+                        player.sendMessage(messages.get("group.property.list.entry").replaceText(text -> text.match("%key%").replacement(entry.getKey().name())).replaceText(text -> text.match("%value%").replacement(String.valueOf(entry.getValue()))));
                     }
                 }
 
@@ -98,16 +100,16 @@ public class GroupSubCommand {
                     }
 
                     final String key = args[4];
-                    final Property<?> property = group.property(key);
 
-                    if (property == null) {
+                    final Optional<PropertyKey<?>> propertyKey = group.get(key);
+
+                    if (propertyKey.isEmpty()) {
                         player.sendMessage(messages.get("group.property.not-found").replaceText(text -> text.match("%key%").replacement(key)));
                         return;
                     }
 
-                    group.propertyMap().remove(property.name());
+                    group.removeProperty(propertyKey.get());
                     groupManager.update(group);
-
                     player.sendMessage(messages.get("group.property.remove.success").replaceText(text -> text.match("%name%").replacement(name)).replaceText(text -> text.match("%key%").replacement(key)));
                 }
 
@@ -121,8 +123,7 @@ public class GroupSubCommand {
                     final String value = args[5];
 
                     try {
-                        final Property<?> property = PropertyUtil.stringToProperty(key, value);
-                        group.set(property);
+                        PropertyUtil.setString(group, key, value);
                         groupManager.update(group);
 
                         player.sendMessage(messages.get("group.property.set.success").replaceText(text -> text.match("%key%").replacement(key)).replaceText(text -> text.match("%value%").replacement(value)).replaceText(text -> text.match("%name%").replacement(name)));
@@ -231,7 +232,7 @@ public class GroupSubCommand {
 
             if (args.length == 5 && args[2].equalsIgnoreCase("remove")) {
                 return groupManager.find(args[3])
-                        .map(group -> group.properties().stream().map(Property::name)
+                        .map(group -> group.properties().keySet().stream().map(PropertyKey::name)
                                 .filter(propertyName -> propertyName.startsWith(args[4]))
                                 .toList())
                         .orElseGet(List::of);
@@ -240,8 +241,8 @@ public class GroupSubCommand {
             if (args.length == 5 && args[2].equalsIgnoreCase("set")) {
                 List<String> completions = new ArrayList<>();
                 completions.add("<custom>");
-                completions.addAll(DefaultProperties.asSet().stream()
-                        .map(Property::name)
+                completions.addAll(DefaultProperties.values().stream()
+                        .map(PropertyKey::name)
                         .filter(propertyName -> propertyName.startsWith(args[4].toLowerCase())).
                         toList());
                 return completions;

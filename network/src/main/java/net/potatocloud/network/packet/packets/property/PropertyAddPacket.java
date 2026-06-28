@@ -1,21 +1,27 @@
 package net.potatocloud.network.packet.packets.property;
 
-import net.potatocloud.api.property.Property;
+import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.network.netty.PacketBuffer;
 import net.potatocloud.network.packet.Packet;
 
-public record PropertyAddPacket(Property<?> property) implements Packet {
+public record PropertyAddPacket(String name, Object defaultValue, Object value) implements Packet {
 
     public static final Codec<PropertyAddPacket> CODEC = new Codec<>() {
 
         @Override
         public void encode(PropertyAddPacket packet, PacketBuffer buf) {
-            buf.writeProperty(packet.property());
+            buf.writeString(packet.name());
+            buf.writeObject(packet.defaultValue());
+            buf.writeObject(packet.value());
         }
 
         @Override
         public PropertyAddPacket decode(PacketBuffer buf) {
-            return new PropertyAddPacket(buf.readProperty());
+            return new PropertyAddPacket(buf.readString(), buf.readObject(), buf.readObject());
         }
     };
+
+    public PropertyKey<?> toKey() {
+        return PropertyKey.of(name, defaultValue);
+    }
 }

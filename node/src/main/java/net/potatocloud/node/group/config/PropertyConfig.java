@@ -1,6 +1,8 @@
 package net.potatocloud.node.group.config;
 
-import net.potatocloud.api.property.Property;
+import net.potatocloud.api.property.PropertyKey;
+
+import java.util.Map;
 
 public record PropertyConfig(
         String name,
@@ -8,19 +10,15 @@ public record PropertyConfig(
         Object value
 ) {
 
-    public static PropertyConfig from(Property<?> property) {
+    public static PropertyConfig from(Map.Entry<PropertyKey<?>, Object> entry) {
         return new PropertyConfig(
-                property.name(),
-                property.defaultValue(),
-                property.value()
+                entry.getKey().name(),
+                entry.getKey().defaultValue(),
+                entry.getValue()
         );
     }
 
-    public Property<?> toProperty() {
-        return Property.of(
-                name,
-                defaultValue,
-                value
-        );
+    public Map.Entry<PropertyKey<?>, Object> toEntry() {
+        return Map.entry(PropertyKey.of(name, defaultValue), value);
     }
 }

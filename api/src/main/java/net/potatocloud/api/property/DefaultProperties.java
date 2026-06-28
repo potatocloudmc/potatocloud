@@ -2,19 +2,45 @@ package net.potatocloud.api.property;
 
 import java.util.Set;
 
-public class DefaultProperties {
+/**
+ * Common properties with built-in functionality.
+ */
+public final class DefaultProperties {
 
-    // Shows the current game state of the service
-    // When the game state changes to "INGAME", the cloud automatically starts a new service
-    public static final Property<String> GAME_STATE = Property.ofString("gameState", "LOBBY");
+    private DefaultProperties() {
+    }
 
-    // If true, the service uses Velocitys modern forwarding
-    public static final Property<Boolean> VELOCITY_MODERN_FORWARDING = Property.ofBoolean("velocityModernForwarding", false);
+    /**
+     * Represents the current game state of a service.
+     * <p>
+     * When the value changes to {@code "INGAME"}, the cloud
+     * automatically starts another service if required.
+     */
+    public static final PropertyKey<String> GAME_STATE = PropertyKey.of("gameState", "LOBBY");
 
-    // If true, the cloud always replaces the velocity forwarding secret with its own
-    public static final Property<Boolean> ALWAYS_OVERRIDE_FORWARDING_SECRET = Property.ofBoolean("alwaysOverrideForwardingSecret", true);
+    /**
+     * Whether the service uses Velocity modern forwarding or not.
+     * Only works when the service is running on Velocity platform.
+     */
+    public static final PropertyKey<Boolean> VELOCITY_MODERN_FORWARDING = PropertyKey.of("velocityModernForwarding", false);
 
-    public static Set<Property<?>> asSet() {
-        return Set.of(GAME_STATE, VELOCITY_MODERN_FORWARDING, ALWAYS_OVERRIDE_FORWARDING_SECRET);
+    /**
+     * Whether the cloud should always replace the configured Velocity forwarding secret with its own.
+     */
+    public static final PropertyKey<Boolean> ALWAYS_OVERRIDE_FORWARDING_SECRET = PropertyKey.of("alwaysOverrideForwardingSecret", true);
+
+    private static final Set<PropertyKey<?>> VALUES =
+            Set.of(GAME_STATE,
+                    VELOCITY_MODERN_FORWARDING,
+                    ALWAYS_OVERRIDE_FORWARDING_SECRET
+            );
+
+    /**
+     * Returns all default properties.
+     *
+     * @return all default properties
+     */
+    public static Set<PropertyKey<?>> values() {
+        return VALUES;
     }
 }

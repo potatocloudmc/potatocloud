@@ -12,10 +12,11 @@ import net.potatocloud.api.platform.impl.PlatformImpl;
 import net.potatocloud.api.platform.impl.PlatformVersionImpl;
 import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.player.impl.CloudPlayerImpl;
-import net.potatocloud.api.property.Property;
+import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceState;
 import net.potatocloud.api.service.impl.ServiceImpl;
+import net.potatocloud.common.Pair;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -113,6 +114,7 @@ public class PacketBuffer {
 
     public void writeObject(Object object) {
         switch (object) {
+            case null -> buf.writeByte(0);
             case String string -> {
                 buf.writeByte(1);
                 writeString(string);
@@ -137,13 +139,14 @@ public class PacketBuffer {
                 buf.writeByte(6);
                 writeDouble(d);
             }
-            case null, default -> throw new IllegalArgumentException("Unsupported object: " + object.getClass());
+            default -> throw new IllegalArgumentException("Unsupported object: " + object.getClass());
         }
     }
 
     public Object readObject() {
         final byte type = buf.readByte();
         return switch (type) {
+            case 0 -> null;
             case 1 -> readString();
             case 2 -> readInt();
             case 3 -> readBoolean();
@@ -154,41 +157,40 @@ public class PacketBuffer {
         };
     }
 
-    public <T> void writeProperty(Property<T> property) {
-        writeString(property.name());
-        writeObject(property.defaultValue());
-        writeObject(property.value());
+    public void writeProperty(PropertyKey<?> key, Object value) {
+        writeString(key.name());
+        writeObject(key.defaultValue());
+        writeObject(value);
     }
 
-    public Property<?> readProperty() {
+    public Pair<PropertyKey<?>, Object> readProperty() {
         final String name = readString();
         final Object defaultValue = readObject();
         final Object value = readObject();
 
-        return Property.of(name, defaultValue, value);
+        return Pair.of(new PropertyKey<>(name, defaultValue), value);
     }
 
-    public void writePropertyMap(Map<String, Property<?>> propertyMap) {
+    public void writePropertyMap(Map<PropertyKey<?>, Object> propertyMap) {
         if (propertyMap == null) {
             writeInt(-1);
             return;
         }
         writeInt(propertyMap.size());
-        for (Property<?> prop : propertyMap.values()) {
-            writeProperty(prop);
+        for (Map.Entry<PropertyKey<?>, Object> entry : propertyMap.entrySet()) {
+            writeProperty(entry.getKey(), entry.getValue());
         }
     }
 
-    public Map<String, Property<?>> readPropertyMap() {
+    public Map<PropertyKey<?>, Object> readPropertyMap() {
         final int size = readInt();
         if (size == -1) {
             return new HashMap<>();
         }
-        final Map<String, Property<?>> map = new HashMap<>(size);
+        final Map<PropertyKey<?>, Object> map = new HashMap<>(size);
         for (int i = 0; i < size; i++) {
-            final Property<?> property = readProperty();
-
-            map.put(property.name(), property);
+            final Pair<PropertyKey<?>, Object> pair = readProperty();
+            map.put(pair.key(), pair.value());
         }
         return map;
     }
@@ -205,6 +207,10 @@ public class PacketBuffer {
     }
 
     public void writeClusterNodeList(List<ClusterNode> nodes) {
+        if (nodes == null) {
+            writeInt(-1);
+            return;
+        }
         writeInt(nodes.size());
         for (ClusterNode node : nodes) {
             writeClusterNode(node);
@@ -213,6 +219,9 @@ public class PacketBuffer {
 
     public List<ClusterNode> readClusterNodeList() {
         final int size = readInt();
+        if (size == -1) {
+            return new ArrayList<>();
+        }
         final List<ClusterNode> list = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             list.add(readClusterNode());
@@ -221,6 +230,10 @@ public class PacketBuffer {
     }
 
     public void writeGroupList(List<Group> groups) {
+        if (groups == null) {
+            writeInt(-1);
+            return;
+        }
         writeInt(groups.size());
         for (Group group : groups) {
             writeGroup(group);
@@ -229,6 +242,9 @@ public class PacketBuffer {
 
     public List<Group> readGroupList() {
         final int size = readInt();
+        if (size == -1) {
+            return new ArrayList<>();
+        }
         final List<Group> list = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             list.add(readGroup());
@@ -237,6 +253,10 @@ public class PacketBuffer {
     }
 
     public void writeServiceList(List<Service> services) {
+        if (services == null) {
+            writeInt(-1);
+            return;
+        }
         writeInt(services.size());
         for (Service service : services) {
             writeService(service);
@@ -245,6 +265,9 @@ public class PacketBuffer {
 
     public List<Service> readServiceList() {
         final int size = readInt();
+        if (size == -1) {
+            return new ArrayList<>();
+        }
         final List<Service> list = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             list.add(readService());
@@ -253,6 +276,10 @@ public class PacketBuffer {
     }
 
     public void writeCloudPlayerList(List<CloudPlayer> players) {
+        if (players == null) {
+            writeInt(-1);
+            return;
+        }
         writeInt(players.size());
         for (CloudPlayer player : players) {
             writeCloudPlayer(player);
@@ -261,6 +288,9 @@ public class PacketBuffer {
 
     public List<CloudPlayer> readCloudPlayerList() {
         final int size = readInt();
+        if (size == -1) {
+            return new ArrayList<>();
+        }
         final List<CloudPlayer> list = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             list.add(readCloudPlayer());
@@ -269,6 +299,10 @@ public class PacketBuffer {
     }
 
     public void writePlatformList(List<Platform> platforms) {
+        if (platforms == null) {
+            writeInt(-1);
+            return;
+        }
         writeInt(platforms.size());
         for (Platform platform : platforms) {
             writePlatform(platform);
@@ -277,6 +311,9 @@ public class PacketBuffer {
 
     public List<Platform> readPlatformList() {
         final int size = readInt();
+        if (size == -1) {
+            return new ArrayList<>();
+        }
         final List<Platform> list = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             list.add(readPlatform());
@@ -333,7 +370,7 @@ public class PacketBuffer {
         writeInt(group.startPriority());
         writeInt(group.startPercentage());
         writeStringSet(group.templates());
-        writePropertyMap(group.propertyMap());
+        writePropertyMap(group.properties());
     }
 
     public Group readGroup() {
@@ -362,8 +399,8 @@ public class PacketBuffer {
         writeString(service.host());
         writeInt(service.port());
         writeString(service.name());
-        writeString(service.group().name());
-        writePropertyMap(service.propertyMap());
+        writeString(service.group() == null ? null : service.group().name());
+        writePropertyMap(service.properties());
         writeLong(service.startedAt().toEpochMilli());
         writeString(service.state().name());
         writeInt(service.maxPlayers());
@@ -390,7 +427,7 @@ public class PacketBuffer {
         writeUUID(player.uniqueId());
         writeString(player.proxy().name());
         writeString(player.service().map(Service::name).orElse(null));
-        writePropertyMap(player.propertyMap());
+        writePropertyMap(player.properties());
     }
 
     public CloudPlayer readCloudPlayer() {

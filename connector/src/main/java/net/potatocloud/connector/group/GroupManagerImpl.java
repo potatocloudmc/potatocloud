@@ -84,7 +84,7 @@ public class GroupManagerImpl implements GroupManager {
                 group.startPriority(),
                 group.startPercentage(),
                 group.templates(),
-                group.propertyMap()
+                group.properties()
         ));
     }
 }

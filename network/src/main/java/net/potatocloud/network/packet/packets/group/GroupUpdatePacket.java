@@ -1,6 +1,6 @@
 package net.potatocloud.network.packet.packets.group;
 
-import net.potatocloud.api.property.Property;
+import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.network.netty.PacketBuffer;
 import net.potatocloud.network.packet.Packet;
 
@@ -18,7 +18,7 @@ public record GroupUpdatePacket(
         int startPriority,
         int startPercentage,
         Set<String> templates,
-        Map<String, Property<?>> propertyMap
+        Map<PropertyKey<?>, Object> propertyMap
 ) implements Packet {
 
     public static final Codec<GroupUpdatePacket> CODEC = new Codec<>() {

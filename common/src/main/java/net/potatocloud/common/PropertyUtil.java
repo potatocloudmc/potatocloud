@@ -1,44 +1,44 @@
 package net.potatocloud.common;
 
-import net.potatocloud.api.property.Property;
 import net.potatocloud.api.property.PropertyHolder;
+import net.potatocloud.api.property.PropertyKey;
 
 public final class PropertyUtil {
 
     private PropertyUtil() {
     }
 
-    /**
-     * Converts a string into a Property with the right type (needed for property commands both in node and cloud command)
-     */
-    public static Property<?> stringToProperty(String key, String value) {
+    public static Object parseValue(String value) {
+        if (value == null) {
+            return null;
+        }
+
         if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
-            return Property.ofBoolean(key, Boolean.parseBoolean(value));
+            return Boolean.parseBoolean(value);
         }
 
         try {
-            return Property.ofInteger(key, Integer.parseInt(value));
-        } catch (NumberFormatException ignored) {
-
-        }
+            return Integer.parseInt(value);
+        } catch (NumberFormatException ignored) {}
 
         try {
-            return Property.ofFloat(key, Float.parseFloat(value));
-        } catch (NumberFormatException ignored) {
-
-        }
+            return Float.parseFloat(value);
+        } catch (NumberFormatException ignored) {}
 
         try {
-            return Property.ofDouble(key, Double.parseDouble(value));
-        } catch (NumberFormatException ignored) {
-        }
+            return Double.parseDouble(value);
+        } catch (NumberFormatException ignored) {}
 
-        return Property.ofString(key, value);
+        return value;
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> void setPropertyUnchecked(PropertyHolder holder, Property<?> property) {
-        final Property<T> typed = (Property<T>) property;
-        holder.set(typed, typed.value(), false);
+    public static <T> void setUnchecked(PropertyHolder holder, PropertyKey<T> key, Object value) {
+        holder.set(key, (T) value, false);
+    }
+
+    public static void setString(PropertyHolder holder, String name, String value) {
+        Object parsed = parseValue(value);
+        holder.set(PropertyKey.of(name, parsed), parsed, false);
     }
 }

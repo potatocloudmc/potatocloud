@@ -2,7 +2,6 @@ package net.potatocloud.node.player.handlers;
 
 import net.potatocloud.api.player.CloudPlayerManager;
 import net.potatocloud.api.player.impl.CloudPlayerImpl;
-import net.potatocloud.api.property.Property;
 import net.potatocloud.common.PropertyUtil;
 import net.potatocloud.network.ConnectionType;
 import net.potatocloud.network.NetworkServer;
@@ -32,10 +31,8 @@ public final class CloudPlayerUpdateHandler implements PacketHandler<CloudPlayer
                 playerImpl.proxyName(packet.connectedProxyName());
                 playerImpl.serviceName(packet.connectedServiceName());
 
-                playerImpl.propertyMap().clear();
-                for (Property<?> property : packet.propertyMap().values()) {
-                    PropertyUtil.setPropertyUnchecked(playerImpl, property);
-                }
+                playerImpl.properties().clear();
+                packet.propertyMap().forEach((key, value) -> PropertyUtil.setUnchecked(playerImpl, key, value));
             }
         });
 

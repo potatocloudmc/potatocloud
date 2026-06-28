@@ -33,8 +33,8 @@ public final class GroupUpdateHandler implements PacketHandler<GroupUpdatePacket
             group.customJvmFlags().clear();
             packet.customJvmFlags().forEach(group::addCustomJvmFlag);
 
-            group.propertyMap().clear();
-            packet.propertyMap().values().forEach(property -> PropertyUtil.setPropertyUnchecked(group, property));
+            group.properties().clear();
+            packet.propertyMap().forEach((key, value) -> PropertyUtil.setUnchecked(group, key, value));
         });
     }
 }

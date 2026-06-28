@@ -1,6 +1,5 @@
 package net.potatocloud.connector.service.handlers;
 
-import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.ServiceState;
 import net.potatocloud.common.PropertyUtil;
@@ -24,10 +23,8 @@ public final class ServiceUpdateHandler implements PacketHandler<ServiceUpdatePa
             service.state(ServiceState.valueOf(packet.state()));
             service.maxPlayers(packet.maxPlayers());
 
-            service.propertyMap().clear();
-            for (Property<?> property : packet.propertyMap().values()) {
-                PropertyUtil.setPropertyUnchecked(service, property);
-            }
+            service.properties().clear();
+            packet.propertyMap().forEach((key, value) -> PropertyUtil.setUnchecked(service, key, value));
         });
     }
 }

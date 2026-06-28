@@ -118,7 +118,7 @@ public class ServiceManagerImpl implements ServiceManager {
                 service.name(),
                 service.state().name(),
                 service.maxPlayers(),
-                service.propertyMap()
+                service.properties()
         );
         server.broadcast().connectors().send(packet);
         clusterManager.broadcast(packet);
@@ -218,7 +218,7 @@ public class ServiceManagerImpl implements ServiceManager {
                 port,
                 name,
                 group.get().name(),
-                new HashMap<>(group.get().propertyMap()),
+                new HashMap<>(group.get().properties()),
                 Instant.ofEpochSecond(0L),
                 ServiceState.STOPPED,
                 group.get().maxPlayers(),

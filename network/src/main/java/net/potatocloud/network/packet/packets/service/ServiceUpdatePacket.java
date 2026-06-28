@@ -1,6 +1,6 @@
 package net.potatocloud.network.packet.packets.service;
 
-import net.potatocloud.api.property.Property;
+import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.network.netty.PacketBuffer;
 import net.potatocloud.network.packet.Packet;
 
@@ -10,7 +10,7 @@ public record ServiceUpdatePacket(
         String serviceName,
         String state,
         int maxPlayers,
-        Map<String, Property<?>> propertyMap
+        Map<PropertyKey<?>, Object> propertyMap
 ) implements Packet {
 
     public static final Codec<ServiceUpdatePacket> CODEC = new Codec<>() {
