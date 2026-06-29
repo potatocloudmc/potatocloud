@@ -3,7 +3,7 @@ package net.potatocloud.connector.utils;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.connector.ConnectorAPI;
-import net.potatocloud.network.packet.packets.service.ServiceStartedPacket;
+import net.potatocloud.network.packets.service.ServiceStartedPacket;
 
 import java.util.Optional;
 

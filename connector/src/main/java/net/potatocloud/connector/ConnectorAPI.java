@@ -18,9 +18,9 @@ import net.potatocloud.connector.properties.ConnectorPropertiesHolder;
 import net.potatocloud.connector.service.ServiceManagerImpl;
 import net.potatocloud.eventbus.ClientEventBus;
 import net.potatocloud.network.NetworkClient;
-import net.potatocloud.network.netty.client.NettyNetworkClient;
-import net.potatocloud.network.packet.PacketManager;
-import net.potatocloud.network.packet.PacketRegistry;
+import net.potatocloud.network.transport.netty.NettyNetworkClient;
+import net.potatocloud.network.protocol.PacketManager;
+import net.potatocloud.network.protocol.PacketRegistry;
 
 /**
  * The Connector connects a node to this instance and provides API methods for running services.

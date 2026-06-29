@@ -1,8 +1,8 @@
 package net.potatocloud.network;
 
-import net.potatocloud.network.packet.Packet;
-import net.potatocloud.network.packet.request.RequestPacket;
-import net.potatocloud.network.packet.request.ResponsePacket;
+import net.potatocloud.network.protocol.Packet;
+import net.potatocloud.network.request.RequestPacket;
+import net.potatocloud.network.request.ResponsePacket;
 
 import java.util.concurrent.CompletableFuture;
 

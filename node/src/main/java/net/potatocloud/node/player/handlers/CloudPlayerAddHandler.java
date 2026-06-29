@@ -2,9 +2,9 @@ package net.potatocloud.node.player.handlers;
 
 import net.potatocloud.network.ConnectionType;
 import net.potatocloud.network.NetworkServer;
-import net.potatocloud.network.packet.PacketContext;
-import net.potatocloud.network.packet.PacketHandler;
-import net.potatocloud.network.packet.packets.player.CloudPlayerAddPacket;
+import net.potatocloud.network.protocol.PacketContext;
+import net.potatocloud.network.protocol.PacketHandler;
+import net.potatocloud.network.packets.player.CloudPlayerAddPacket;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.config.NodeConfig;

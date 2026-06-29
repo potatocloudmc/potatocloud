@@ -1,7 +1,7 @@
 package net.potatocloud.eventbus;
 
 import net.potatocloud.api.event.Event;
-import net.potatocloud.network.packet.packets.event.EventPacket;
+import net.potatocloud.network.packets.event.EventPacket;
 import tools.jackson.databind.json.JsonMapper;
 
 public final class JsonEventCodec {

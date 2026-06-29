@@ -1,7 +1,7 @@
 package net.potatocloud.node.cluster;
 
 import net.potatocloud.api.logging.Logger;
-import net.potatocloud.network.packet.packets.cluster.HeartbeatPacket;
+import net.potatocloud.network.packets.cluster.HeartbeatPacket;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

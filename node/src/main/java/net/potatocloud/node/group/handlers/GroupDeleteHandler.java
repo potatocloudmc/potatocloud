@@ -2,9 +2,9 @@ package net.potatocloud.node.group.handlers;
 
 import net.potatocloud.network.ConnectionType;
 import net.potatocloud.network.NetworkServer;
-import net.potatocloud.network.packet.PacketContext;
-import net.potatocloud.network.packet.PacketHandler;
-import net.potatocloud.network.packet.packets.group.GroupDeletePacket;
+import net.potatocloud.network.protocol.PacketContext;
+import net.potatocloud.network.protocol.PacketHandler;
+import net.potatocloud.network.packets.group.GroupDeletePacket;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.group.GroupManagerImpl;
 

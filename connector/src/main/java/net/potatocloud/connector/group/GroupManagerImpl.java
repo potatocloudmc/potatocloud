@@ -3,12 +3,12 @@ package net.potatocloud.connector.group;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.group.GroupManager;
 import net.potatocloud.connector.group.handlers.GroupUpdateHandler;
-import net.potatocloud.network.packet.packets.group.GroupsResponsePacket;
+import net.potatocloud.network.packets.group.GroupsResponsePacket;
 import net.potatocloud.network.NetworkClient;
-import net.potatocloud.network.packet.packets.group.GroupAddPacket;
-import net.potatocloud.network.packet.packets.group.GroupDeletePacket;
-import net.potatocloud.network.packet.packets.group.GroupUpdatePacket;
-import net.potatocloud.network.packet.packets.group.RequestGroupsPacket;
+import net.potatocloud.network.packets.group.GroupAddPacket;
+import net.potatocloud.network.packets.group.GroupDeletePacket;
+import net.potatocloud.network.packets.group.GroupUpdatePacket;
+import net.potatocloud.network.packets.group.RequestGroupsPacket;
 
 import java.util.*;
 

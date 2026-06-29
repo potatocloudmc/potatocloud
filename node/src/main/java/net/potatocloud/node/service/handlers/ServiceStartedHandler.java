@@ -9,9 +9,9 @@ import net.potatocloud.api.service.ServiceState;
 import net.potatocloud.api.utils.TimeFormatter;
 import net.potatocloud.network.ConnectionType;
 import net.potatocloud.network.NetworkServer;
-import net.potatocloud.network.packet.PacketContext;
-import net.potatocloud.network.packet.PacketHandler;
-import net.potatocloud.network.packet.packets.service.ServiceStartedPacket;
+import net.potatocloud.network.protocol.PacketContext;
+import net.potatocloud.network.protocol.PacketHandler;
+import net.potatocloud.network.packets.service.ServiceStartedPacket;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 

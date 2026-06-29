@@ -2,9 +2,9 @@ package net.potatocloud.node.service.handlers;
 
 import net.potatocloud.network.ConnectionType;
 import net.potatocloud.network.NetworkServer;
-import net.potatocloud.network.packet.PacketContext;
-import net.potatocloud.network.packet.PacketHandler;
-import net.potatocloud.network.packet.packets.service.ServiceRemovePacket;
+import net.potatocloud.network.protocol.PacketContext;
+import net.potatocloud.network.protocol.PacketHandler;
+import net.potatocloud.network.packets.service.ServiceRemovePacket;
 import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.service.ServiceManagerImpl;
 

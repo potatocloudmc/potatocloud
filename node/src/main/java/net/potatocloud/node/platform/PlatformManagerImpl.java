@@ -4,11 +4,11 @@ import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformManager;
 import net.potatocloud.network.NetworkServer;
-import net.potatocloud.network.packet.packets.platform.PlatformAddPacket;
-import net.potatocloud.network.packet.packets.platform.PlatformRemovePacket;
-import net.potatocloud.network.packet.packets.platform.PlatformUpdatePacket;
-import net.potatocloud.network.packet.packets.platform.RequestPlatformsPacket;
-import net.potatocloud.network.packet.packets.platform.PlatformsResponsePacket;
+import net.potatocloud.network.packets.platform.PlatformAddPacket;
+import net.potatocloud.network.packets.platform.PlatformRemovePacket;
+import net.potatocloud.network.packets.platform.PlatformUpdatePacket;
+import net.potatocloud.network.packets.platform.RequestPlatformsPacket;
+import net.potatocloud.network.packets.platform.PlatformsResponsePacket;
 
 import java.util.Collections;
 import java.util.List;

@@ -3,9 +3,9 @@ package net.potatocloud.node.service.handlers;
 import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.group.GroupManager;
-import net.potatocloud.network.packet.PacketContext;
-import net.potatocloud.network.packet.PacketHandler;
-import net.potatocloud.network.packet.packets.service.StartServicePacket;
+import net.potatocloud.network.protocol.PacketContext;
+import net.potatocloud.network.protocol.PacketHandler;
+import net.potatocloud.network.packets.service.StartServicePacket;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.service.ServiceManagerImpl;
 

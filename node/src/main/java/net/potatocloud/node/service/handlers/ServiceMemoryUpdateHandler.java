@@ -4,9 +4,9 @@ import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.impl.ServiceImpl;
 import net.potatocloud.network.ConnectionType;
 import net.potatocloud.network.NetworkServer;
-import net.potatocloud.network.packet.PacketContext;
-import net.potatocloud.network.packet.PacketHandler;
-import net.potatocloud.network.packet.packets.service.ServiceMemoryUpdatePacket;
+import net.potatocloud.network.protocol.PacketContext;
+import net.potatocloud.network.protocol.PacketHandler;
+import net.potatocloud.network.packets.service.ServiceMemoryUpdatePacket;
 
 public final class ServiceMemoryUpdateHandler implements PacketHandler<ServiceMemoryUpdatePacket> {
 

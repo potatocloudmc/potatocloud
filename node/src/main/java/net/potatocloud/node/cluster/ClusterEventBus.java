@@ -6,7 +6,7 @@ import net.potatocloud.api.event.EventHandler;
 import net.potatocloud.api.event.PublishTarget;
 import net.potatocloud.eventbus.JsonEventCodec;
 import net.potatocloud.eventbus.ServerEventBus;
-import net.potatocloud.network.packet.packets.event.EventPacket;
+import net.potatocloud.network.packets.event.EventPacket;
 
 public class ClusterEventBus implements EventBus {
 

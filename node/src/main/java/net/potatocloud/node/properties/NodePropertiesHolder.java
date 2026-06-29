@@ -4,9 +4,9 @@ import net.potatocloud.api.property.PropertyHolder;
 import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.network.ConnectionType;
 import net.potatocloud.network.NetworkServer;
-import net.potatocloud.network.packet.packets.property.PropertyAddPacket;
-import net.potatocloud.network.packet.packets.property.PropertyUpdatePacket;
-import net.potatocloud.network.packet.packets.property.RequestPropertiesPacket;
+import net.potatocloud.network.packets.property.PropertyAddPacket;
+import net.potatocloud.network.packets.property.PropertyUpdatePacket;
+import net.potatocloud.network.packets.property.RequestPropertiesPacket;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 
 import java.util.HashMap;

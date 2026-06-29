@@ -3,10 +3,10 @@ package net.potatocloud.connector.cluster;
 import net.potatocloud.api.cluster.ClusterManager;
 import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.network.NetworkClient;
-import net.potatocloud.network.packet.packets.cluster.ClusterNodeAddPacket;
-import net.potatocloud.network.packet.packets.cluster.ClusterNodeRemovePacket;
-import net.potatocloud.network.packet.packets.cluster.ClusterNodesResponsePacket;
-import net.potatocloud.network.packet.packets.cluster.RequestClusterNodesPacket;
+import net.potatocloud.network.packets.cluster.ClusterNodeAddPacket;
+import net.potatocloud.network.packets.cluster.ClusterNodeRemovePacket;
+import net.potatocloud.network.packets.cluster.ClusterNodesResponsePacket;
+import net.potatocloud.network.packets.cluster.RequestClusterNodesPacket;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

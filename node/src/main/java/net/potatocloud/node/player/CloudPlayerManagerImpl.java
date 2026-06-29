@@ -4,7 +4,7 @@ import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.player.CloudPlayerManager;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.network.NetworkServer;
-import net.potatocloud.network.packet.packets.player.*;
+import net.potatocloud.network.packets.player.*;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.player.handlers.CloudPlayerAddHandler;
 import net.potatocloud.node.player.handlers.CloudPlayerRemoveHandler;

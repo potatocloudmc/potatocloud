@@ -6,9 +6,8 @@ import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.impl.ServiceImpl;
 import net.potatocloud.connector.service.handlers.ServiceAddHandler;
 import net.potatocloud.connector.service.handlers.ServiceUpdateHandler;
-import net.potatocloud.network.packet.packets.service.ServicesResponsePacket;
+import net.potatocloud.network.packets.service.*;
 import net.potatocloud.network.NetworkClient;
-import net.potatocloud.network.packet.packets.service.*;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;

@@ -8,11 +8,11 @@ import net.potatocloud.api.service.Service;
 import net.potatocloud.connector.event.ConnectPlayerWithServiceEvent;
 import net.potatocloud.connector.player.handlers.CloudPlayerUpdateHandler;
 import net.potatocloud.network.NetworkClient;
-import net.potatocloud.network.packet.packets.player.CloudPlayerAddPacket;
-import net.potatocloud.network.packet.packets.player.CloudPlayerRemovePacket;
-import net.potatocloud.network.packet.packets.player.CloudPlayerUpdatePacket;
-import net.potatocloud.network.packet.packets.player.CloudPlayersResponsePacket;
-import net.potatocloud.network.packet.packets.player.RequestCloudPlayersPacket;
+import net.potatocloud.network.packets.player.CloudPlayerAddPacket;
+import net.potatocloud.network.packets.player.CloudPlayerRemovePacket;
+import net.potatocloud.network.packets.player.CloudPlayerUpdatePacket;
+import net.potatocloud.network.packets.player.CloudPlayersResponsePacket;
+import net.potatocloud.network.packets.player.RequestCloudPlayersPacket;
 
 import java.util.*;
 

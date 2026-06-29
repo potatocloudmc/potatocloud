@@ -2,9 +2,9 @@ package net.potatocloud.node.service.handlers;
 
 import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.api.service.ServiceManager;
-import net.potatocloud.network.packet.PacketContext;
-import net.potatocloud.network.packet.PacketHandler;
-import net.potatocloud.network.packet.packets.service.StopServicePacket;
+import net.potatocloud.network.protocol.PacketContext;
+import net.potatocloud.network.protocol.PacketHandler;
+import net.potatocloud.network.packets.service.StopServicePacket;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 import java.util.Optional;
 

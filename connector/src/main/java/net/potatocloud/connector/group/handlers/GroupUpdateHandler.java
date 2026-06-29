@@ -2,9 +2,9 @@ package net.potatocloud.connector.group.handlers;
 
 import net.potatocloud.api.group.GroupManager;
 import net.potatocloud.common.PropertyUtil;
-import net.potatocloud.network.packet.PacketContext;
-import net.potatocloud.network.packet.PacketHandler;
-import net.potatocloud.network.packet.packets.group.GroupUpdatePacket;
+import net.potatocloud.network.protocol.PacketContext;
+import net.potatocloud.network.protocol.PacketHandler;
+import net.potatocloud.network.packets.group.GroupUpdatePacket;
 
 public final class GroupUpdateHandler implements PacketHandler<GroupUpdatePacket> {
 

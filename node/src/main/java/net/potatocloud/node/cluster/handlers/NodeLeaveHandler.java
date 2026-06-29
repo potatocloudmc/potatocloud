@@ -1,9 +1,9 @@
 package net.potatocloud.node.cluster.handlers;
 
 import net.potatocloud.api.logging.Logger;
-import net.potatocloud.network.packet.PacketContext;
-import net.potatocloud.network.packet.PacketHandler;
-import net.potatocloud.network.packet.packets.cluster.NodeLeavePacket;
+import net.potatocloud.network.protocol.PacketContext;
+import net.potatocloud.network.protocol.PacketHandler;
+import net.potatocloud.network.packets.cluster.NodeLeavePacket;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 
 public final class NodeLeaveHandler implements PacketHandler<NodeLeavePacket> {

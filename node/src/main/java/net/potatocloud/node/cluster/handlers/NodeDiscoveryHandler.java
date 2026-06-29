@@ -1,9 +1,9 @@
 package net.potatocloud.node.cluster.handlers;
 
 import net.potatocloud.api.cluster.ClusterNode;
-import net.potatocloud.network.packet.PacketContext;
-import net.potatocloud.network.packet.PacketHandler;
-import net.potatocloud.network.packet.packets.cluster.NodeDiscoveryPacket;
+import net.potatocloud.network.protocol.PacketContext;
+import net.potatocloud.network.protocol.PacketHandler;
+import net.potatocloud.network.packets.cluster.NodeDiscoveryPacket;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 
 public final class NodeDiscoveryHandler implements PacketHandler<NodeDiscoveryPacket> {

@@ -3,9 +3,9 @@ package net.potatocloud.connector.player.handlers;
 import net.potatocloud.api.player.impl.CloudPlayerImpl;
 import net.potatocloud.common.PropertyUtil;
 import net.potatocloud.connector.player.CloudPlayerManagerImpl;
-import net.potatocloud.network.packet.PacketContext;
-import net.potatocloud.network.packet.PacketHandler;
-import net.potatocloud.network.packet.packets.player.CloudPlayerUpdatePacket;
+import net.potatocloud.network.protocol.PacketContext;
+import net.potatocloud.network.protocol.PacketHandler;
+import net.potatocloud.network.packets.player.CloudPlayerUpdatePacket;
 
 public final class CloudPlayerUpdateHandler implements PacketHandler<CloudPlayerUpdatePacket> {
 

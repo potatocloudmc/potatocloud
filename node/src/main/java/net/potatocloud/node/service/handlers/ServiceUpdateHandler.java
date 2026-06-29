@@ -5,9 +5,9 @@ import net.potatocloud.api.service.ServiceState;
 import net.potatocloud.common.PropertyUtil;
 import net.potatocloud.network.ConnectionType;
 import net.potatocloud.network.NetworkServer;
-import net.potatocloud.network.packet.PacketContext;
-import net.potatocloud.network.packet.PacketHandler;
-import net.potatocloud.network.packet.packets.service.ServiceUpdatePacket;
+import net.potatocloud.network.protocol.PacketContext;
+import net.potatocloud.network.protocol.PacketHandler;
+import net.potatocloud.network.packets.service.ServiceUpdatePacket;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 
 public final class ServiceUpdateHandler implements PacketHandler<ServiceUpdatePacket> {
