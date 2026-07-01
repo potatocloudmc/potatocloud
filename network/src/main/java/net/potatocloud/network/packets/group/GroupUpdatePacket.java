@@ -28,13 +28,13 @@ public record GroupUpdatePacket(
         public void encode(GroupUpdatePacket packet, PacketBuffer buf) {
             buf.writeString(packet.groupName());
             buf.write(packet.customJvmFlags(), CollectionSerializers.set(String.class));
-            buf.writeInt(packet.maxPlayers());
-            buf.writeInt(packet.maxMemory());
-            buf.writeInt(packet.minOnlineCount());
-            buf.writeInt(packet.maxOnlineCount());
+            buf.writeVarInt(packet.maxPlayers());
+            buf.writeVarInt(packet.maxMemory());
+            buf.writeVarInt(packet.minOnlineCount());
+            buf.writeVarInt(packet.maxOnlineCount());
             buf.writeBoolean(packet.fallback());
             buf.writeInt(packet.startPriority());
-            buf.writeInt(packet.startPercentage());
+            buf.writeVarInt(packet.startPercentage());
             buf.write(packet.templates(), CollectionSerializers.set(String.class));
             buf.write(packet.propertyMap(), CollectionSerializers.propertyMap());
         }
@@ -44,13 +44,13 @@ public record GroupUpdatePacket(
             return new GroupUpdatePacket(
                     buf.readString(),
                     buf.read(CollectionSerializers.set(String.class)),
-                    buf.readInt(),
-                    buf.readInt(),
-                    buf.readInt(),
-                    buf.readInt(),
+                    buf.readVarInt(),
+                    buf.readVarInt(),
+                    buf.readVarInt(),
+                    buf.readVarInt(),
                     buf.readBoolean(),
                     buf.readInt(),
-                    buf.readInt(),
+                    buf.readVarInt(),
                     buf.read(CollectionSerializers.set(String.class)),
                     buf.read(CollectionSerializers.propertyMap())
             );

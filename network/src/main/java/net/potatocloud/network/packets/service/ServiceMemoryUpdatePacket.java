@@ -10,12 +10,12 @@ public record ServiceMemoryUpdatePacket(String serviceName, int usedMemory) impl
         @Override
         public void encode(ServiceMemoryUpdatePacket packet, PacketBuffer buf) {
             buf.writeString(packet.serviceName());
-            buf.writeInt(packet.usedMemory());
+            buf.writeVarInt(packet.usedMemory());
         }
 
         @Override
         public ServiceMemoryUpdatePacket decode(PacketBuffer buf) {
-            return new ServiceMemoryUpdatePacket(buf.readString(), buf.readInt());
+            return new ServiceMemoryUpdatePacket(buf.readString(), buf.readVarInt());
         }
     };
 }

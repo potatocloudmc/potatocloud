@@ -10,12 +10,12 @@ public record ServiceRemovePacket(String serviceName, int servicePort) implement
         @Override
         public void encode(ServiceRemovePacket packet, PacketBuffer buf) {
             buf.writeString(packet.serviceName());
-            buf.writeInt(packet.servicePort());
+            buf.writeVarInt(packet.servicePort());
         }
 
         @Override
         public ServiceRemovePacket decode(PacketBuffer buf) {
-            return new ServiceRemovePacket(buf.readString(), buf.readInt());
+            return new ServiceRemovePacket(buf.readString(), buf.readVarInt());
         }
     };
 }

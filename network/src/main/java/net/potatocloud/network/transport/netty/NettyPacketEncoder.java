@@ -19,27 +19,24 @@ public class NettyPacketEncoder extends MessageToByteEncoder<Packet> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, Packet packet, ByteBuf out) {
-        // Create a new buffer for the packet with the id and packet data
-        final ByteBuf buf = ctx.alloc().buffer();
+        final NettyPacketBuffer packetBuffer = new NettyPacketBuffer(out);
 
-        // Write the packet id and packet data into the buffer
-        buf.writeInt(packetManager.packetId(packet));
+        final int packetId = packetManager.packetId(packet);
+        packetBuffer.writeVarInt(packetId);
 
         if (packet instanceof RequestPacket requestPacket) {
-            buf.writeInt(packetManager.requestId(requestPacket));
+            packetBuffer.writeVarInt(packetManager.requestId(requestPacket));
         } else if (packet instanceof ResponsePacket responsePacket) {
-            buf.writeInt(packetManager.requestId(responsePacket));
+            packetBuffer.writeVarInt(packetManager.requestId(responsePacket));
         } else {
-            buf.writeInt(0);
+            packetBuffer.writeVarInt(0);
         }
 
-        packetManager.codec(packetManager.packetId(packet)).encode(packet, new NettyPacketBuffer(buf));
+        final Packet.Codec<Packet> codec = packetManager.codec(packetId);
+        if (codec == null) {
+            throw new IllegalStateException("No codec for packet: " + packetId);
+        }
 
-        // Payload length
-        out.writeInt(buf.readableBytes());
-
-        // Write the payload
-        out.writeBytes(buf);
-        buf.release();
+        codec.encode(packet, packetBuffer);
     }
 }

@@ -6,7 +6,6 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 
 import net.potatocloud.network.protocol.Packet;
 import net.potatocloud.network.protocol.PacketManager;
-import net.potatocloud.network.exception.PacketTooBigException;
 import net.potatocloud.network.request.RequestPacket;
 import net.potatocloud.network.request.ResponsePacket;
 
@@ -20,39 +19,19 @@ public class NettyPacketDecoder extends ByteToMessageDecoder {
         this.packetManager = packetManager;
     }
 
-    private static final int MAX_PACKET_SIZE = 65536;
-
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-        if (in.readableBytes() < 4) {
-            return;
-        }
+        final NettyPacketBuffer packetBuffer = new NettyPacketBuffer(in);
 
-        in.markReaderIndex();
+        final int packetId = packetBuffer.readVarInt();
+        final int requestId = packetBuffer.readVarInt();
 
-        // Read packet length and stop if too big
-        final int length = in.readInt();
-        if (length > MAX_PACKET_SIZE) {
-            ctx.close();
-            throw new PacketTooBigException(length);
-        }
-
-        // Wait until the full packet is received
-        if (in.readableBytes() < length) {
-            in.resetReaderIndex();
-            return;
-        }
-
-        final int packetId = in.readInt();
-        final int requestId = in.readInt();
-
-        final Packet.Codec<?> codec = packetManager.codec(packetId);
+        final Packet.Codec<? extends Packet> codec = packetManager.codec(packetId);
         if (codec == null) {
-            in.skipBytes(length - 8);
-            return;
+            throw new IllegalStateException("No codec for packet: " + packetId);
         }
 
-        final Packet packet = codec.decode(new NettyPacketBuffer(in));
+        final Packet packet = codec.decode(packetBuffer);
 
         if (packet instanceof RequestPacket requestPacket) {
             packetManager.requestId(requestPacket, requestId);

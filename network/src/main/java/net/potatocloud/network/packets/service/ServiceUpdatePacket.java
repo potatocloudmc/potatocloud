@@ -20,7 +20,7 @@ public record ServiceUpdatePacket(
         public void encode(ServiceUpdatePacket packet, PacketBuffer buf) {
             buf.writeString(packet.serviceName());
             buf.writeString(packet.state());
-            buf.writeInt(packet.maxPlayers());
+            buf.writeVarInt(packet.maxPlayers());
             buf.write(packet.propertyMap(), CollectionSerializers.propertyMap());
         }
 
@@ -29,7 +29,7 @@ public record ServiceUpdatePacket(
             return new ServiceUpdatePacket(
                     buf.readString(),
                     buf.readString(),
-                    buf.readInt(),
+                    buf.readVarInt(),
                     buf.read(CollectionSerializers.propertyMap())
             );
         }

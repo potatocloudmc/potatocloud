@@ -17,14 +17,14 @@ public final class GroupSerializer implements TypeSerializer<Group> {
         buffer.writeString(group.platformVersion().name());
         buffer.writeString(group.javaCommand());
         buffer.write(group.customJvmFlags(), CollectionSerializers.set(String.class));
-        buffer.writeInt(group.maxPlayers());
-        buffer.writeInt(group.maxMemory());
-        buffer.writeInt(group.minServices());
-        buffer.writeInt(group.maxServices());
+        buffer.writeVarInt(group.maxPlayers());
+        buffer.writeVarInt(group.maxMemory());
+        buffer.writeVarInt(group.minServices());
+        buffer.writeVarInt(group.maxServices());
         buffer.writeBoolean(group.staticServices());
         buffer.writeBoolean(group.fallback());
         buffer.writeInt(group.startPriority());
-        buffer.writeInt(group.startPercentage());
+        buffer.writeVarInt(group.startPercentage());
         buffer.write(group.templates(), CollectionSerializers.set(String.class));
         buffer.write(group.properties(), CollectionSerializers.propertyMap());
     }
@@ -38,14 +38,14 @@ public final class GroupSerializer implements TypeSerializer<Group> {
                 buffer.readString(),
                 buffer.readString(),
                 buffer.read(CollectionSerializers.set(String.class)),
-                buffer.readInt(),
-                buffer.readInt(),
-                buffer.readInt(),
-                buffer.readInt(),
+                buffer.readVarInt(),
+                buffer.readVarInt(),
+                buffer.readVarInt(),
+                buffer.readVarInt(),
                 buffer.readBoolean(),
                 buffer.readBoolean(),
                 buffer.readInt(),
-                buffer.readInt(),
+                buffer.readVarInt(),
                 buffer.read(CollectionSerializers.set(String.class)),
                 buffer.read(CollectionSerializers.propertyMap())
         );

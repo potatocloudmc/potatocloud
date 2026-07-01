@@ -13,31 +13,31 @@ public final class ServiceSerializer implements TypeSerializer<Service> {
 
     @Override
     public void write(PacketBuffer buffer, Service service) {
-        buffer.writeInt(service.id());
+        buffer.writeVarInt(service.id());
         buffer.writeString(service.host());
-        buffer.writeInt(service.port());
+        buffer.writeVarInt(service.port());
         buffer.writeString(service.name());
         buffer.writeString(service.group() == null ? null : service.group().name());
         buffer.write(service.properties(), CollectionSerializers.propertyMap());
         buffer.write(service.startedAt(), Instant.class);
         buffer.writeString(service.state().name());
-        buffer.writeInt(service.maxPlayers());
-        buffer.writeInt(service.usedMemory());
+        buffer.writeVarInt(service.maxPlayers());
+        buffer.writeVarInt(service.usedMemory());
     }
 
     @Override
     public Service read(PacketBuffer buffer) {
         return new ServiceImpl(
-                buffer.readInt(),
+                buffer.readVarInt(),
                 buffer.readString(),
-                buffer.readInt(),
+                buffer.readVarInt(),
                 buffer.readString(),
                 buffer.readString(),
                 buffer.read(CollectionSerializers.propertyMap()),
                 buffer.read(Instant.class),
                 ServiceState.valueOf(buffer.readString()),
-                buffer.readInt(),
-                buffer.readInt()
+                buffer.readVarInt(),
+                buffer.readVarInt()
         );
 
     }

@@ -11,7 +11,7 @@ public record NodeJoinPacket(String nodeName, String host, int port, long starte
         public void encode(NodeJoinPacket packet, PacketBuffer buf) {
             buf.writeString(packet.nodeName());
             buf.writeString(packet.host());
-            buf.writeInt(packet.port());
+            buf.writeVarInt(packet.port());
             buf.writeLong(packet.startedAt());
             buf.writeString(packet.nodeVersion());
             buf.writeString(packet.clusterToken());
@@ -19,7 +19,7 @@ public record NodeJoinPacket(String nodeName, String host, int port, long starte
 
         @Override
         public NodeJoinPacket decode(PacketBuffer buf) {
-            return new NodeJoinPacket(buf.readString(), buf.readString(), buf.readInt(), buf.readLong(), buf.readString(), buf.readString());
+            return new NodeJoinPacket(buf.readString(), buf.readString(), buf.readVarInt(), buf.readLong(), buf.readString(), buf.readString());
         }
     };
 }
