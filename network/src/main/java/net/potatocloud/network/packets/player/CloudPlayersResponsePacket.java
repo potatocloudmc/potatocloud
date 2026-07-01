@@ -1,6 +1,7 @@
 package net.potatocloud.network.packets.player;
 
 import net.potatocloud.api.player.CloudPlayer;
+import net.potatocloud.network.codec.CollectionSerializers;
 import net.potatocloud.network.codec.PacketBuffer;
 import net.potatocloud.network.request.ResponsePacket;
 
@@ -12,12 +13,12 @@ public record CloudPlayersResponsePacket(List<CloudPlayer> players) implements R
 
         @Override
         public void encode(CloudPlayersResponsePacket packet, PacketBuffer buf) {
-            buf.writeCloudPlayerList(packet.players());
+            buf.write(packet.players(), CollectionSerializers.list(CloudPlayer.class));
         }
 
         @Override
         public CloudPlayersResponsePacket decode(PacketBuffer buf) {
-            return new CloudPlayersResponsePacket(buf.readCloudPlayerList());
+            return new CloudPlayersResponsePacket(buf.read(CollectionSerializers.list(CloudPlayer.class)));
         }
     };
 }

@@ -1,6 +1,7 @@
 package net.potatocloud.network.packets.service;
 
 import net.potatocloud.api.service.Service;
+import net.potatocloud.network.codec.CollectionSerializers;
 import net.potatocloud.network.codec.PacketBuffer;
 import net.potatocloud.network.request.ResponsePacket;
 
@@ -12,12 +13,12 @@ public record ServicesResponsePacket(List<Service> services) implements Response
 
         @Override
         public void encode(ServicesResponsePacket packet, PacketBuffer buf) {
-            buf.writeServiceList(packet.services());
+            buf.write(packet.services(), CollectionSerializers.list(Service.class));
         }
 
         @Override
         public ServicesResponsePacket decode(PacketBuffer buf) {
-            return new ServicesResponsePacket(buf.readServiceList());
+            return new ServicesResponsePacket(buf.read(CollectionSerializers.list(Service.class)));
         }
     };
 }

@@ -10,13 +10,13 @@ public record ServiceAddPacket(Service service, String requestId) implements Pac
 
         @Override
         public void encode(ServiceAddPacket packet, PacketBuffer buf) {
-            buf.writeService(packet.service());
+            buf.write(packet.service(), Service.class);
             buf.writeString(packet.requestId());
         }
 
         @Override
         public ServiceAddPacket decode(PacketBuffer buf) {
-            return new ServiceAddPacket(buf.readService(), buf.readString());
+            return new ServiceAddPacket(buf.read(Service.class), buf.readString());
         }
     };
 }

@@ -1,6 +1,7 @@
 package net.potatocloud.network.packets.service;
 
 import net.potatocloud.api.property.PropertyKey;
+import net.potatocloud.network.codec.CollectionSerializers;
 import net.potatocloud.network.codec.PacketBuffer;
 import net.potatocloud.network.protocol.Packet;
 
@@ -20,7 +21,7 @@ public record ServiceUpdatePacket(
             buf.writeString(packet.serviceName());
             buf.writeString(packet.state());
             buf.writeInt(packet.maxPlayers());
-            buf.writePropertyMap(packet.propertyMap());
+            buf.write(packet.propertyMap(), CollectionSerializers.propertyMap());
         }
 
         @Override
@@ -29,7 +30,7 @@ public record ServiceUpdatePacket(
                     buf.readString(),
                     buf.readString(),
                     buf.readInt(),
-                    buf.readPropertyMap()
+                    buf.read(CollectionSerializers.propertyMap())
             );
         }
     };

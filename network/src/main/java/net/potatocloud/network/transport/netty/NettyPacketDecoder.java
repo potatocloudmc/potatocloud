@@ -3,7 +3,7 @@ package net.potatocloud.network.transport.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import net.potatocloud.network.codec.PacketBuffer;
+
 import net.potatocloud.network.protocol.Packet;
 import net.potatocloud.network.protocol.PacketManager;
 import net.potatocloud.network.exception.PacketTooBigException;
@@ -52,7 +52,7 @@ public class NettyPacketDecoder extends ByteToMessageDecoder {
             return;
         }
 
-        final Packet packet = codec.decode(new PacketBuffer(in));
+        final Packet packet = codec.decode(new NettyPacketBuffer(in));
 
         if (packet instanceof RequestPacket requestPacket) {
             packetManager.requestId(requestPacket, requestId);

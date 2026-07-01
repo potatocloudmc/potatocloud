@@ -1,6 +1,7 @@
 package net.potatocloud.network.packets.cluster;
 
 import net.potatocloud.api.cluster.ClusterNode;
+import net.potatocloud.network.codec.CollectionSerializers;
 import net.potatocloud.network.codec.PacketBuffer;
 import net.potatocloud.network.request.ResponsePacket;
 
@@ -12,13 +13,13 @@ public record ClusterNodesResponsePacket(ClusterNode localNode, List<ClusterNode
 
         @Override
         public void encode(ClusterNodesResponsePacket packet, PacketBuffer buf) {
-            buf.writeClusterNode(packet.localNode());
-            buf.writeClusterNodeList(packet.remoteNodes());
+            buf.write(packet.localNode(), ClusterNode.class);
+            buf.write(packet.remoteNodes(), CollectionSerializers.list(ClusterNode.class));
         }
 
         @Override
         public ClusterNodesResponsePacket decode(PacketBuffer buf) {
-            return new ClusterNodesResponsePacket(buf.readClusterNode(), buf.readClusterNodeList());
+            return new ClusterNodesResponsePacket(buf.read(ClusterNode.class), buf.read(CollectionSerializers.list(ClusterNode.class)));
         }
     };
 }

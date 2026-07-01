@@ -10,12 +10,12 @@ public record PlatformUpdatePacket(Platform platform) implements Packet {
 
         @Override
         public void encode(PlatformUpdatePacket packet, PacketBuffer buf) {
-            buf.writePlatform(packet.platform());
+            buf.write(packet.platform(), Platform.class);
         }
 
         @Override
         public PlatformUpdatePacket decode(PacketBuffer buf) {
-            return new PlatformUpdatePacket(buf.readPlatform());
+            return new PlatformUpdatePacket(buf.read(Platform.class));
         }
     };
 }

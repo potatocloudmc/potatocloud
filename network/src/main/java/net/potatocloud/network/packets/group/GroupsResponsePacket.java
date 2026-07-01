@@ -1,6 +1,7 @@
 package net.potatocloud.network.packets.group;
 
 import net.potatocloud.api.group.Group;
+import net.potatocloud.network.codec.CollectionSerializers;
 import net.potatocloud.network.codec.PacketBuffer;
 import net.potatocloud.network.request.ResponsePacket;
 
@@ -12,12 +13,12 @@ public record GroupsResponsePacket(List<Group> groups) implements ResponsePacket
 
         @Override
         public void encode(GroupsResponsePacket packet, PacketBuffer buf) {
-            buf.writeGroupList(packet.groups());
+            buf.write(packet.groups(), CollectionSerializers.list(Group.class));
         }
 
         @Override
         public GroupsResponsePacket decode(PacketBuffer buf) {
-            return new GroupsResponsePacket(buf.readGroupList());
+            return new GroupsResponsePacket(buf.read(CollectionSerializers.list(Group.class)));
         }
     };
 }

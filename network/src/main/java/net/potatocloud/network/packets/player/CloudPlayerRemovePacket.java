@@ -11,12 +11,12 @@ public record CloudPlayerRemovePacket(UUID playerUniqueId) implements Packet {
 
         @Override
         public void encode(CloudPlayerRemovePacket packet, PacketBuffer buf) {
-            buf.writeUUID(packet.playerUniqueId());
+            buf.write(packet.playerUniqueId(), UUID.class);
         }
 
         @Override
         public CloudPlayerRemovePacket decode(PacketBuffer buf) {
-            return new CloudPlayerRemovePacket(buf.readUUID());
+            return new CloudPlayerRemovePacket(buf.read(UUID.class));
         }
     };
 }

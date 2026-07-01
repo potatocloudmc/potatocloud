@@ -10,12 +10,12 @@ public record PropertyUpdatePacket(String propertyName, Object propertyValue) im
         @Override
         public void encode(PropertyUpdatePacket packet, PacketBuffer buf) {
             buf.writeString(packet.propertyName());
-            buf.writeObject(packet.propertyValue());
+            buf.write(packet.propertyValue(), Object.class);
         }
 
         @Override
         public PropertyUpdatePacket decode(PacketBuffer buf) {
-            return new PropertyUpdatePacket(buf.readString(), buf.readObject());
+            return new PropertyUpdatePacket(buf.readString(), buf.read(Object.class));
         }
     };
 }

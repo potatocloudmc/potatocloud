@@ -10,12 +10,12 @@ public record ClusterNodeAddPacket(ClusterNode node) implements Packet {
 
         @Override
         public void encode(ClusterNodeAddPacket packet, PacketBuffer buf) {
-            buf.writeClusterNode(packet.node());
+            buf.write(packet.node(), ClusterNode.class);
         }
 
         @Override
         public ClusterNodeAddPacket decode(PacketBuffer buf) {
-            return new ClusterNodeAddPacket(buf.readClusterNode());
+            return new ClusterNodeAddPacket(buf.read(ClusterNode.class));
         }
     };
 }

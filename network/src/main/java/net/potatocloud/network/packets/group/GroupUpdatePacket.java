@@ -1,6 +1,7 @@
 package net.potatocloud.network.packets.group;
 
 import net.potatocloud.api.property.PropertyKey;
+import net.potatocloud.network.codec.CollectionSerializers;
 import net.potatocloud.network.codec.PacketBuffer;
 import net.potatocloud.network.protocol.Packet;
 
@@ -26,7 +27,7 @@ public record GroupUpdatePacket(
         @Override
         public void encode(GroupUpdatePacket packet, PacketBuffer buf) {
             buf.writeString(packet.groupName());
-            buf.writeStringSet(packet.customJvmFlags());
+            buf.write(packet.customJvmFlags(), CollectionSerializers.set(String.class));
             buf.writeInt(packet.maxPlayers());
             buf.writeInt(packet.maxMemory());
             buf.writeInt(packet.minOnlineCount());
@@ -34,15 +35,15 @@ public record GroupUpdatePacket(
             buf.writeBoolean(packet.fallback());
             buf.writeInt(packet.startPriority());
             buf.writeInt(packet.startPercentage());
-            buf.writeStringSet(packet.templates());
-            buf.writePropertyMap(packet.propertyMap());
+            buf.write(packet.templates(), CollectionSerializers.set(String.class));
+            buf.write(packet.propertyMap(), CollectionSerializers.propertyMap());
         }
 
         @Override
         public GroupUpdatePacket decode(PacketBuffer buf) {
             return new GroupUpdatePacket(
                     buf.readString(),
-                    buf.readStringSet(),
+                    buf.read(CollectionSerializers.set(String.class)),
                     buf.readInt(),
                     buf.readInt(),
                     buf.readInt(),
@@ -50,8 +51,8 @@ public record GroupUpdatePacket(
                     buf.readBoolean(),
                     buf.readInt(),
                     buf.readInt(),
-                    buf.readStringSet(),
-                    buf.readPropertyMap()
+                    buf.read(CollectionSerializers.set(String.class)),
+                    buf.read(CollectionSerializers.propertyMap())
             );
         }
     };

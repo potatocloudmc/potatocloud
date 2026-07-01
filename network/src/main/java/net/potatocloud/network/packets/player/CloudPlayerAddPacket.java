@@ -10,12 +10,12 @@ public record CloudPlayerAddPacket(CloudPlayer player) implements Packet {
 
         @Override
         public void encode(CloudPlayerAddPacket packet, PacketBuffer buf) {
-            buf.writeCloudPlayer(packet.player());
+            buf.write(packet.player(), CloudPlayer.class);
         }
 
         @Override
         public CloudPlayerAddPacket decode(PacketBuffer buf) {
-            return new CloudPlayerAddPacket(buf.readCloudPlayer());
+            return new CloudPlayerAddPacket(buf.read(CloudPlayer.class));
         }
     };
 }

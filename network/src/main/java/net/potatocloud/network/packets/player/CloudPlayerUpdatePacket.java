@@ -1,6 +1,7 @@
 package net.potatocloud.network.packets.player;
 
 import net.potatocloud.api.property.PropertyKey;
+import net.potatocloud.network.codec.CollectionSerializers;
 import net.potatocloud.network.codec.PacketBuffer;
 import net.potatocloud.network.protocol.Packet;
 
@@ -18,19 +19,19 @@ public record CloudPlayerUpdatePacket(
 
         @Override
         public void encode(CloudPlayerUpdatePacket packet, PacketBuffer buf) {
-            buf.writeUUID(packet.playerUniqueId());
+            buf.write(packet.playerUniqueId(), UUID.class);
             buf.writeString(packet.connectedProxyName());
             buf.writeString(packet.connectedServiceName());
-            buf.writePropertyMap(packet.propertyMap());
+            buf.write(packet.propertyMap(), CollectionSerializers.propertyMap());
         }
 
         @Override
         public CloudPlayerUpdatePacket decode(PacketBuffer buf) {
             return new CloudPlayerUpdatePacket(
-                    buf.readUUID(),
+                    buf.read(UUID.class),
                     buf.readString(),
                     buf.readString(),
-                    buf.readPropertyMap()
+                    buf.read(CollectionSerializers.propertyMap())
             );
         }
     };

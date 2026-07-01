@@ -11,13 +11,13 @@ public record PropertyAddPacket(String name, Object defaultValue, Object value) 
         @Override
         public void encode(PropertyAddPacket packet, PacketBuffer buf) {
             buf.writeString(packet.name());
-            buf.writeObject(packet.defaultValue());
-            buf.writeObject(packet.value());
+            buf.write(packet.defaultValue(), Object.class);
+            buf.write(packet.value(), Object.class);
         }
 
         @Override
         public PropertyAddPacket decode(PacketBuffer buf) {
-            return new PropertyAddPacket(buf.readString(), buf.readObject(), buf.readObject());
+            return new PropertyAddPacket(buf.readString(), buf.read(Object.class), buf.read(Object.class));
         }
     };
 

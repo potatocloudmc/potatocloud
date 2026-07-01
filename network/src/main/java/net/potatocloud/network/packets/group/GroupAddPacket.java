@@ -10,12 +10,12 @@ public record GroupAddPacket(Group group) implements Packet {
 
         @Override
         public void encode(GroupAddPacket packet, PacketBuffer buf) {
-            buf.writeGroup(packet.group());
+            buf.write(packet.group(), Group.class);
         }
 
         @Override
         public GroupAddPacket decode(PacketBuffer buf) {
-            return new GroupAddPacket(buf.readGroup());
+            return new GroupAddPacket(buf.read(Group.class));
         }
     };
 }
