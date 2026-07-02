@@ -8,6 +8,7 @@ import net.potatocloud.api.service.Service;
 import net.potatocloud.network.NetworkConnection;
 import net.potatocloud.network.NetworkServer;
 import net.potatocloud.network.packets.cluster.*;
+import net.potatocloud.network.request.RequestManager;
 import net.potatocloud.network.transport.netty.NettyNetworkClient;
 import net.potatocloud.network.protocol.Packet;
 import net.potatocloud.network.protocol.PacketManager;
@@ -34,6 +35,7 @@ public class ClusterManagerImpl implements ClusterManager {
     private final ClusterNodeImpl localNode;
 
     private final ClusterConfig config;
+    private final RequestManager requestManager;
     private final PacketManager packetManager;
     private final NetworkServer server;
     private final Logger logger;
@@ -49,8 +51,9 @@ public class ClusterManagerImpl implements ClusterManager {
     private ServiceManagerImpl serviceManager;
     private CloudPlayerManagerImpl playerManager;
 
-    public ClusterManagerImpl(String localHost, int localPort, ClusterConfig config, PacketManager packetManager, NetworkServer server, Logger logger) {
+    public ClusterManagerImpl(String localHost, int localPort, ClusterConfig config, RequestManager requestManager, PacketManager packetManager, NetworkServer server, Logger logger) {
         this.config = config;
+        this.requestManager = requestManager;
         this.packetManager = packetManager;
         this.server = server;
         this.logger = logger;
@@ -101,7 +104,7 @@ public class ClusterManagerImpl implements ClusterManager {
             return;
         }
 
-        final NettyNetworkClient client = new NettyNetworkClient(packetManager);
+        final NettyNetworkClient client = new NettyNetworkClient(requestManager, packetManager);
 
         client.addConnectionHandler(() -> {
             final NetworkConnection connection = client.connection();

@@ -12,6 +12,7 @@ import net.potatocloud.network.NetworkServer;
 import net.potatocloud.network.protocol.Packet;
 import net.potatocloud.network.protocol.PacketHandler;
 import net.potatocloud.network.protocol.PacketManager;
+import net.potatocloud.network.request.RequestManager;
 
 import java.net.InetSocketAddress;
 import java.util.Collection;
@@ -23,7 +24,9 @@ import java.util.function.Consumer;
 
 public class NettyNetworkServer implements NetworkServer {
 
+    private final RequestManager requestManager;
     private final PacketManager packetManager;
+
     private final Map<Channel, NetworkConnection> sessionMap = new ConcurrentHashMap<>();
     private final List<Consumer<NetworkConnection>> disconnectHandlers = new CopyOnWriteArrayList<>();
 
@@ -32,7 +35,8 @@ public class NettyNetworkServer implements NetworkServer {
     private Channel channel;
     private int port;
 
-    public NettyNetworkServer(PacketManager packetManager) {
+    public NettyNetworkServer(RequestManager requestManager, PacketManager packetManager) {
+        this.requestManager = requestManager;
         this.packetManager = packetManager;
     }
 
@@ -48,7 +52,7 @@ public class NettyNetworkServer implements NetworkServer {
                 .channel(Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
                 .childOption(ChannelOption.TCP_NODELAY, true)
-                .childHandler(new NettyServerInitializer(packetManager, this))
+                .childHandler(new NettyServerInitializer(packetManager,  requestManager, this))
                 .bind(new InetSocketAddress(hostname, port)).syncUninterruptibly().channel();
     }
 

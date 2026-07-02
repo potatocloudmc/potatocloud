@@ -16,6 +16,7 @@ import net.potatocloud.api.service.ServiceState;
 import net.potatocloud.common.FileUtils;
 import net.potatocloud.eventbus.ServerEventBus;
 import net.potatocloud.network.NetworkServer;
+import net.potatocloud.network.request.RequestManager;
 import net.potatocloud.network.transport.netty.NettyNetworkServer;
 import net.potatocloud.network.protocol.PacketManager;
 import net.potatocloud.network.protocol.PacketRegistry;
@@ -70,6 +71,7 @@ public class Node extends CloudAPI {
     private final CommandManager commandManager;
 
     private final MigrationManager migrationManager;
+    private final RequestManager requestManager;
     private final PacketManager packetManager;
     private final NetworkServer server;
     private final EventBus eventBus;
@@ -114,11 +116,12 @@ public class Node extends CloudAPI {
         this.setupManager = new SetupManager();
         this.updateChecker = new UpdateChecker(logger);
 
-        this.packetManager = new PacketManager();
+        this.requestManager = new RequestManager();
+        this.packetManager = new PacketManager(requestManager);
         PacketRegistry.registerPackets(packetManager);
-        this.server = new NettyNetworkServer(packetManager);
+        this.server = new NettyNetworkServer(requestManager, packetManager);
 
-        this.clusterManager = new ClusterManagerImpl(config.node().host(), config.node().port(), config.cluster(), packetManager, server, logger);
+        this.clusterManager = new ClusterManagerImpl(config.node().host(), config.node().port(), config.cluster(), requestManager, packetManager, server, logger);
 
         this.eventBus = new ClusterEventBus(new ServerEventBus(server), clusterManager);
 

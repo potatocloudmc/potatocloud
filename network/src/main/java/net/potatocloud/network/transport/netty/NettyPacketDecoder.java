@@ -6,6 +6,7 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 
 import net.potatocloud.network.protocol.Packet;
 import net.potatocloud.network.protocol.PacketManager;
+import net.potatocloud.network.request.RequestManager;
 import net.potatocloud.network.request.RequestPacket;
 import net.potatocloud.network.request.ResponsePacket;
 
@@ -14,9 +15,11 @@ import java.util.List;
 public class NettyPacketDecoder extends ByteToMessageDecoder {
 
     private final PacketManager packetManager;
+    private final RequestManager requestManager;
 
-    public NettyPacketDecoder(PacketManager packetManager) {
+    public NettyPacketDecoder(PacketManager packetManager, RequestManager requestManager) {
         this.packetManager = packetManager;
+        this.requestManager = requestManager;
     }
 
     @Override
@@ -34,9 +37,9 @@ public class NettyPacketDecoder extends ByteToMessageDecoder {
         final Packet packet = codec.decode(packetBuffer);
 
         if (packet instanceof RequestPacket requestPacket) {
-            packetManager.requestId(requestPacket, requestId);
+            requestManager.requestId(requestPacket, requestId);
         } else if (packet instanceof ResponsePacket responsePacket) {
-            packetManager.requestId(responsePacket, requestId);
+            requestManager.requestId(responsePacket, requestId);
         }
 
         out.add(packet);

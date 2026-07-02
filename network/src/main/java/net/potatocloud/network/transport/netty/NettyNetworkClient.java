@@ -14,6 +14,7 @@ import net.potatocloud.network.NetworkConnection;
 import net.potatocloud.network.protocol.Packet;
 import net.potatocloud.network.protocol.PacketHandler;
 import net.potatocloud.network.protocol.PacketManager;
+import net.potatocloud.network.request.RequestManager;
 import net.potatocloud.network.request.RequestPacket;
 import net.potatocloud.network.request.ResponsePacket;
 
@@ -25,13 +26,17 @@ public class NettyNetworkClient implements NetworkClient {
 
     private static final int CONNECT_TIMEOUT_MILLIS = 5000;
 
+    private final RequestManager requestManager;
     private final PacketManager packetManager;
+
     private volatile Channel channel;
     private EventLoopGroup group;
+
     private volatile NetworkConnection connection;
     private final List<ConnectionHandler> connectionHandlers = new ArrayList<>();
 
-    public NettyNetworkClient(PacketManager packetManager) {
+    public NettyNetworkClient(RequestManager requestManager, PacketManager packetManager) {
+        this.requestManager = requestManager;
         this.packetManager = packetManager;
     }
 
@@ -43,7 +48,7 @@ public class NettyNetworkClient implements NetworkClient {
                 .group(group)
                 .channel(Epoll.isAvailable() ? EpollSocketChannel.class : NioSocketChannel.class)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CONNECT_TIMEOUT_MILLIS)
-                .handler(new NettyClientInitializer(packetManager, this))
+                .handler(new NettyClientInitializer(packetManager, requestManager, this))
                 .connect(host, port).syncUninterruptibly();
 
         channel = connectFuture.channel();
@@ -78,7 +83,7 @@ public class NettyNetworkClient implements NetworkClient {
 
     @Override
     public <T extends ResponsePacket> CompletableFuture<T> request(RequestPacket packet, Class<T> type) {
-        return packetManager.request(connection, packet, type);
+        return requestManager.request(connection, packet, type);
     }
 
     public NetworkConnection connection() {

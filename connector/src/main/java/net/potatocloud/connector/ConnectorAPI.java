@@ -18,6 +18,7 @@ import net.potatocloud.connector.properties.ConnectorPropertiesHolder;
 import net.potatocloud.connector.service.ServiceManagerImpl;
 import net.potatocloud.eventbus.ClientEventBus;
 import net.potatocloud.network.NetworkClient;
+import net.potatocloud.network.request.RequestManager;
 import net.potatocloud.network.transport.netty.NettyNetworkClient;
 import net.potatocloud.network.protocol.PacketManager;
 import net.potatocloud.network.protocol.PacketRegistry;
@@ -30,6 +31,7 @@ public class ConnectorAPI extends CloudAPI {
     private static final String NODE_HOST = System.getProperty("potatocloud.node.host", "127.0.0.1");
     private static final int NODE_PORT = Integer.parseInt(System.getProperty("potatocloud.node.port"));
 
+    private final RequestManager requestManager;
     private final PacketManager packetManager;
     private final NetworkClient client;
     private ConnectorLogger logger;
@@ -42,10 +44,11 @@ public class ConnectorAPI extends CloudAPI {
     private CloudPlayerManager playerManager;
 
     public ConnectorAPI() {
-        packetManager = new PacketManager();
+        requestManager = new RequestManager();
+        packetManager = new PacketManager(requestManager);
         PacketRegistry.registerPackets(packetManager);
 
-        client = new NettyNetworkClient(packetManager);
+        client = new NettyNetworkClient(requestManager, packetManager);
 
         client.addConnectionHandler(() -> {
             logger = new ConnectorLogger(client);

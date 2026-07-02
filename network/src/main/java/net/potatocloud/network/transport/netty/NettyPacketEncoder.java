@@ -6,15 +6,18 @@ import io.netty.handler.codec.MessageToByteEncoder;
 
 import net.potatocloud.network.protocol.Packet;
 import net.potatocloud.network.protocol.PacketManager;
+import net.potatocloud.network.request.RequestManager;
 import net.potatocloud.network.request.RequestPacket;
 import net.potatocloud.network.request.ResponsePacket;
 
 public class NettyPacketEncoder extends MessageToByteEncoder<Packet> {
 
     private final PacketManager packetManager;
+    private final RequestManager requestManager;
 
-    public NettyPacketEncoder(PacketManager packetManager) {
+    public NettyPacketEncoder(PacketManager packetManager, RequestManager requestManager) {
         this.packetManager = packetManager;
+        this.requestManager = requestManager;
     }
 
     @Override
@@ -25,9 +28,9 @@ public class NettyPacketEncoder extends MessageToByteEncoder<Packet> {
         packetBuffer.writeVarInt(packetId);
 
         if (packet instanceof RequestPacket requestPacket) {
-            packetBuffer.writeVarInt(packetManager.requestId(requestPacket));
+            packetBuffer.writeVarInt(requestManager.requestId(requestPacket));
         } else if (packet instanceof ResponsePacket responsePacket) {
-            packetBuffer.writeVarInt(packetManager.requestId(responsePacket));
+            packetBuffer.writeVarInt(requestManager.requestId(responsePacket));
         } else {
             packetBuffer.writeVarInt(0);
         }
