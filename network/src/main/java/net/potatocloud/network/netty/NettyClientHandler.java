@@ -1,4 +1,4 @@
-package net.potatocloud.network.transport.netty;
+package net.potatocloud.network.netty;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;

@@ -1,4 +1,4 @@
-package net.potatocloud.network.transport.netty;
+package net.potatocloud.network.netty;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;

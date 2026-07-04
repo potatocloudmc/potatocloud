@@ -1,4 +1,4 @@
-package net.potatocloud.network.transport.netty;
+package net.potatocloud.network.netty;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;

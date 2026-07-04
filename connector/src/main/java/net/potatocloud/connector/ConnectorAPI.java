@@ -19,7 +19,7 @@ import net.potatocloud.connector.service.ServiceManagerImpl;
 import net.potatocloud.eventbus.ClientEventBus;
 import net.potatocloud.network.NetworkClient;
 import net.potatocloud.network.request.RequestManager;
-import net.potatocloud.network.transport.netty.NettyNetworkClient;
+import net.potatocloud.network.netty.NettyNetworkClient;
 import net.potatocloud.network.protocol.PacketManager;
 import net.potatocloud.network.protocol.PacketRegistry;
 

@@ -1,4 +1,4 @@
-package net.potatocloud.network.transport.netty;
+package net.potatocloud.network.netty;
 
 import io.netty.buffer.ByteBuf;
 import net.potatocloud.network.codec.AbstractPacketBuffer;

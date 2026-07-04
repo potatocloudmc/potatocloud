@@ -9,7 +9,7 @@ import net.potatocloud.network.NetworkConnection;
 import net.potatocloud.network.NetworkServer;
 import net.potatocloud.network.packets.cluster.*;
 import net.potatocloud.network.request.RequestManager;
-import net.potatocloud.network.transport.netty.NettyNetworkClient;
+import net.potatocloud.network.netty.NettyNetworkClient;
 import net.potatocloud.network.protocol.Packet;
 import net.potatocloud.network.protocol.PacketManager;
 import net.potatocloud.network.packets.group.GroupDeletePacket;

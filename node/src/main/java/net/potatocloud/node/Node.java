@@ -17,7 +17,7 @@ import net.potatocloud.common.FileUtils;
 import net.potatocloud.eventbus.ServerEventBus;
 import net.potatocloud.network.NetworkServer;
 import net.potatocloud.network.request.RequestManager;
-import net.potatocloud.network.transport.netty.NettyNetworkServer;
+import net.potatocloud.network.netty.NettyNetworkServer;
 import net.potatocloud.network.protocol.PacketManager;
 import net.potatocloud.network.protocol.PacketRegistry;
 import net.potatocloud.network.packets.event.EventPacket;

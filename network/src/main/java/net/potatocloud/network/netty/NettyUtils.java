@@ -1,4 +1,4 @@
-package net.potatocloud.network.transport.netty;
+package net.potatocloud.network.netty;
 
 import io.netty.channel.IoHandlerFactory;
 import io.netty.channel.MultiThreadIoEventLoopGroup;
