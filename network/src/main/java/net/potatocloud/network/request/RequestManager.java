@@ -14,7 +14,7 @@ public final class RequestManager {
 
     private final Map<Integer, PendingRequest<?>> pending = new ConcurrentHashMap<>();
     private final AtomicInteger requestCounter = new AtomicInteger(1);
-    private final Map<Packet, Integer> requestIds = Collections.synchronizedMap(new IdentityHashMap<>());
+    private final Map<Packet, Integer> requestIds = new ConcurrentHashMap<>();
 
     public <T extends ResponsePacket> CompletableFuture<T> request(NetworkConnection connection, RequestPacket packet, Class<T> type) {
         final int id = requestCounter.getAndIncrement();
