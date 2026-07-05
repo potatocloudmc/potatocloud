@@ -6,9 +6,12 @@ import net.potatocloud.network.protocol.Packet;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class RequestManager {
+
+    private static final long REQUEST_TIMEOUT_SECONDS = 10;
 
     private final Map<Integer, PendingRequest<?>> pending = new ConcurrentHashMap<>();
     private final AtomicInteger requestCounter = new AtomicInteger(1);
@@ -18,12 +21,16 @@ public final class RequestManager {
         final int id = requestCounter.getAndIncrement();
         requestIds.put(packet, id);
 
-        final CompletableFuture<T> future = new CompletableFuture<>();
+        final CompletableFuture<T> future = new CompletableFuture<T>();
+        future.orTimeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         pending.put(id, new PendingRequest<>(type, future));
 
         connection.send(packet);
 
-        future.whenComplete((_, _) -> pending.remove(id));
+        future.whenComplete((_, _) -> {
+            pending.remove(id);
+            requestIds.remove(packet);
+        });
 
         return future;
     }
