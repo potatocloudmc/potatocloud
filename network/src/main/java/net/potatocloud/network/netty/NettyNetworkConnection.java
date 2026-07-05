@@ -61,6 +61,6 @@ public final class NettyNetworkConnection implements NetworkConnection {
 
     @Override
     public void close() {
-        channel.close();
+        channel.close().syncUninterruptibly();
     }
 }
