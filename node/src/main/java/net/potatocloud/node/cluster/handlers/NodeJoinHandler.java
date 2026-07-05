@@ -17,8 +17,6 @@ import net.potatocloud.node.group.GroupManagerImpl;
 import net.potatocloud.node.player.CloudPlayerManagerImpl;
 import net.potatocloud.node.service.ServiceManagerImpl;
 
-import java.time.Instant;
-
 public final class NodeJoinHandler implements PacketHandler<NodeJoinPacket> {
 
     private final ClusterNode localNode;
@@ -70,14 +68,14 @@ public final class NodeJoinHandler implements PacketHandler<NodeJoinPacket> {
 
         connection.type(ConnectionType.NODE);
 
-        final ClusterNodeImpl node = new ClusterNodeImpl(nodeName, packet.host(), packet.port(), Instant.ofEpochMilli(packet.startedAt()), connection);
+        final ClusterNodeImpl node = new ClusterNodeImpl(nodeName, packet.host(), packet.port(), packet.startedAt(), connection);
         clusterManager.add(node);
 
         if (clusterManager.isOutbound(connection)) {
             logger.info("Connected to cluster node &a" + node.name() + " &8(&a" + node.host() + "&8:&a" + node.port() + "&8)");
         } else {
             logger.info("Cluster node &a" + node.name() + " &7connected to the cluster &8(&a" + node.host() + "&8:&a" + node.port() + "&8)");
-            connection.send(new NodeJoinPacket(localNode.name(), localNode.host(), localNode.port(), localNode.startedAt().toEpochMilli(), CloudAPI.VERSION.toString(), clusterToken));
+            connection.send(new NodeJoinPacket(localNode.name(), localNode.host(), localNode.port(), localNode.startedAt(), CloudAPI.VERSION.toString(), clusterToken));
 
             connection.send(new NodeDiscoveryPacket(
                     clusterManager.remoteNodes().stream()

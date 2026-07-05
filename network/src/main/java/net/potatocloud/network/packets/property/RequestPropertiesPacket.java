@@ -1,9 +1,9 @@
 package net.potatocloud.network.packets.property;
 
 import net.potatocloud.network.codec.PacketBuffer;
-import net.potatocloud.network.protocol.Packet;
+import net.potatocloud.network.request.RequestPacket;
 
-public record RequestPropertiesPacket() implements Packet {
+public record RequestPropertiesPacket() implements RequestPacket {
 
     public static final Codec<RequestPropertiesPacket> CODEC = new Codec<>() {
 
