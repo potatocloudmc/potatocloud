@@ -26,10 +26,10 @@ public final class NettyNetworkServer implements NetworkServer {
 
     private final RequestManager requestManager;
     private final PacketManager packetManager;
-
     private final Map<Channel, NetworkConnection> sessionMap = new ConcurrentHashMap<>();
     private final List<Consumer<NetworkConnection>> disconnectHandlers = new CopyOnWriteArrayList<>();
 
+    private boolean running;
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
     private Channel channel;
@@ -52,17 +52,26 @@ public final class NettyNetworkServer implements NetworkServer {
                 .channel(Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
                 .childOption(ChannelOption.TCP_NODELAY, true)
-                .childHandler(new NettyServerInitializer(packetManager,  requestManager, this))
+                .childHandler(new NettyServerInitializer(packetManager, requestManager, this))
                 .bind(new InetSocketAddress(hostname, port))
                 .syncUninterruptibly()
                 .channel();
+
+        this.running = true;
     }
 
     @Override
     public void close() {
+        if (!running) {
+            return;
+        }
+
+        running = false;
+
         for (NetworkConnection session : connectedSessions()) {
             session.close();
         }
+
         channel.close().syncUninterruptibly();
         bossGroup.shutdownGracefully().syncUninterruptibly();
         workerGroup.shutdownGracefully().syncUninterruptibly();
@@ -70,7 +79,7 @@ public final class NettyNetworkServer implements NetworkServer {
 
     @Override
     public boolean running() {
-        return channel != null && channel.isActive();
+        return running;
     }
 
     @Override

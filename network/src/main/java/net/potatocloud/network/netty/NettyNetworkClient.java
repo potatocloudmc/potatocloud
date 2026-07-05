@@ -28,12 +28,12 @@ public final class NettyNetworkClient implements NetworkClient {
 
     private final RequestManager requestManager;
     private final PacketManager packetManager;
-
-    private volatile Channel channel;
-    private EventLoopGroup group;
-
-    private volatile NetworkConnection connection;
     private final List<ConnectionHandler> connectionHandlers = new ArrayList<>();
+
+    private boolean running;
+    private Channel channel;
+    private EventLoopGroup group;
+    private NetworkConnection connection;
 
     public NettyNetworkClient(RequestManager requestManager, PacketManager packetManager) {
         this.requestManager = requestManager;
@@ -54,11 +54,15 @@ public final class NettyNetworkClient implements NetworkClient {
 
         this.channel = connectFuture.channel();
         this.connection = new NettyNetworkConnection(channel);
+        this.running = true;
         onConnected();
     }
 
     @Override
     public void send(Packet packet) {
+        if (!running) {
+            throw new IllegalStateException("Client is not connected");
+        }
         channel.writeAndFlush(packet);
     }
 
@@ -73,6 +77,12 @@ public final class NettyNetworkClient implements NetworkClient {
 
     @Override
     public void close() {
+        if (!running) {
+            return;
+        }
+
+        running = false;
+
         channel.close().syncUninterruptibly();
         group.shutdownGracefully().syncUninterruptibly();
     }
@@ -84,6 +94,9 @@ public final class NettyNetworkClient implements NetworkClient {
 
     @Override
     public <T extends ResponsePacket> CompletableFuture<T> request(RequestPacket packet, Class<T> type) {
+        if (!running) {
+            throw new IllegalStateException("Client is not connected");
+        }
         return requestManager.request(connection, packet, type);
     }
 
