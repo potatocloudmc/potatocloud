@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class Broadcast {
+public final class Broadcast {
 
     private final NetworkServer server;
     private final Set<NetworkConnection> excludedConnections = new HashSet<>();

@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class NettyNetworkClient implements NetworkClient {
+public final class NettyNetworkClient implements NetworkClient {
 
     private static final int CONNECT_TIMEOUT_MILLIS = 5000;
 
@@ -42,17 +42,18 @@ public class NettyNetworkClient implements NetworkClient {
 
     @Override
     public void connect(String host, int port) {
-        group = NettyUtils.createEventLoopGroup();
+        this.group = NettyUtils.createEventLoopGroup();
 
         final ChannelFuture connectFuture = new Bootstrap()
                 .group(group)
                 .channel(Epoll.isAvailable() ? EpollSocketChannel.class : NioSocketChannel.class)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CONNECT_TIMEOUT_MILLIS)
                 .handler(new NettyClientInitializer(packetManager, requestManager, this))
-                .connect(host, port).syncUninterruptibly();
+                .connect(host, port)
+                .syncUninterruptibly();
 
-        channel = connectFuture.channel();
-        connection = new NettyNetworkConnection(channel);
+        this.channel = connectFuture.channel();
+        this.connection = new NettyNetworkConnection(channel);
         onConnected();
     }
 

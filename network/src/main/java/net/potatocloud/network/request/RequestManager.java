@@ -3,8 +3,6 @@ package net.potatocloud.network.request;
 import net.potatocloud.network.NetworkConnection;
 import net.potatocloud.network.protocol.Packet;
 
-import java.util.Collections;
-import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;

@@ -10,7 +10,7 @@ import net.potatocloud.network.request.RequestManager;
 import net.potatocloud.network.request.RequestPacket;
 import net.potatocloud.network.request.ResponsePacket;
 
-public class NettyPacketEncoder extends MessageToByteEncoder<Packet> {
+public final class NettyPacketEncoder extends MessageToByteEncoder<Packet> {
 
     private final PacketManager packetManager;
     private final RequestManager requestManager;

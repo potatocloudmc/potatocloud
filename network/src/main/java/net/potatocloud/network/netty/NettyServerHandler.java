@@ -8,7 +8,7 @@ import net.potatocloud.network.protocol.PacketManager;
 
 import java.net.SocketException;
 
-public class NettyServerHandler extends ChannelInboundHandlerAdapter {
+public final class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
     private final NettyNetworkServer server;
     private final PacketManager packetManager;
@@ -42,11 +42,12 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        if (msg instanceof Packet packet) {
-            final NetworkConnection connection = server.sessionMap().get(ctx.channel());
-            if (connection != null) {
-                packetManager.dispatch(connection, packet);
-            }
+        if (!(msg instanceof Packet packet)) {
+            return;
+        }
+        final NetworkConnection connection = server.sessionMap().get(ctx.channel());
+        if (connection != null) {
+            packetManager.dispatch(connection, packet);
         }
     }
 }

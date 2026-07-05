@@ -7,7 +7,7 @@ import net.potatocloud.network.protocol.Packet;
 
 import java.util.UUID;
 
-public class NettyNetworkConnection implements NetworkConnection {
+public final class NettyNetworkConnection implements NetworkConnection {
 
     private final UUID id = UUID.randomUUID();
     private final Channel channel;

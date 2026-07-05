@@ -12,7 +12,7 @@ import net.potatocloud.network.request.ResponsePacket;
 
 import java.util.List;
 
-public class NettyPacketDecoder extends ByteToMessageDecoder {
+public final class NettyPacketDecoder extends ByteToMessageDecoder {
 
     private final PacketManager packetManager;
     private final RequestManager requestManager;

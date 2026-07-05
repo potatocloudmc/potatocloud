@@ -9,7 +9,7 @@ import net.potatocloud.network.NetworkConstants;
 import net.potatocloud.network.protocol.PacketManager;
 import net.potatocloud.network.request.RequestManager;
 
-public class NettyClientInitializer extends ChannelInitializer<SocketChannel> {
+public final class NettyClientInitializer extends ChannelInitializer<SocketChannel> {
 
     private final PacketManager packetManager;
     private final RequestManager requestManager;

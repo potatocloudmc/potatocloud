@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
-public class NettyNetworkServer implements NetworkServer {
+public final class NettyNetworkServer implements NetworkServer {
 
     private final RequestManager requestManager;
     private final PacketManager packetManager;
@@ -44,16 +44,18 @@ public class NettyNetworkServer implements NetworkServer {
     public void start(String hostname, int port) {
         this.port = port;
 
-        bossGroup = NettyUtils.createEventLoopGroup();
-        workerGroup = NettyUtils.createEventLoopGroup();
+        this.bossGroup = NettyUtils.createEventLoopGroup();
+        this.workerGroup = NettyUtils.createEventLoopGroup();
 
-        channel = new ServerBootstrap()
+        this.channel = new ServerBootstrap()
                 .group(bossGroup, workerGroup)
                 .channel(Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childHandler(new NettyServerInitializer(packetManager,  requestManager, this))
-                .bind(new InetSocketAddress(hostname, port)).syncUninterruptibly().channel();
+                .bind(new InetSocketAddress(hostname, port))
+                .syncUninterruptibly()
+                .channel();
     }
 
     @Override

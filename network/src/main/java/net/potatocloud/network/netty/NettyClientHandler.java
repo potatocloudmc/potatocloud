@@ -5,7 +5,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import net.potatocloud.network.protocol.Packet;
 import net.potatocloud.network.protocol.PacketManager;
 
-public class NettyClientHandler extends ChannelInboundHandlerAdapter {
+public final class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
     private final PacketManager packetManager;
     private final NettyNetworkClient client;
