@@ -12,6 +12,7 @@ import net.potatocloud.network.NetworkServer;
 import net.potatocloud.network.protocol.Packet;
 import net.potatocloud.network.protocol.PacketHandler;
 import net.potatocloud.network.protocol.PacketManager;
+import net.potatocloud.network.protocol.PacketRegistry;
 import net.potatocloud.network.request.RequestManager;
 
 import java.net.InetSocketAddress;
@@ -35,9 +36,10 @@ public final class NettyNetworkServer implements NetworkServer {
     private Channel channel;
     private int port;
 
-    public NettyNetworkServer(RequestManager requestManager, PacketManager packetManager) {
-        this.requestManager = requestManager;
-        this.packetManager = packetManager;
+    public NettyNetworkServer() {
+        this.requestManager = new RequestManager();
+        this.packetManager = new PacketManager(requestManager);
+        PacketRegistry.registerPackets(packetManager);
     }
 
     @Override
@@ -68,7 +70,7 @@ public final class NettyNetworkServer implements NetworkServer {
 
         running = false;
 
-        for (NetworkConnection session : connectedSessions()) {
+        for (NetworkConnection session : connections()) {
             session.close();
         }
 
@@ -83,7 +85,7 @@ public final class NettyNetworkServer implements NetworkServer {
     }
 
     @Override
-    public Collection<NetworkConnection> connectedSessions() {
+    public Collection<NetworkConnection> connections() {
         return sessionMap.values();
     }
 
@@ -97,7 +99,7 @@ public final class NettyNetworkServer implements NetworkServer {
     }
 
     @Override
-    public void addDisconnectHandler(Consumer<NetworkConnection> handler) {
+    public void onClientDisconnected(Consumer<NetworkConnection> handler) {
         disconnectHandlers.add(handler);
     }
 
@@ -115,7 +117,7 @@ public final class NettyNetworkServer implements NetworkServer {
     }
 
     @Override
-    public void send(NetworkConnection connection, Packet packet) {
+    public void sendTo(NetworkConnection connection, Packet packet) {
         connection.send(packet);
     }
 }

@@ -14,6 +14,7 @@ import net.potatocloud.network.NetworkConnection;
 import net.potatocloud.network.protocol.Packet;
 import net.potatocloud.network.protocol.PacketHandler;
 import net.potatocloud.network.protocol.PacketManager;
+import net.potatocloud.network.protocol.PacketRegistry;
 import net.potatocloud.network.request.RequestManager;
 import net.potatocloud.network.request.RequestPacket;
 import net.potatocloud.network.request.ResponsePacket;
@@ -35,9 +36,10 @@ public final class NettyNetworkClient implements NetworkClient {
     private EventLoopGroup group;
     private NetworkConnection connection;
 
-    public NettyNetworkClient(RequestManager requestManager, PacketManager packetManager) {
-        this.requestManager = requestManager;
-        this.packetManager = packetManager;
+    public NettyNetworkClient() {
+        this.requestManager = new RequestManager();
+        this.packetManager = new PacketManager(requestManager);
+        PacketRegistry.registerPackets(packetManager);
     }
 
     @Override
@@ -67,7 +69,7 @@ public final class NettyNetworkClient implements NetworkClient {
     }
 
     @Override
-    public void addConnectionHandler(ConnectionHandler handler) {
+    public void onConnected(ConnectionHandler handler) {
         connectionHandlers.add(handler);
     }
 

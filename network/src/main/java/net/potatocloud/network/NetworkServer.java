@@ -12,13 +12,13 @@ public interface NetworkServer extends NetworkComponent {
 
     boolean running();
 
-    Collection<NetworkConnection> connectedSessions();
+    Collection<NetworkConnection> connections();
 
     int port();
 
-    void send(NetworkConnection client, Packet packet);
+    void sendTo(NetworkConnection client, Packet packet);
 
-    default void addDisconnectHandler(Consumer<NetworkConnection> handler) {}
+    default void onClientDisconnected(Consumer<NetworkConnection> handler) {}
 
     default Broadcast broadcast() {
         return new Broadcast(this);

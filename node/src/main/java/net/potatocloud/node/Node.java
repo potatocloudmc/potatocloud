@@ -71,8 +71,6 @@ public class Node extends CloudAPI {
     private final CommandManager commandManager;
 
     private final MigrationManager migrationManager;
-    private final RequestManager requestManager;
-    private final PacketManager packetManager;
     private final NetworkServer server;
     private final EventBus eventBus;
 
@@ -116,12 +114,9 @@ public class Node extends CloudAPI {
         this.setupManager = new SetupManager();
         this.updateChecker = new UpdateChecker(logger);
 
-        this.requestManager = new RequestManager();
-        this.packetManager = new PacketManager(requestManager);
-        PacketRegistry.registerPackets(packetManager);
-        this.server = new NettyNetworkServer(requestManager, packetManager);
+        this.server = new NettyNetworkServer();
 
-        this.clusterManager = new ClusterManagerImpl(config.node().host(), config.node().port(), config.cluster(), requestManager, packetManager, server, logger);
+        this.clusterManager = new ClusterManagerImpl(config.node().host(), config.node().port(), config.cluster(), server, logger);
 
         this.eventBus = new ClusterEventBus(new ServerEventBus(server), clusterManager);
 

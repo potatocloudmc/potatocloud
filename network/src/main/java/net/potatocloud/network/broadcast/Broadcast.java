@@ -34,7 +34,7 @@ public final class Broadcast {
     }
 
     public void send(Packet packet) {
-        server.connectedSessions().forEach(connection -> {
+        server.connections().forEach(connection -> {
             if (excludedConnections.contains(connection)) {
                 return;
             }
@@ -43,7 +43,7 @@ public final class Broadcast {
                 return;
             }
 
-            server.send(connection, packet);
+            server.sendTo(connection, packet);
         });
     }
 }

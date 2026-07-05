@@ -38,7 +38,7 @@ public final class NettyNetworkConnection implements NetworkConnection {
     }
 
     @Override
-    public UUID getId() {
+    public UUID id() {
         return id;
     }
 

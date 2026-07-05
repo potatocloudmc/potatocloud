@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface NetworkConnection extends Closeable {
 
-    UUID getId();
+    UUID id();
 
     void send(Packet packet);
 
