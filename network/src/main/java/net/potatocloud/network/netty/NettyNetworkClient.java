@@ -8,6 +8,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.ssl.SslContext;
 import net.potatocloud.network.ConnectionHandler;
 import net.potatocloud.network.NetworkClient;
 import net.potatocloud.network.NetworkConnection;
@@ -18,6 +19,8 @@ import net.potatocloud.network.protocol.PacketRegistry;
 import net.potatocloud.network.request.RequestManager;
 import net.potatocloud.network.request.RequestPacket;
 import net.potatocloud.network.request.ResponsePacket;
+import net.potatocloud.network.security.SecurityConfig;
+import net.potatocloud.network.security.SecurityProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,14 +34,17 @@ public final class NettyNetworkClient implements NetworkClient {
     private final PacketManager packetManager;
     private final List<ConnectionHandler> connectionHandlers = new ArrayList<>();
 
+    private final SecurityProvider<SslContext> securityProvider;
+
     private boolean running;
     private Channel channel;
     private EventLoopGroup group;
     private NetworkConnection connection;
 
-    public NettyNetworkClient() {
+    public NettyNetworkClient(SecurityConfig securityConfig) {
         this.requestManager = new RequestManager();
         this.packetManager = new PacketManager(requestManager);
+        this.securityProvider = new NettySecurityProvider(securityConfig);
         PacketRegistry.registerPackets(packetManager);
     }
 
@@ -46,11 +52,13 @@ public final class NettyNetworkClient implements NetworkClient {
     public void connect(String host, int port) {
         this.group = NettyUtils.createEventLoopGroup();
 
+        final SslContext sslContext = securityProvider.createClientContext();
+
         final ChannelFuture connectFuture = new Bootstrap()
                 .group(group)
                 .channel(Epoll.isAvailable() ? EpollSocketChannel.class : NioSocketChannel.class)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CONNECT_TIMEOUT_MILLIS)
-                .handler(new NettyClientInitializer(packetManager, requestManager, this))
+                .handler(new NettyClientInitializer(packetManager, requestManager, this, sslContext))
                 .connect(host, port)
                 .syncUninterruptibly();
 

@@ -7,6 +7,7 @@ import net.potatocloud.api.platform.PlatformVersion;
 import net.potatocloud.api.platform.PrepareStep;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.common.FileUtils;
+import net.potatocloud.network.security.SecurityConfig;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.platform.DownloadManager;
 import net.potatocloud.node.platform.PlatformPrepareSteps;
@@ -236,6 +237,13 @@ public final class LocalJvmRuntime implements ServiceRuntime {
         args.add("-Dpotatocloud.service.name=" + name);
         args.add("-Dpotatocloud.node.host=" + config.node().host());
         args.add("-Dpotatocloud.node.port=" + config.node().port());
+
+        final SecurityConfig security = config.security().toNetworkConfig();
+        if (security.sslEnabled()) {
+            args.add("-D" + SecurityConfig.SSL_ENABLED + "=true");
+            args.add("-D" + SecurityConfig.SECURITY_DIRECTORY + "=" + security.securityDirectory().toAbsolutePath());
+            args.add("-D" + SecurityConfig.REQUIRE_CLIENT_AUTH + "=" + security.requireClientAuth());
+        }
 
         args.addAll(ServicePerformanceFlags.DEFAULT_FLAGS);
 

@@ -7,6 +7,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.ssl.SslContext;
 import net.potatocloud.network.NetworkConnection;
 import net.potatocloud.network.NetworkServer;
 import net.potatocloud.network.protocol.Packet;
@@ -14,8 +15,12 @@ import net.potatocloud.network.protocol.PacketHandler;
 import net.potatocloud.network.protocol.PacketManager;
 import net.potatocloud.network.protocol.PacketRegistry;
 import net.potatocloud.network.request.RequestManager;
+import net.potatocloud.network.security.SecurityConfig;
+import net.potatocloud.network.security.SecurityProvider;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -30,21 +35,30 @@ public final class NettyNetworkServer implements NetworkServer {
     private final Map<Channel, NetworkConnection> sessionMap = new ConcurrentHashMap<>();
     private final List<Consumer<NetworkConnection>> disconnectHandlers = new CopyOnWriteArrayList<>();
 
+    private final SecurityConfig securityConfig;
+    private final SecurityProvider<SslContext> securityProvider;
+
     private boolean running;
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
     private Channel channel;
     private int port;
 
-    public NettyNetworkServer() {
+    public NettyNetworkServer(SecurityConfig securityConfig) {
         this.requestManager = new RequestManager();
         this.packetManager = new PacketManager(requestManager);
+        this.securityConfig = securityConfig;
+        this.securityProvider = new NettySecurityProvider(securityConfig);
         PacketRegistry.registerPackets(packetManager);
     }
 
     @Override
     public void start(String hostname, int port) {
         this.port = port;
+
+        generateCertificates();
+
+        final SslContext sslContext = securityProvider.createServerContext();
 
         this.bossGroup = NettyUtils.createEventLoopGroup();
         this.workerGroup = NettyUtils.createEventLoopGroup();
@@ -54,12 +68,27 @@ public final class NettyNetworkServer implements NetworkServer {
                 .channel(Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
                 .childOption(ChannelOption.TCP_NODELAY, true)
-                .childHandler(new NettyServerInitializer(packetManager, requestManager, this))
+                .childHandler(new NettyServerInitializer(packetManager, requestManager, this, sslContext))
                 .bind(new InetSocketAddress(hostname, port))
                 .syncUninterruptibly()
                 .channel();
 
         this.running = true;
+    }
+
+    private void generateCertificates() {
+        if (!securityConfig.sslEnabled()) {
+            return;
+        }
+
+        try {
+            Files.createDirectories(securityConfig.securityDirectory());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to create security directory: " + securityConfig.securityDirectory(), e);
+        }
+
+        securityProvider.generate("server");
+        securityProvider.generate("client");
     }
 
     @Override

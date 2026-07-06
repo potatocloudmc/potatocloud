@@ -19,6 +19,7 @@ import net.potatocloud.connector.service.ServiceManagerImpl;
 import net.potatocloud.eventbus.ClientEventBus;
 import net.potatocloud.network.NetworkClient;
 import net.potatocloud.network.netty.NettyNetworkClient;
+import net.potatocloud.network.security.SecurityConfig;
 
 /**
  * The Connector connects a node to this instance and provides API methods for running services.
@@ -39,7 +40,7 @@ public class ConnectorAPI extends CloudAPI {
     private CloudPlayerManager playerManager;
 
     public ConnectorAPI() {
-        this.client = new NettyNetworkClient();
+        this.client = new NettyNetworkClient(SecurityConfig.fromProperties());
 
         client.onConnected(() -> {
             this.logger = new ConnectorLogger(client);

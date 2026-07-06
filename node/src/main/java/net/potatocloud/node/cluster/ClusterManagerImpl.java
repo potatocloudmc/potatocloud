@@ -13,6 +13,7 @@ import net.potatocloud.network.protocol.Packet;
 import net.potatocloud.network.packets.group.GroupDeletePacket;
 import net.potatocloud.network.packets.player.CloudPlayerRemovePacket;
 import net.potatocloud.network.packets.service.ServiceRemovePacket;
+import net.potatocloud.network.security.SecurityConfig;
 import net.potatocloud.node.cluster.handlers.NodeDisconnectHandler;
 import net.potatocloud.node.cluster.handlers.NodeDiscoveryHandler;
 import net.potatocloud.node.cluster.handlers.NodeJoinHandler;
@@ -33,6 +34,7 @@ public class ClusterManagerImpl implements ClusterManager {
     private final ClusterNodeImpl localNode;
 
     private final ClusterConfig config;
+    private final SecurityConfig securityConfig;
     private final NetworkServer server;
     private final Logger logger;
 
@@ -47,8 +49,9 @@ public class ClusterManagerImpl implements ClusterManager {
     private ServiceManagerImpl serviceManager;
     private CloudPlayerManagerImpl playerManager;
 
-    public ClusterManagerImpl(String localHost, int localPort, ClusterConfig config, NetworkServer server, Logger logger) {
+    public ClusterManagerImpl(String localHost, int localPort, ClusterConfig config, SecurityConfig securityConfig, NetworkServer server, Logger logger) {
         this.config = config;
+        this.securityConfig = securityConfig;
         this.server = server;
         this.logger = logger;
         this.localNode = new ClusterNodeImpl(config.name(), localHost, localPort, Instant.now(), null);
@@ -98,7 +101,7 @@ public class ClusterManagerImpl implements ClusterManager {
             return;
         }
 
-        final NettyNetworkClient client = new NettyNetworkClient();
+        final NettyNetworkClient client = new NettyNetworkClient(securityConfig);
 
         client.onConnected(() -> {
             final NetworkConnection connection = client.connection();
