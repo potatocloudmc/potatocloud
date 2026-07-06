@@ -8,8 +8,13 @@ import net.potatocloud.network.security.CertificatePaths;
 import net.potatocloud.network.security.SecurityConfig;
 import net.potatocloud.network.security.SecurityProvider;
 
+import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 
 public final class NettySecurityProvider implements SecurityProvider<SslContext> {
 
@@ -60,6 +65,7 @@ public final class NettySecurityProvider implements SecurityProvider<SslContext>
             final var key = config.securityDirectory().resolve(name + ".key");
 
             if (Files.exists(certificate) && Files.exists(key)) {
+                checkNotExpired(certificate, name);
                 return;
             }
 
@@ -69,6 +75,19 @@ public final class NettySecurityProvider implements SecurityProvider<SslContext>
             Files.copy(selfSigned.privateKey().toPath(), key, StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
             throw new RuntimeException("Failed to generate certificate for " + name, e);
+        }
+    }
+
+    private void checkNotExpired(Path certificate, String name) {
+        try (InputStream in = Files.newInputStream(certificate)) {
+            ((X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(in)).checkValidity();
+        } catch (CertificateExpiredException e) {
+            throw new RuntimeException("Certificates have expired! Delete the security folder and they will be created again automatically. " +
+                            "If you use Multi Node, all nodes must have the same certificates. Copy the security folder from this node " +
+                            "or from another node with valid certificates to all nodes."
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to verify " + name + " certificate", e);
         }
     }
 }
