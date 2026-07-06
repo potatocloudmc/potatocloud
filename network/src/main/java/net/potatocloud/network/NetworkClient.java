@@ -5,6 +5,7 @@ import net.potatocloud.network.request.RequestPacket;
 import net.potatocloud.network.request.ResponsePacket;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public interface NetworkClient extends NetworkComponent {
 
@@ -14,7 +15,7 @@ public interface NetworkClient extends NetworkComponent {
 
     void close();
 
-    void onConnected(ConnectionHandler handler);
+    void onConnected(Runnable handler);
 
     <T extends ResponsePacket> CompletableFuture<T> request(RequestPacket packet, Class<T> type);
 

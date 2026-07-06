@@ -136,10 +136,6 @@ public final class NettyNetworkServer implements NetworkServer {
         disconnectHandlers.forEach(handler -> handler.accept(connection));
     }
 
-    public PacketManager packetManager() {
-        return packetManager;
-    }
-
     @Override
     public <T extends Packet> void on(Class<T> packetClass, PacketHandler<T> handler) {
         packetManager.on(packetClass, handler);

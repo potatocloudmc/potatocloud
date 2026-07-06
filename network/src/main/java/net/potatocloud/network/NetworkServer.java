@@ -18,7 +18,7 @@ public interface NetworkServer extends NetworkComponent {
 
     void sendTo(NetworkConnection client, Packet packet);
 
-    default void onClientDisconnected(Consumer<NetworkConnection> handler) {}
+    void onClientDisconnected(Consumer<NetworkConnection> handler);
 
     default Broadcast broadcast() {
         return new Broadcast(this);

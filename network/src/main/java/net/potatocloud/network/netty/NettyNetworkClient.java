@@ -9,7 +9,6 @@ import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.ssl.SslContext;
-import net.potatocloud.network.ConnectionHandler;
 import net.potatocloud.network.NetworkClient;
 import net.potatocloud.network.NetworkConnection;
 import net.potatocloud.network.protocol.Packet;
@@ -32,7 +31,7 @@ public final class NettyNetworkClient implements NetworkClient {
 
     private final RequestManager requestManager;
     private final PacketManager packetManager;
-    private final List<ConnectionHandler> connectionHandlers = new ArrayList<>();
+    private final List<Runnable> connectionHandlers = new ArrayList<>();
 
     private final SecurityProvider<SslContext> securityProvider;
 
@@ -77,12 +76,12 @@ public final class NettyNetworkClient implements NetworkClient {
     }
 
     @Override
-    public void onConnected(ConnectionHandler handler) {
+    public void onConnected(Runnable handler) {
         connectionHandlers.add(handler);
     }
 
     public void onConnected() {
-        connectionHandlers.forEach(ConnectionHandler::onConnected);
+        connectionHandlers.forEach(Runnable::run);
     }
 
     @Override
@@ -112,9 +111,5 @@ public final class NettyNetworkClient implements NetworkClient {
 
     public NetworkConnection connection() {
         return connection;
-    }
-
-    public PacketManager packetManager() {
-        return packetManager;
     }
 }
