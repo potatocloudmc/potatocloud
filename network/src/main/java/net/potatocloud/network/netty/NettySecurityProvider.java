@@ -51,6 +51,7 @@ public final class NettySecurityProvider implements SecurityProvider<SslContext>
             return SslContextBuilder.forClient()
                     .keyManager(CertificatePaths.clientCertificate(config).toFile(), CertificatePaths.clientKey(config).toFile())
                     .trustManager(CertificatePaths.serverCertificate(config).toFile())
+                    .endpointIdentificationAlgorithm(null)
                     .build();
 
         } catch (Exception e) {
