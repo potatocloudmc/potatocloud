@@ -297,6 +297,7 @@ public class ServiceManagerImpl implements ServiceManager {
 
     public void removeService(Service service) {
         services.remove(service);
+        screenManager.unregister(service.name());
     }
 
     public boolean hasEnoughMemory(Group group) {
