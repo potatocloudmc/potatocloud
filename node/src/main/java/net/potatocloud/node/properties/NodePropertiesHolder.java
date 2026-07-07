@@ -12,7 +12,7 @@ import net.potatocloud.node.cluster.ClusterManagerImpl;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NodePropertiesHolder implements PropertyHolder {
+public final class NodePropertiesHolder implements PropertyHolder {
 
     private final NetworkServer server;
     private final ClusterManagerImpl clusterManager;

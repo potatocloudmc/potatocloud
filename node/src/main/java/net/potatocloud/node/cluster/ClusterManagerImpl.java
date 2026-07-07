@@ -7,21 +7,18 @@ import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.network.NetworkConnection;
 import net.potatocloud.network.NetworkServer;
-import net.potatocloud.network.packets.cluster.*;
 import net.potatocloud.network.netty.NettyNetworkClient;
-import net.potatocloud.network.protocol.Packet;
+import net.potatocloud.network.packets.cluster.*;
 import net.potatocloud.network.packets.group.GroupDeletePacket;
 import net.potatocloud.network.packets.player.CloudPlayerRemovePacket;
 import net.potatocloud.network.packets.service.ServiceRemovePacket;
+import net.potatocloud.network.protocol.Packet;
 import net.potatocloud.network.security.SecurityConfig;
-import net.potatocloud.node.cluster.handlers.NodeDisconnectHandler;
-import net.potatocloud.node.cluster.handlers.NodeDiscoveryHandler;
-import net.potatocloud.node.cluster.handlers.NodeJoinHandler;
-import net.potatocloud.node.cluster.handlers.NodeLeaveHandler;
-import net.potatocloud.node.cluster.handlers.ClusterSyncHandler;
+import net.potatocloud.node.cluster.handlers.*;
 import net.potatocloud.node.config.ClusterConfig;
 import net.potatocloud.node.group.GroupManagerImpl;
 import net.potatocloud.node.player.CloudPlayerManagerImpl;
+import net.potatocloud.node.properties.NodePropertiesHolder;
 import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.service.ServiceManagerImpl;
 
@@ -49,7 +46,14 @@ public class ClusterManagerImpl implements ClusterManager {
     private ServiceManagerImpl serviceManager;
     private CloudPlayerManagerImpl playerManager;
 
-    public ClusterManagerImpl(String localHost, int localPort, ClusterConfig config, SecurityConfig securityConfig, NetworkServer server, Logger logger) {
+    public ClusterManagerImpl(
+            String localHost,
+            int localPort,
+            ClusterConfig config,
+            SecurityConfig securityConfig,
+            NetworkServer server,
+            Logger logger
+    ) {
         this.config = config;
         this.securityConfig = securityConfig;
         this.server = server;
@@ -59,17 +63,23 @@ public class ClusterManagerImpl implements ClusterManager {
         server.on(RequestClusterNodesPacket.class, ctx -> ctx.reply(new ClusterNodesResponsePacket(localNode, new ArrayList<>(remoteNodes()))));
     }
 
-    public void start(GroupManagerImpl groupManager, ServiceManagerImpl serviceManager, CloudPlayerManagerImpl playerManager, ScreenManager screenManager) {
+    public void start(
+            GroupManagerImpl groupManager,
+            ServiceManagerImpl serviceManager,
+            CloudPlayerManagerImpl playerManager,
+            NodePropertiesHolder properties,
+            ScreenManager screenManager
+    ) {
         this.groupManager = groupManager;
         this.serviceManager = serviceManager;
         this.playerManager = playerManager;
 
-        server.on(NodeJoinPacket.class, new NodeJoinHandler(localNode, this, config.token(), logger, groupManager, serviceManager, playerManager));
+        server.on(NodeJoinPacket.class, new NodeJoinHandler(localNode, this, config.token(), logger, groupManager, serviceManager, playerManager, properties));
         server.on(NodeJoinRejectPacket.class, ctx -> logger.warn("Could not join the cluster&8: &c" + ctx.packet().reason()));
         server.on(NodeLeavePacket.class, new NodeLeaveHandler(this, logger));
         server.on(HeartbeatPacket.class, ctx -> remoteNode(ctx.packet().nodeName()).ifPresent(ClusterNodeImpl::updateHeartbeat));
         server.on(NodeDiscoveryPacket.class, new NodeDiscoveryHandler(this));
-        server.on(ClusterSyncPacket.class, new ClusterSyncHandler(groupManager, serviceManager, playerManager, server, screenManager, this));
+        server.on(ClusterSyncPacket.class, new ClusterSyncHandler(groupManager, serviceManager, playerManager, server, screenManager, this, properties));
         server.onClientDisconnected(new NodeDisconnectHandler(this, logger));
 
         heartbeatScheduler = new HeartbeatScheduler(this, localNode, logger);

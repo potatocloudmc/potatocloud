@@ -178,7 +178,7 @@ public class Node extends CloudAPI {
                 });
             }
 
-            clusterManager.start((GroupManagerImpl) groupManager, serviceManager, (CloudPlayerManagerImpl) playerManager, screenManager);
+            clusterManager.start((GroupManagerImpl) groupManager, serviceManager, (CloudPlayerManagerImpl) playerManager, propertiesHolder, screenManager);
         }
 
         final List<Group> groups = groupManager.groups();

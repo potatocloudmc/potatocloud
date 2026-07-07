@@ -3,14 +3,15 @@ package net.potatocloud.node.cluster.handlers;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.api.logging.Logger;
+import net.potatocloud.api.property.PropertyHolder;
 import net.potatocloud.network.ConnectionType;
 import net.potatocloud.network.NetworkConnection;
-import net.potatocloud.network.protocol.PacketContext;
-import net.potatocloud.network.protocol.PacketHandler;
 import net.potatocloud.network.packets.cluster.ClusterSyncPacket;
 import net.potatocloud.network.packets.cluster.NodeDiscoveryPacket;
 import net.potatocloud.network.packets.cluster.NodeJoinPacket;
 import net.potatocloud.network.packets.cluster.NodeJoinRejectPacket;
+import net.potatocloud.network.protocol.PacketContext;
+import net.potatocloud.network.protocol.PacketHandler;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.cluster.ClusterNodeImpl;
 import net.potatocloud.node.group.GroupManagerImpl;
@@ -26,8 +27,9 @@ public final class NodeJoinHandler implements PacketHandler<NodeJoinPacket> {
     private final GroupManagerImpl groupManager;
     private final ServiceManagerImpl serviceManager;
     private final CloudPlayerManagerImpl playerManager;
+    private final PropertyHolder properties;
 
-    public NodeJoinHandler(ClusterNode localNode, ClusterManagerImpl clusterManager, String clusterToken, Logger logger, GroupManagerImpl groupManager, ServiceManagerImpl serviceManager, CloudPlayerManagerImpl playerManager) {
+    public NodeJoinHandler(ClusterNode localNode, ClusterManagerImpl clusterManager, String clusterToken, Logger logger, GroupManagerImpl groupManager, ServiceManagerImpl serviceManager, CloudPlayerManagerImpl playerManager, PropertyHolder properties) {
         this.localNode = localNode;
         this.clusterManager = clusterManager;
         this.clusterToken = clusterToken;
@@ -35,6 +37,7 @@ public final class NodeJoinHandler implements PacketHandler<NodeJoinPacket> {
         this.groupManager = groupManager;
         this.serviceManager = serviceManager;
         this.playerManager = playerManager;
+        this.properties = properties;
     }
 
     @Override
@@ -90,7 +93,8 @@ public final class NodeJoinHandler implements PacketHandler<NodeJoinPacket> {
         connection.send(new ClusterSyncPacket(
                 groupManager.groups(),
                 serviceManager.services(),
-                playerManager.players()
+                playerManager.players(),
+                properties.properties()
         ));
 
         logger.debug("Cluster sync sent to node &a" + node.name() + " &7in &a" + (System.currentTimeMillis() - syncStart) + "ms");
