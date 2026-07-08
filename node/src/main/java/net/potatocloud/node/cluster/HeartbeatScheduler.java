@@ -7,7 +7,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class HeartbeatScheduler {
+public final class HeartbeatScheduler {
 
     private static final long HEARTBEAT_INTERVAL = 5000;
     private static final long TIMEOUT_MS = 15000;

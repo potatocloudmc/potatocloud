@@ -47,6 +47,12 @@ public final class NettyNetworkClient implements NetworkClient {
         PacketRegistry.registerPackets(packetManager);
     }
 
+    public NettyNetworkClient(PacketManager packetManager, RequestManager requestManager, SecurityConfig securityConfig) {
+        this.packetManager = packetManager;
+        this.requestManager = requestManager;
+        this.securityProvider = new NettySecurityProvider(securityConfig);
+    }
+
     @Override
     public void connect(String host, int port) {
         this.group = NettyUtils.createEventLoopGroup();

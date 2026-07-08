@@ -109,6 +109,25 @@ public final class NettyNetworkServer implements NetworkServer {
     }
 
     @Override
+    public <T extends Packet> void on(Class<T> packetClass, PacketHandler<T> handler) {
+        packetManager.on(packetClass, handler);
+    }
+
+    @Override
+    public void sendTo(NetworkConnection connection, Packet packet) {
+        connection.send(packet);
+    }
+
+    @Override
+    public void onClientDisconnected(Consumer<NetworkConnection> handler) {
+        disconnectHandlers.add(handler);
+    }
+
+    public void handleDisconnect(NetworkConnection connection) {
+        disconnectHandlers.forEach(handler -> handler.accept(connection));
+    }
+
+    @Override
     public boolean running() {
         return running;
     }
@@ -127,22 +146,11 @@ public final class NettyNetworkServer implements NetworkServer {
         return sessionMap;
     }
 
-    @Override
-    public void onClientDisconnected(Consumer<NetworkConnection> handler) {
-        disconnectHandlers.add(handler);
+    public PacketManager packetManager() {
+        return packetManager;
     }
 
-    public void handleDisconnect(NetworkConnection connection) {
-        disconnectHandlers.forEach(handler -> handler.accept(connection));
-    }
-
-    @Override
-    public <T extends Packet> void on(Class<T> packetClass, PacketHandler<T> handler) {
-        packetManager.on(packetClass, handler);
-    }
-
-    @Override
-    public void sendTo(NetworkConnection connection, Packet packet) {
-        connection.send(packet);
+    public RequestManager requestManager() {
+        return requestManager;
     }
 }

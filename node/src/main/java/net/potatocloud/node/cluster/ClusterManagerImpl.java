@@ -8,6 +8,7 @@ import net.potatocloud.api.service.Service;
 import net.potatocloud.network.NetworkConnection;
 import net.potatocloud.network.NetworkServer;
 import net.potatocloud.network.netty.NettyNetworkClient;
+import net.potatocloud.network.netty.NettyNetworkServer;
 import net.potatocloud.network.packets.cluster.*;
 import net.potatocloud.network.packets.group.GroupDeletePacket;
 import net.potatocloud.network.packets.player.CloudPlayerRemovePacket;
@@ -111,7 +112,11 @@ public class ClusterManagerImpl implements ClusterManager {
             return;
         }
 
-        final NettyNetworkClient client = new NettyNetworkClient(securityConfig);
+        final NettyNetworkClient client = new NettyNetworkClient(
+                ((NettyNetworkServer) server).packetManager(),
+                ((NettyNetworkServer) server).requestManager(),
+                securityConfig
+        );
 
         client.onConnected(() -> {
             final NetworkConnection connection = client.connection();
