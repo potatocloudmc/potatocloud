@@ -2,7 +2,7 @@ package net.potatocloud.api.player.impl;
 
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.player.CloudPlayer;
-import net.potatocloud.api.property.Property;
+import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.api.service.Service;
 
 import java.util.HashMap;
@@ -16,21 +16,21 @@ public class CloudPlayerImpl implements CloudPlayer {
     private final UUID uniqueId;
     private String proxyName;
     private String serviceName;
-    private final Map<String, Property<?>> propertyMap;
+    private final Map<PropertyKey<?>, Object> properties;
 
     public CloudPlayerImpl(String username, UUID uniqueId, String proxyName) {
         this.username = username;
         this.uniqueId = uniqueId;
         this.proxyName = proxyName;
-        this.propertyMap = new HashMap<>();
+        this.properties = new HashMap<>();
     }
 
-    public CloudPlayerImpl(String username, UUID uniqueId, String proxyName, String serviceName, Map<String, Property<?>> propertyMap) {
+    public CloudPlayerImpl(String username, UUID uniqueId, String proxyName, String serviceName, Map<PropertyKey<?>, Object> properties) {
         this.username = username;
         this.uniqueId = uniqueId;
         this.proxyName = proxyName;
         this.serviceName = serviceName;
-        this.propertyMap = propertyMap;
+        this.properties = properties;
     }
 
     @Override
@@ -68,8 +68,8 @@ public class CloudPlayerImpl implements CloudPlayer {
     }
 
     @Override
-    public Map<String, Property<?>> propertyMap() {
-        return propertyMap;
+    public Map<PropertyKey<?>, Object> properties() {
+        return properties;
     }
 
     @Override

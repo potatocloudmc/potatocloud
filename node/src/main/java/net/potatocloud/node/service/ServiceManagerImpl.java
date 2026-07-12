@@ -13,7 +13,7 @@ import net.potatocloud.api.service.ServiceState;
 import net.potatocloud.api.service.impl.ServiceImpl;
 import net.potatocloud.common.FileUtils;
 import net.potatocloud.network.NetworkServer;
-import net.potatocloud.network.packet.packets.service.*;
+import net.potatocloud.network.packets.service.*;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.console.Console;
@@ -25,7 +25,7 @@ import net.potatocloud.node.screen.impl.LocalServiceScreen;
 import net.potatocloud.node.screen.impl.NodeScreen;
 import net.potatocloud.node.service.helper.ServiceIds;
 import net.potatocloud.node.service.helper.ServicePorts;
-import net.potatocloud.node.service.listeners.*;
+import net.potatocloud.node.service.handlers.*;
 import net.potatocloud.node.service.runtime.ServiceMemoryMonitor;
 import net.potatocloud.node.service.runtime.ServiceProcessMonitor;
 import net.potatocloud.node.service.runtime.ServiceRuntime;
@@ -86,17 +86,17 @@ public class ServiceManagerImpl implements ServiceManager {
 
         ServiceDefaultFiles.copyDefaultFiles(Path.of(config.folders().data()));
 
-        server.on(RequestServicesPacket.class, new RequestServicesListener(this));
-        server.on(ServiceAddPacket.class, new ServiceAddListener(this, server, screenManager, clusterManager));
-        server.on(ServiceRemovePacket.class, new ServiceRemoveListener(this, server, screenManager));
-        server.on(ServiceStartedPacket.class, new ServiceStartedListener(this, logger, eventBus, clusterManager, server));
-        server.on(ServiceUpdatePacket.class, new ServiceUpdateListener(this, server, clusterManager));
-        server.on(ServiceStartingPacket.class, new ServiceStartingListener(logger, this));
-        server.on(StartServicePacket.class, new StartServiceListener(this, groupManager, clusterManager));
-        server.on(StopServicePacket.class, new StopServiceListener(this, clusterManager));
-        server.on(ServiceExecuteCommandPacket.class, new ServiceExecuteCommandListener(this, clusterManager));
-        server.on(ServiceCopyPacket.class, new ServiceCopyListener(this, clusterManager));
-        server.on(ServiceMemoryUpdatePacket.class, new ServiceMemoryUpdateListener(this, server));
+        server.on(RequestServicesPacket.class, ctx -> ctx.reply(new ServicesResponsePacket(services())));
+        server.on(ServiceAddPacket.class, new ServiceAddHandler(this, server, screenManager, clusterManager));
+        server.on(ServiceRemovePacket.class, new ServiceRemoveHandler(this, server, screenManager));
+        server.on(ServiceStartedPacket.class, new ServiceStartedHandler(this, logger, eventBus, clusterManager, server));
+        server.on(ServiceUpdatePacket.class, new ServiceUpdateHandler(this, server, clusterManager));
+        server.on(ServiceStartingPacket.class, new ServiceStartingHandler(logger, this));
+        server.on(StartServicePacket.class, new StartServiceHandler(this, groupManager, clusterManager));
+        server.on(StopServicePacket.class, new StopServiceHandler(this, clusterManager));
+        server.on(ServiceExecuteCommandPacket.class, new ServiceExecuteCommandHandler(this, clusterManager));
+        server.on(ServiceCopyPacket.class, new ServiceCopyHandler(this, clusterManager));
+        server.on(ServiceMemoryUpdatePacket.class, new ServiceMemoryUpdateHandler(this, server));
 
         scheduler.scheduleAtFixedRate(new ServiceProcessMonitor(runtimes, this), 0, 1, TimeUnit.SECONDS);
         scheduler.scheduleAtFixedRate(new ServiceMemoryMonitor(runtimes, this, server, clusterManager), 0, 2, TimeUnit.SECONDS);
@@ -118,7 +118,7 @@ public class ServiceManagerImpl implements ServiceManager {
                 service.name(),
                 service.state().name(),
                 service.maxPlayers(),
-                service.propertyMap()
+                service.properties()
         );
         server.broadcast().connectors().send(packet);
         clusterManager.broadcast(packet);
@@ -218,7 +218,7 @@ public class ServiceManagerImpl implements ServiceManager {
                 port,
                 name,
                 group.get().name(),
-                new HashMap<>(group.get().propertyMap()),
+                new HashMap<>(group.get().properties()),
                 Instant.ofEpochSecond(0L),
                 ServiceState.STOPPED,
                 group.get().maxPlayers(),
@@ -244,6 +244,7 @@ public class ServiceManagerImpl implements ServiceManager {
         runtime.prepare(service);
 
         service.state(ServiceState.STARTING);
+        update(service);
         runtime.start(service);
 
         final String nodeInfo = config.cluster().enabled() ? " on node &a" + clusterManager.localNode().name() + "&7" : "";
@@ -296,6 +297,7 @@ public class ServiceManagerImpl implements ServiceManager {
 
     public void removeService(Service service) {
         services.remove(service);
+        screenManager.unregister(service.name());
     }
 
     public boolean hasEnoughMemory(Group group) {

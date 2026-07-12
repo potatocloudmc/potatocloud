@@ -1,8 +1,8 @@
 package net.potatocloud.node.screen.impl;
 
 import net.potatocloud.api.service.Service;
-import net.potatocloud.network.packet.packets.service.ServiceScreenSubscribePacket;
-import net.potatocloud.network.packet.packets.service.ServiceScreenUnsubscribePacket;
+import net.potatocloud.network.packets.service.ServiceScreenSubscribePacket;
+import net.potatocloud.network.packets.service.ServiceScreenUnsubscribePacket;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.console.Console;
 

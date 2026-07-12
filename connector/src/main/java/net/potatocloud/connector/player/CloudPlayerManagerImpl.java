@@ -6,14 +6,13 @@ import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.player.CloudPlayerManager;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.connector.event.ConnectPlayerWithServiceEvent;
-import net.potatocloud.connector.player.listeners.CloudPlayerAddListener;
-import net.potatocloud.connector.player.listeners.CloudPlayerRemoveListener;
-import net.potatocloud.connector.player.listeners.CloudPlayerUpdateListener;
+import net.potatocloud.connector.player.handlers.CloudPlayerUpdateHandler;
 import net.potatocloud.network.NetworkClient;
-import net.potatocloud.network.packet.packets.player.CloudPlayerAddPacket;
-import net.potatocloud.network.packet.packets.player.CloudPlayerRemovePacket;
-import net.potatocloud.network.packet.packets.player.CloudPlayerUpdatePacket;
-import net.potatocloud.network.packet.packets.player.RequestCloudPlayersPacket;
+import net.potatocloud.network.packets.player.CloudPlayerAddPacket;
+import net.potatocloud.network.packets.player.CloudPlayerRemovePacket;
+import net.potatocloud.network.packets.player.CloudPlayerUpdatePacket;
+import net.potatocloud.network.packets.player.CloudPlayersResponsePacket;
+import net.potatocloud.network.packets.player.RequestCloudPlayersPacket;
 
 import java.util.*;
 
@@ -25,11 +24,11 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
     public CloudPlayerManagerImpl(NetworkClient client) {
         this.client = client;
 
-        client.send(new RequestCloudPlayersPacket());
+        client.on(CloudPlayerAddPacket.class, ctx -> registerPlayerLocal(ctx.packet().player()));
+        client.on(CloudPlayerRemovePacket.class, ctx -> find(ctx.packet().playerUniqueId()).ifPresent(this::unregisterPlayerLocal));
+        client.on(CloudPlayerUpdatePacket.class, new CloudPlayerUpdateHandler(this));
 
-        client.on(CloudPlayerAddPacket.class, new CloudPlayerAddListener(this));
-        client.on(CloudPlayerRemovePacket.class, new CloudPlayerRemoveListener(this));
-        client.on(CloudPlayerUpdatePacket.class, new CloudPlayerUpdateListener(this));
+        client.request(new RequestCloudPlayersPacket(), CloudPlayersResponsePacket.class).thenAccept(response -> response.players().forEach(this::registerPlayerLocal));
     }
 
     public void registerPlayer(CloudPlayer player) {
@@ -93,7 +92,7 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
                 player.uniqueId(),
                 player.proxy().name(),
                 player.service().map(Service::name).orElse(null),
-                player.propertyMap()
+                player.properties()
         ));
     }
 }

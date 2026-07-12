@@ -2,9 +2,9 @@ package net.potatocloud.node.screen;
 
 import net.potatocloud.network.NetworkConnection;
 import net.potatocloud.network.NetworkServer;
-import net.potatocloud.network.packet.packets.service.ServiceScreenLogPacket;
-import net.potatocloud.network.packet.packets.service.ServiceScreenSubscribePacket;
-import net.potatocloud.network.packet.packets.service.ServiceScreenUnsubscribePacket;
+import net.potatocloud.network.packets.service.ServiceScreenLogPacket;
+import net.potatocloud.network.packets.service.ServiceScreenSubscribePacket;
+import net.potatocloud.network.packets.service.ServiceScreenUnsubscribePacket;
 import net.potatocloud.node.console.Console;
 import net.potatocloud.node.screen.impl.NodeScreen;
 
@@ -132,6 +132,7 @@ public class ScreenManager {
         }
     }
 
+    @SuppressWarnings("unused")
     public Map<String, Screen> screens() {
         return screens;
     }

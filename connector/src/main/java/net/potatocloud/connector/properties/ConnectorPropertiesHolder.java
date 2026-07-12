@@ -1,11 +1,11 @@
 package net.potatocloud.connector.properties;
 
-import net.potatocloud.api.property.Property;
 import net.potatocloud.api.property.PropertyHolder;
+import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.network.NetworkClient;
-import net.potatocloud.network.packet.packets.property.PropertyAddPacket;
-import net.potatocloud.network.packet.packets.property.PropertyUpdatePacket;
-import net.potatocloud.network.packet.packets.property.RequestPropertiesPacket;
+import net.potatocloud.network.packets.property.PropertyAddPacket;
+import net.potatocloud.network.packets.property.PropertyUpdatePacket;
+import net.potatocloud.network.packets.property.RequestPropertiesPacket;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +14,7 @@ public class ConnectorPropertiesHolder implements PropertyHolder {
 
     private final NetworkClient client;
 
-    private final Map<String, Property<?>> propertyMap = new HashMap<>();
+    private final Map<PropertyKey<?>, Object> propertyMap = new HashMap<>();
 
     public ConnectorPropertiesHolder(NetworkClient client) {
         this.client = client;
@@ -22,33 +22,32 @@ public class ConnectorPropertiesHolder implements PropertyHolder {
         client.send(new RequestPropertiesPacket());
 
         client.on(PropertyAddPacket.class, ctx -> {
-            propertyMap.put(ctx.packet().property().name(), ctx.packet().property());
+            final PropertyAddPacket packet = ctx.packet();
+            propertyMap.put(packet.toKey(), packet.value());
         });
 
         client.on(PropertyUpdatePacket.class, ctx -> {
-            final Property<?> property = propertyMap.get(ctx.packet().propertyName());
-            if (property != null) {
-                property.valueObject(ctx.packet().propertyValue());
-            }
+            propertyMap.entrySet().stream()
+                    .filter(e -> e.getKey().name().equals(ctx.packet().propertyName()))
+                    .findFirst()
+                    .ifPresent(e -> propertyMap.put(e.getKey(), ctx.packet().propertyValue()));
         });
     }
 
     @Override
-    public <T> void set(Property<T> key, T value, boolean fireEvent) {
-        final Property<T> existing = property(key.name());
+    public <T> void set(PropertyKey<T> key, T value, boolean fireEvent) {
+        final boolean existing = properties().containsKey(key);
         PropertyHolder.super.set(key, value, fireEvent);
 
-        if (existing == null) {
-            // Property was just created, so send the add packet to the node
-            client.send(new PropertyAddPacket(key));
+        if (!existing) {
+            client.send(new PropertyAddPacket(key.name(), key.defaultValue(), value));
         } else {
-            // Property was just updated, so send the update packet to the node
             client.send(new PropertyUpdatePacket(key.name(), value));
         }
     }
 
     @Override
-    public Map<String, Property<?>> propertyMap() {
+    public Map<PropertyKey<?>, Object> properties() {
         return propertyMap;
     }
 

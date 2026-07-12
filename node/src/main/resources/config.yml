@@ -73,6 +73,16 @@ cluster:
   #  - 127.0.0.1:16001
   #  - 127.0.0.1:16002
 
+security:
+  # Enable TLS/SSL encryption
+  ssl-enabled: false
+
+  # Directory where the certificates are saved
+  security-directory: security
+
+  # Require client authentication
+  require-client-auth: true
+
 disable-update-checker: false
 debug: false
 

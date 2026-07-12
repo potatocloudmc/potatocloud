@@ -1,6 +1,7 @@
 package net.potatocloud.network;
 
-import net.potatocloud.network.packet.Packet;
+import net.potatocloud.network.broadcast.Broadcast;
+import net.potatocloud.network.protocol.Packet;
 
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -11,13 +12,13 @@ public interface NetworkServer extends NetworkComponent {
 
     boolean running();
 
-    Collection<NetworkConnection> connectedSessions();
+    Collection<NetworkConnection> connections();
 
     int port();
 
-    void send(NetworkConnection client, Packet packet);
+    void sendTo(NetworkConnection client, Packet packet);
 
-    default void addDisconnectListener(Consumer<NetworkConnection> listener) {}
+    void onClientDisconnected(Consumer<NetworkConnection> handler);
 
     default Broadcast broadcast() {
         return new Broadcast(this);

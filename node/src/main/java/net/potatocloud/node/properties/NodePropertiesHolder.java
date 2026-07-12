@@ -1,36 +1,35 @@
 package net.potatocloud.node.properties;
 
-import net.potatocloud.api.property.Property;
 import net.potatocloud.api.property.PropertyHolder;
+import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.network.ConnectionType;
 import net.potatocloud.network.NetworkServer;
-import net.potatocloud.network.packet.packets.property.PropertyAddPacket;
-import net.potatocloud.network.packet.packets.property.PropertyUpdatePacket;
-import net.potatocloud.network.packet.packets.property.RequestPropertiesPacket;
+import net.potatocloud.network.packets.property.PropertyAddPacket;
+import net.potatocloud.network.packets.property.PropertyUpdatePacket;
+import net.potatocloud.network.packets.property.RequestPropertiesPacket;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class NodePropertiesHolder implements PropertyHolder {
+public final class NodePropertiesHolder implements PropertyHolder {
 
     private final NetworkServer server;
     private final ClusterManagerImpl clusterManager;
 
-    private final Map<String, Property<?>> propertyMap = new HashMap<>();
+    private final Map<PropertyKey<?>, Object> propertyMap = new HashMap<>();
 
     public NodePropertiesHolder(NetworkServer server, ClusterManagerImpl clusterManager) {
         this.server = server;
         this.clusterManager = clusterManager;
 
         server.on(RequestPropertiesPacket.class, ctx -> {
-            propertyMap.values().forEach(property -> ctx.connection().send(new PropertyAddPacket(property)));
+            propertyMap.forEach((key, value) -> ctx.connection().send(new PropertyAddPacket(key.name(), key.defaultValue(), value)));
         });
 
         server.on(PropertyAddPacket.class, ctx -> {
             final PropertyAddPacket packet = ctx.packet();
-
-            propertyMap.put(packet.property().name(), packet.property());
+            propertyMap.put(packet.toKey(), packet.value());
 
             server.broadcast().connectors().exclude(ctx.connection()).send(packet);
 
@@ -40,10 +39,10 @@ public class NodePropertiesHolder implements PropertyHolder {
         });
 
         server.on(PropertyUpdatePacket.class, ctx -> {
-            final Property<?> property = propertyMap.get(ctx.packet().propertyName());
-            if (property != null) {
-                property.valueObject(ctx.packet().propertyValue());
-            }
+            propertyMap.entrySet().stream()
+                    .filter(e -> e.getKey().name().equals(ctx.packet().propertyName()))
+                    .findFirst()
+                    .ifPresent(e -> propertyMap.put(e.getKey(), ctx.packet().propertyValue()));
 
             server.broadcast().connectors().exclude(ctx.connection()).send(ctx.packet());
 
@@ -54,12 +53,12 @@ public class NodePropertiesHolder implements PropertyHolder {
     }
 
     @Override
-    public <T> void set(Property<T> key, T value, boolean fireEvent) {
-        final Property<T> existing = property(key.name());
+    public <T> void set(PropertyKey<T> key, T value, boolean fireEvent) {
+        final boolean existing = properties().containsKey(key);
         PropertyHolder.super.set(key, value, fireEvent);
 
-        if (existing == null) {
-            final PropertyAddPacket packet = new PropertyAddPacket(key);
+        if (!existing) {
+            final PropertyAddPacket packet = new PropertyAddPacket(key.name(), key.defaultValue(), value);
 
             server.broadcast().connectors().send(packet);
             clusterManager.broadcast(packet);
@@ -72,7 +71,7 @@ public class NodePropertiesHolder implements PropertyHolder {
     }
 
     @Override
-    public Map<String, Property<?>> propertyMap() {
+    public Map<PropertyKey<?>, Object> properties() {
         return propertyMap;
     }
 

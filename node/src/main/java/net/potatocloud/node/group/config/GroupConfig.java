@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.group.impl.GroupImpl;
-import net.potatocloud.api.property.Property;
+import net.potatocloud.api.property.PropertyKey;
 
 import java.util.*;
 
@@ -46,25 +46,23 @@ public record GroupConfig(
                 group.startPriority(),
                 group.startPercentage(),
                 group.templates(),
-                group.properties().stream().map(PropertyConfig::from).toList()
+                group.properties().entrySet().stream().map(PropertyConfig::from).toList()
         );
     }
 
 
     public Group toGroup() {
-        final Set<String> names = new HashSet<>();
-        final Map<String, Property<?>> propertyMap = new HashMap<>();
+        final Map<PropertyKey<?>, Object> propertyMap = new HashMap<>();
 
         if (properties != null) {
             for (PropertyConfig property : properties) {
-                final String name = property.name();
+                final Map.Entry<PropertyKey<?>, Object> entry = property.toEntry();
 
-                // Check for duplicate names
-                if (!names.add(name)) {
-                    throw new IllegalStateException("Duplicate property " + name + " found in group " + this.name);
+                if (propertyMap.containsKey(entry.getKey())) {
+                    throw new IllegalStateException("Duplicate property " + entry.getKey().name() + " found in group " + this.name);
                 }
 
-                propertyMap.put(name, property.toProperty());
+                propertyMap.put(entry.getKey(), entry.getValue());
             }
         }
 

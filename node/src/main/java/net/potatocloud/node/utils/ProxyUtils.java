@@ -2,7 +2,6 @@ package net.potatocloud.node.utils;
 
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.property.DefaultProperties;
-import net.potatocloud.api.property.Property;
 import net.potatocloud.node.Node;
 
 import java.util.List;
@@ -25,11 +24,6 @@ public final class ProxyUtils {
             return false;
         }
 
-        final Property<Boolean> property = getProxyGroup().property(DefaultProperties.VELOCITY_MODERN_FORWARDING);
-        if (property == null) {
-            return false;
-        }
-
-        return property.value();
+        return getProxyGroup().get(DefaultProperties.VELOCITY_MODERN_FORWARDING);
     }
 }

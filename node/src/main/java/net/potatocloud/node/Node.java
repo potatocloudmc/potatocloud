@@ -16,14 +16,13 @@ import net.potatocloud.api.service.ServiceState;
 import net.potatocloud.common.FileUtils;
 import net.potatocloud.eventbus.ServerEventBus;
 import net.potatocloud.network.NetworkServer;
-import net.potatocloud.network.netty.server.NettyNetworkServer;
-import net.potatocloud.network.packet.PacketManager;
-import net.potatocloud.network.packet.PacketRegistry;
-import net.potatocloud.network.packet.packets.event.EventPacket;
-import net.potatocloud.network.packet.packets.logging.LogMessagePacket;
+import net.potatocloud.network.security.SecurityConfig;
+import net.potatocloud.network.netty.NettyNetworkServer;
+import net.potatocloud.network.packets.event.EventPacket;
+import net.potatocloud.network.packets.logging.LogMessagePacket;
+import net.potatocloud.network.ConnectionType;
 import net.potatocloud.node.cluster.ClusterEventBus;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
-import net.potatocloud.node.cluster.listeners.ClusterEventListener;
 import net.potatocloud.node.command.CommandManager;
 import net.potatocloud.node.command.commands.*;
 import net.potatocloud.node.config.NodeConfig;
@@ -70,7 +69,6 @@ public class Node extends CloudAPI {
     private final CommandManager commandManager;
 
     private final MigrationManager migrationManager;
-    private final PacketManager packetManager;
     private final NetworkServer server;
     private final EventBus eventBus;
 
@@ -114,11 +112,11 @@ public class Node extends CloudAPI {
         this.setupManager = new SetupManager();
         this.updateChecker = new UpdateChecker(logger);
 
-        this.packetManager = new PacketManager();
-        PacketRegistry.registerPackets(packetManager);
-        this.server = new NettyNetworkServer(packetManager);
+        final SecurityConfig networkSecurity = config.security().toNetworkConfig();
 
-        this.clusterManager = new ClusterManagerImpl(config.node().host(), config.node().port(), config.cluster(), packetManager, server, logger);
+        this.server = new NettyNetworkServer(networkSecurity);
+
+        this.clusterManager = new ClusterManagerImpl(config.node().host(), config.node().port(), config.cluster(), networkSecurity, server, logger);
 
         this.eventBus = new ClusterEventBus(new ServerEventBus(server), clusterManager);
 
@@ -173,10 +171,14 @@ public class Node extends CloudAPI {
 
         if (config.cluster().enabled()) {
             if (eventBus instanceof ClusterEventBus clusterBus) {
-                server.on(EventPacket.class, new ClusterEventListener(clusterBus));
+                server.on(EventPacket.class, ctx -> {
+                    if (ctx.connection().type() == ConnectionType.NODE) {
+                        clusterBus.publishEventFromCluster(ctx.packet());
+                    }
+                });
             }
 
-            clusterManager.start((GroupManagerImpl) groupManager, serviceManager, (CloudPlayerManagerImpl) playerManager, screenManager);
+            clusterManager.start((GroupManagerImpl) groupManager, serviceManager, (CloudPlayerManagerImpl) playerManager, propertiesHolder, screenManager);
         }
 
         final List<Group> groups = groupManager.groups();
@@ -257,6 +259,9 @@ public class Node extends CloudAPI {
 
             for (Service service : serviceManager.services()) {
                 final Group group = service.group();
+                if (group == null) {
+                    continue;
+                }
 
                 if (group.node().isPresent() && group.node().get().name().equals(localNodeName)) {
                     if (service.state() != ServiceState.STOPPING && service.state() != ServiceState.STOPPED) {

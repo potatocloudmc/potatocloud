@@ -3,11 +3,11 @@ package net.potatocloud.network.netty;
 import io.netty.channel.Channel;
 import net.potatocloud.network.ConnectionType;
 import net.potatocloud.network.NetworkConnection;
-import net.potatocloud.network.packet.Packet;
+import net.potatocloud.network.protocol.Packet;
 
 import java.util.UUID;
 
-public class NettyNetworkConnection implements NetworkConnection {
+public final class NettyNetworkConnection implements NetworkConnection {
 
     private final UUID id = UUID.randomUUID();
     private final Channel channel;
@@ -38,7 +38,7 @@ public class NettyNetworkConnection implements NetworkConnection {
     }
 
     @Override
-    public UUID getId() {
+    public UUID id() {
         return id;
     }
 
@@ -61,6 +61,6 @@ public class NettyNetworkConnection implements NetworkConnection {
 
     @Override
     public void close() {
-        channel.close();
+        channel.close().syncUninterruptibly();
     }
 }

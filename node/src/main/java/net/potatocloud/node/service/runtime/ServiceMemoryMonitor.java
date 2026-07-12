@@ -3,7 +3,7 @@ package net.potatocloud.node.service.runtime;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.impl.ServiceImpl;
 import net.potatocloud.network.NetworkServer;
-import net.potatocloud.network.packet.packets.service.ServiceMemoryUpdatePacket;
+import net.potatocloud.network.packets.service.ServiceMemoryUpdatePacket;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 
 import java.util.Map;

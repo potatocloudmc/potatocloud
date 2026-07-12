@@ -8,17 +8,17 @@ import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.common.FileUtils;
 import net.potatocloud.network.NetworkServer;
-import net.potatocloud.network.packet.packets.group.GroupAddPacket;
-import net.potatocloud.network.packet.packets.group.GroupDeletePacket;
-import net.potatocloud.network.packet.packets.group.GroupUpdatePacket;
-import net.potatocloud.network.packet.packets.group.RequestGroupsPacket;
+import net.potatocloud.network.packets.group.GroupAddPacket;
+import net.potatocloud.network.packets.group.GroupDeletePacket;
+import net.potatocloud.network.packets.group.GroupUpdatePacket;
+import net.potatocloud.network.packets.group.RequestGroupsPacket;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.group.config.GroupStorage;
-import net.potatocloud.node.group.listeners.GroupAddListener;
-import net.potatocloud.node.group.listeners.GroupDeleteListener;
-import net.potatocloud.node.group.listeners.GroupUpdateListener;
-import net.potatocloud.node.group.listeners.RequestGroupsListener;
+import net.potatocloud.network.packets.group.GroupsResponsePacket;
+import net.potatocloud.node.group.handlers.GroupAddHandler;
+import net.potatocloud.node.group.handlers.GroupDeleteHandler;
+import net.potatocloud.node.group.handlers.GroupUpdateHandler;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,10 +42,10 @@ public class GroupManagerImpl implements GroupManager {
         this.logger = logger;
         this.clusterManager = clusterManager;
 
-        server.on(RequestGroupsPacket.class, new RequestGroupsListener(this));
-        server.on(GroupUpdatePacket.class, new GroupUpdateListener(this, server, clusterManager));
-        server.on(GroupAddPacket.class, new GroupAddListener(this, server, clusterManager));
-        server.on(GroupDeletePacket.class, new GroupDeleteListener(this, server, clusterManager));
+        server.on(RequestGroupsPacket.class, ctx -> ctx.reply(new GroupsResponsePacket(groups())));
+        server.on(GroupUpdatePacket.class, new GroupUpdateHandler(this, server, clusterManager));
+        server.on(GroupAddPacket.class, new GroupAddHandler(this, server, clusterManager));
+        server.on(GroupDeletePacket.class, new GroupDeleteHandler(this, server, clusterManager));
 
         loadGroups();
     }
@@ -147,7 +147,7 @@ public class GroupManagerImpl implements GroupManager {
                 group.startPriority(),
                 group.startPercentage(),
                 group.templates(),
-                group.propertyMap()
+                group.properties()
         );
         server.broadcast().connectors().send(updatePacket);
         clusterManager.broadcast(updatePacket);

@@ -3,7 +3,7 @@ package net.potatocloud.node.command.commands;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.property.DefaultProperties;
-import net.potatocloud.api.property.Property;
+import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceState;
 import net.potatocloud.api.utils.TimeFormatter;
@@ -17,6 +17,8 @@ import net.potatocloud.node.service.ServiceManagerImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @CommandInfo(name = "service", description = "Manage services", aliases = {"ser", "serv", "s"})
 public class ServiceCommand extends Command {
@@ -160,7 +162,7 @@ public class ServiceCommand extends Command {
 
                     final List<String> suggestions = new ArrayList<>();
 
-                    for (Property<?> property : DefaultProperties.asSet()) {
+                    for (PropertyKey<?> property : DefaultProperties.values()) {
                         suggestions.add(property.name());
                     }
 
@@ -176,9 +178,7 @@ public class ServiceCommand extends Command {
                     final String value = ctx.get("value");
 
                     try {
-                        final Property<?> property = PropertyUtil.stringToProperty(key, value);
-
-                        service.set(property);
+                        PropertyUtil.setString(service, key, value);
                         serviceManager.update(service);
                         logger.info("Property &a" + key + " &7was set to &a" + value + " &7in service &a" + service.name());
                     } catch (Exception e) {
@@ -196,8 +196,8 @@ public class ServiceCommand extends Command {
 
                     final Service service = ctx.get("service");
 
-                    return service.properties().stream()
-                            .map(Property::name)
+                    return service.properties().keySet().stream()
+                            .map(PropertyKey::name)
                             .filter(name -> name.startsWith(input))
                             .toList();
                 })
@@ -205,13 +205,14 @@ public class ServiceCommand extends Command {
                     final Service service = ctx.get("service");
                     final String key = ctx.get("key");
 
-                    final Property<?> property = service.property(key);
-                    if (property == null) {
+                    final Optional<PropertyKey<?>> propertyKey = service.get(key);
+
+                    if (propertyKey.isEmpty()) {
                         logger.info("Property &a" + key + "&7 was &cnot found &7in service &a" + service.name());
                         return;
                     }
 
-                    service.propertyMap().remove(property.name());
+                    service.removeProperty(propertyKey.get());
                     serviceManager.update(service);
                     logger.info("Property &a" + key + " &7was removed in service &a" + service.name());
                 });
@@ -220,7 +221,7 @@ public class ServiceCommand extends Command {
                 .argument(ArgumentType.Service("service"))
                 .executes(ctx -> {
                     final Service service = ctx.get("service");
-                    final List<Property<?>> properties = service.properties();
+                    final Map<PropertyKey<?>, Object> properties = service.properties();
 
                     if (properties.isEmpty()) {
                         logger.info("No properties found for service &a" + service.name());
@@ -228,8 +229,8 @@ public class ServiceCommand extends Command {
                     }
 
                     logger.info("Properties of service &a" + service.name() + "&8:");
-                    for (Property<?> property : properties) {
-                        logger.info("&8» &a" + property.name() + " &7- " + property.value());
+                    for (Map.Entry<PropertyKey<?>, Object> entry : properties.entrySet()) {
+                        logger.info("&8» &a" + entry.getKey().name() + " &7- " + entry.getValue());
                     }
                 });
 

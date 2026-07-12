@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.property.DefaultProperties;
-import net.potatocloud.api.property.Property;
+import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.utils.TimeFormatter;
@@ -14,6 +14,7 @@ import net.potatocloud.plugins.shared.MessagesConfig;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -157,9 +158,9 @@ public class ServiceSubCommand {
 
         switch (sub) {
             case "list" -> {
-                final List<Property<?>> props = service.get().properties();
+                final Map<PropertyKey<?>, Object> properties = service.get().properties();
 
-                if (props.isEmpty()) {
+                if (properties.isEmpty()) {
                     player.sendMessage(messages.get("service.property.empty")
                             .replaceText(text -> text.match("%name%").replacement(name)));
                     return;
@@ -168,10 +169,10 @@ public class ServiceSubCommand {
                 player.sendMessage(messages.get("service.property.list.header")
                         .replaceText(text -> text.match("%name%").replacement(name)));
 
-                for (Property<?> property : props) {
+                for (Map.Entry<PropertyKey<?>, Object> entry : properties.entrySet()) {
                     player.sendMessage(messages.get("service.property.list.entry")
-                            .replaceText(text -> text.match("%key%").replacement(property.name()))
-                            .replaceText(text -> text.match("%value%").replacement(String.valueOf(property.value()))));
+                            .replaceText(text -> text.match("%key%").replacement(entry.getKey().name()))
+                            .replaceText(text -> text.match("%value%").replacement(String.valueOf(entry.getValue()))));
                 }
             }
 
@@ -182,17 +183,16 @@ public class ServiceSubCommand {
                 }
 
                 final String key = args[4];
-                final Property<?> property = service.get().property(key);
 
-                if (property == null) {
-                    player.sendMessage(messages.get("service.property.not-found")
-                            .replaceText(text -> text.match("%key%").replacement(key)));
+                final Optional<PropertyKey<?>> propertyKey = service.get().get(key);
+
+                if (propertyKey.isEmpty()) {
+                    player.sendMessage(messages.get("service.property.not-found").replaceText(text -> text.match("%key%").replacement(key)));
                     return;
                 }
 
-                service.get().propertyMap().remove(property.name());
+                service.get().removeProperty(propertyKey.get());
                 serviceManager.update(service.get());
-
                 player.sendMessage(messages.get("service.property.remove.success")
                         .replaceText(text -> text.match("%name%").replacement(name))
                         .replaceText(text -> text.match("%key%").replacement(key)));
@@ -208,8 +208,7 @@ public class ServiceSubCommand {
                 final String value = args[5];
 
                 try {
-                    final Property<?> property = PropertyUtil.stringToProperty(key, value);
-                    service.get().set(property);
+                    PropertyUtil.setString(service.get(), key, value);
                     serviceManager.update(service.get());
 
                     player.sendMessage(messages.get("service.property.set.success")
@@ -311,8 +310,8 @@ public class ServiceSubCommand {
 
             if (args.length == 5 && args[2].equalsIgnoreCase("remove")) {
                 return serviceManager.find(args[3])
-                        .map(service -> service.properties().stream()
-                                .map(Property::name)
+                        .map(service -> service.properties().keySet().stream()
+                                .map(PropertyKey::name)
                                 .filter(p -> p.toLowerCase().startsWith(args[4].toLowerCase()))
                                 .toList())
                         .orElse(List.of());
@@ -321,8 +320,8 @@ public class ServiceSubCommand {
             if (args.length == 5 && args[2].equalsIgnoreCase("set")) {
                 List<String> completions = new ArrayList<>();
                 completions.add("<custom>");
-                completions.addAll(DefaultProperties.asSet().stream()
-                        .map(Property::name)
+                completions.addAll(DefaultProperties.values().stream()
+                        .map(PropertyKey::name)
                         .filter(name -> name.toLowerCase().startsWith(args[4].toLowerCase()))
                         .toList());
                 return completions;

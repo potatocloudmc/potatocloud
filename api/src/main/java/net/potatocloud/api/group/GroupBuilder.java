@@ -1,7 +1,7 @@
 package net.potatocloud.api.group;
 
 import net.potatocloud.api.group.impl.GroupImpl;
-import net.potatocloud.api.property.Property;
+import net.potatocloud.api.property.PropertyKey;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,7 +12,7 @@ public class GroupBuilder {
 
     private final String name;
     private final Set<String> customJvmFlags = new HashSet<>();
-    private final Map<String, Property<?>> properties = new HashMap<>();
+    private final Map<PropertyKey<?>, Object> properties = new HashMap<>();
     private String nodeName = "";
     private String platformName;
     private String platformVersionName;
@@ -95,13 +95,12 @@ public class GroupBuilder {
         return this;
     }
 
-    public <T> GroupBuilder property(Property<T> property, T value) {
-        property.value(value);
-        this.properties.put(property.name(), property);
+    public <T> GroupBuilder property(PropertyKey<T> key, T value) {
+        this.properties.put(key, value);
         return this;
     }
 
-    public GroupBuilder properties(Map<String, Property<?>> properties) {
+    public GroupBuilder properties(Map<PropertyKey<?>, Object> properties) {
         this.properties.putAll(properties);
         return this;
     }

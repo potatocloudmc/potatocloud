@@ -1,13 +1,13 @@
 [versions]
 
-shadow = "9.4.1"
+shadow = "9.4.3"
 
 lombok = "1.18.46"
-jackson = "3.1.3"
-jline = "4.1.0"
-netty = "4.2.13.Final"
-oshi = "7.1.0"
-slf4j-nop = "2.0.17"
+jackson = "3.2.0"
+jline = "4.2.1"
+netty = "4.2.15.Final"
+oshi = "7.3.2"
+slf4j-nop = "2.0.18"
 spigot = "1.21.4-R0.1-SNAPSHOT"
 limbo = "0.7.18-ALPHA"
 velocity = "3.5.0-SNAPSHOT"

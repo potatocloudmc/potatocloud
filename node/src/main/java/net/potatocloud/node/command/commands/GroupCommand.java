@@ -6,7 +6,7 @@ import net.potatocloud.api.group.Group;
 import net.potatocloud.api.group.GroupManager;
 import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.property.DefaultProperties;
-import net.potatocloud.api.property.Property;
+import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.common.PropertyUtil;
 import net.potatocloud.node.Node;
@@ -18,6 +18,8 @@ import net.potatocloud.node.setup.setups.GroupConfigurationSetup;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @CommandInfo(name = "group", description = "Manage groups", aliases = {"groups", "g"})
 public class GroupCommand extends Command {
@@ -105,7 +107,7 @@ public class GroupCommand extends Command {
 
                     final List<String> suggestions = new ArrayList<>();
 
-                    for (Property<?> property : DefaultProperties.asSet()) {
+                    for (PropertyKey<?> property : DefaultProperties.values()) {
                         suggestions.add(property.name());
                     }
 
@@ -121,9 +123,7 @@ public class GroupCommand extends Command {
                     final String value = ctx.get("value");
 
                     try {
-                        final Property<?> property = PropertyUtil.stringToProperty(key, value);
-
-                        group.set(property);
+                        PropertyUtil.setString(group, key, value);
                         groupManager.update(group);
                         logger.info("Property &a" + key + " &7was set to &a" + value + " &7in group &a" + group.name());
                     } catch (Exception e) {
@@ -141,8 +141,8 @@ public class GroupCommand extends Command {
 
                     final Group group = ctx.get("group");
 
-                    return group.properties().stream()
-                            .map(Property::name)
+                    return group.properties().keySet().stream()
+                            .map(PropertyKey::name)
                             .filter(name -> name.startsWith(input))
                             .toList();
                 })
@@ -150,13 +150,14 @@ public class GroupCommand extends Command {
                     final Group group = ctx.get("group");
                     final String key = ctx.get("key");
 
-                    final Property<?> property = group.property(key);
-                    if (property == null) {
+                    final Optional<PropertyKey<?>> propertyKey = group.get(key);
+
+                    if (propertyKey.isEmpty()) {
                         logger.info("Property &a" + key + "&7 was &cnot found &7in group &a" + group.name());
                         return;
                     }
 
-                    group.propertyMap().remove(property.name());
+                    group.properties().remove(propertyKey.get());
                     groupManager.update(group);
                     logger.info("Property &a" + key + " &7was removed in group &a" + group.name());
                 });
@@ -165,7 +166,7 @@ public class GroupCommand extends Command {
                 .argument(ArgumentType.Group("group"))
                 .executes(ctx -> {
                     final Group group = ctx.get("group");
-                    final List<Property<?>> properties = group.properties();
+                    final Map<PropertyKey<?>, Object> properties = group.properties();
 
                     if (properties.isEmpty()) {
                         logger.info("No properties found for group &a" + group.name());
@@ -173,8 +174,8 @@ public class GroupCommand extends Command {
                     }
 
                     logger.info("Properties of group &a" + group.name() + "&8:");
-                    for (Property<?> property : properties) {
-                        logger.info("&8» &a" + property.name() + " &7- " + property.value());
+                    for (Map.Entry<PropertyKey<?>, Object> entry : properties.entrySet()) {
+                        logger.info("&8» &a" + entry.getKey().name() + " &7- " + entry.getValue());
                     }
                 });
 

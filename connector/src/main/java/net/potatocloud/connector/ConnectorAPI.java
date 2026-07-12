@@ -18,9 +18,8 @@ import net.potatocloud.connector.properties.ConnectorPropertiesHolder;
 import net.potatocloud.connector.service.ServiceManagerImpl;
 import net.potatocloud.eventbus.ClientEventBus;
 import net.potatocloud.network.NetworkClient;
-import net.potatocloud.network.netty.client.NettyNetworkClient;
-import net.potatocloud.network.packet.PacketManager;
-import net.potatocloud.network.packet.PacketRegistry;
+import net.potatocloud.network.netty.NettyNetworkClient;
+import net.potatocloud.network.security.SecurityConfig;
 
 /**
  * The Connector connects a node to this instance and provides API methods for running services.
@@ -30,7 +29,6 @@ public class ConnectorAPI extends CloudAPI {
     private static final String NODE_HOST = System.getProperty("potatocloud.node.host", "127.0.0.1");
     private static final int NODE_PORT = Integer.parseInt(System.getProperty("potatocloud.node.port"));
 
-    private final PacketManager packetManager;
     private final NetworkClient client;
     private ConnectorLogger logger;
     private ClusterManager clusterManager;
@@ -42,20 +40,17 @@ public class ConnectorAPI extends CloudAPI {
     private CloudPlayerManager playerManager;
 
     public ConnectorAPI() {
-        packetManager = new PacketManager();
-        PacketRegistry.registerPackets(packetManager);
+        this.client = new NettyNetworkClient(SecurityConfig.fromProperties());
 
-        client = new NettyNetworkClient(packetManager);
-
-        client.addConnectionListener(() -> {
-            logger = new ConnectorLogger(client);
-            clusterManager = new ClusterManagerImpl(client);
-            eventBus = new ClientEventBus(client);
-            propertiesHolder = new ConnectorPropertiesHolder(client);
-            platformManager = new PlatformManagerImpl(client);
-            groupManager = new GroupManagerImpl(client);
-            serviceManager = new ServiceManagerImpl(client);
-            playerManager = new CloudPlayerManagerImpl(client);
+        client.onConnected(() -> {
+            this.logger = new ConnectorLogger(client);
+            this.clusterManager = new ClusterManagerImpl(client);
+            this.eventBus = new ClientEventBus(client);
+            this.propertiesHolder = new ConnectorPropertiesHolder(client);
+            this.platformManager = new PlatformManagerImpl(client);
+            this.groupManager = new GroupManagerImpl(client);
+            this.serviceManager = new ServiceManagerImpl(client);
+            this.playerManager = new CloudPlayerManagerImpl(client);
         });
 
         client.connect(NODE_HOST, NODE_PORT);

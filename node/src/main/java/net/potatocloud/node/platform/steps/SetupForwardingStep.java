@@ -3,7 +3,6 @@ package net.potatocloud.node.platform.steps;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.property.DefaultProperties;
-import net.potatocloud.api.property.Property;
 import net.potatocloud.common.FileUtils;
 import net.potatocloud.node.platform.AbstractPrepareStep;
 import net.potatocloud.node.platform.VelocityForwardingSecret;
@@ -43,8 +42,7 @@ public class SetupForwardingStep extends AbstractPrepareStep {
             final Group group = (Group) data().get("group");
 
             // check if the forwarding secret should always be replaced
-            final Property<Boolean> property = group.property(DefaultProperties.ALWAYS_OVERRIDE_FORWARDING_SECRET);
-            final boolean alwaysOverride = property != null ? property.value() : DefaultProperties.ALWAYS_OVERRIDE_FORWARDING_SECRET.defaultValue();
+            final boolean alwaysOverride = group.get(DefaultProperties.ALWAYS_OVERRIDE_FORWARDING_SECRET);
 
             // now create the forwarding secret file with the correct secret
             if (!Files.exists(forwardingSecret) || alwaysOverride) {

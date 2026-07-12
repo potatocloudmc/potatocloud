@@ -26,9 +26,9 @@ import net.potatocloud.connector.ConnectorAPI;
 import net.potatocloud.connector.event.ConnectPlayerWithServiceEvent;
 import net.potatocloud.connector.player.CloudPlayerManagerImpl;
 import net.potatocloud.connector.utils.PlatformPlugin;
-import net.potatocloud.network.packet.packets.player.CloudPlayerConnectPacket;
-import net.potatocloud.network.packet.packets.service.ServiceRemovePacket;
-import net.potatocloud.network.packet.packets.service.ServiceStartedPacket;
+import net.potatocloud.network.packets.player.CloudPlayerConnectPacket;
+import net.potatocloud.network.packets.service.ServiceRemovePacket;
+import net.potatocloud.network.packets.service.ServiceStartedPacket;
 
 import java.net.InetSocketAddress;
 import java.util.Comparator;

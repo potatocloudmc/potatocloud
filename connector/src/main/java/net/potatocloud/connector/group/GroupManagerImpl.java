@@ -2,14 +2,13 @@ package net.potatocloud.connector.group;
 
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.group.GroupManager;
-import net.potatocloud.connector.group.listeners.GroupAddListener;
-import net.potatocloud.connector.group.listeners.GroupDeleteListener;
-import net.potatocloud.connector.group.listeners.GroupUpdateListener;
+import net.potatocloud.connector.group.handlers.GroupUpdateHandler;
+import net.potatocloud.network.packets.group.GroupsResponsePacket;
 import net.potatocloud.network.NetworkClient;
-import net.potatocloud.network.packet.packets.group.GroupAddPacket;
-import net.potatocloud.network.packet.packets.group.GroupDeletePacket;
-import net.potatocloud.network.packet.packets.group.GroupUpdatePacket;
-import net.potatocloud.network.packet.packets.group.RequestGroupsPacket;
+import net.potatocloud.network.packets.group.GroupAddPacket;
+import net.potatocloud.network.packets.group.GroupDeletePacket;
+import net.potatocloud.network.packets.group.GroupUpdatePacket;
+import net.potatocloud.network.packets.group.RequestGroupsPacket;
 
 import java.util.*;
 
@@ -21,11 +20,16 @@ public class GroupManagerImpl implements GroupManager {
     public GroupManagerImpl(NetworkClient client) {
         this.client = client;
 
-        client.on(GroupAddPacket.class, new GroupAddListener(this));
-        client.on(GroupDeletePacket.class, new GroupDeleteListener(this));
-        client.on(GroupUpdatePacket.class, new GroupUpdateListener(this));
+        client.on(GroupAddPacket.class, ctx -> {
+            if (!exists(ctx.packet().group().name())) {
+                addGroup(ctx.packet().group());
+            }
+        });
 
-        client.send(new RequestGroupsPacket());
+        client.on(GroupDeletePacket.class, ctx -> deleteLocal(ctx.packet().groupName()));
+        client.on(GroupUpdatePacket.class, new GroupUpdateHandler(this));
+
+        client.request(new RequestGroupsPacket(), GroupsResponsePacket.class).thenAccept(response -> response.groups().forEach(this::addGroup));
     }
 
     public void addGroup(Group group) {
@@ -80,7 +84,7 @@ public class GroupManagerImpl implements GroupManager {
                 group.startPriority(),
                 group.startPercentage(),
                 group.templates(),
-                group.propertyMap()
+                group.properties()
         ));
     }
 }

@@ -1,14 +1,13 @@
 package net.potatocloud.connector.service;
 
-import lombok.Getter;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
-import net.potatocloud.connector.service.listeners.ServiceAddListener;
-import net.potatocloud.connector.service.listeners.ServiceMemoryUpdateListener;
-import net.potatocloud.connector.service.listeners.ServiceUpdateListener;
+import net.potatocloud.api.service.impl.ServiceImpl;
+import net.potatocloud.connector.service.handlers.ServiceAddHandler;
+import net.potatocloud.connector.service.handlers.ServiceUpdateHandler;
+import net.potatocloud.network.packets.service.*;
 import net.potatocloud.network.NetworkClient;
-import net.potatocloud.network.packet.packets.service.*;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -19,7 +18,6 @@ public class ServiceManagerImpl implements ServiceManager {
 
     private final List<Service> services = new CopyOnWriteArrayList<>();
 
-    @Getter
     private final Map<String, CompletableFuture<Service>> pendingStarts = new ConcurrentHashMap<>();
 
     private final NetworkClient client;
@@ -27,12 +25,16 @@ public class ServiceManagerImpl implements ServiceManager {
     public ServiceManagerImpl(NetworkClient client) {
         this.client = client;
 
-        client.on(ServiceAddPacket.class, new ServiceAddListener(this));
+        client.on(ServiceAddPacket.class, new ServiceAddHandler(this));
         client.on(ServiceRemovePacket.class, ctx -> find(ctx.packet().serviceName()).ifPresent(services::remove));
-        client.on(ServiceUpdatePacket.class, new ServiceUpdateListener(this));
-        client.on(ServiceMemoryUpdatePacket.class, new ServiceMemoryUpdateListener(this));
+        client.on(ServiceUpdatePacket.class, new ServiceUpdateHandler(this));
+        client.on(ServiceMemoryUpdatePacket.class, ctx -> find(ctx.packet().serviceName()).ifPresent(service -> {
+            if (service instanceof ServiceImpl serviceImpl) {
+                serviceImpl.usedMemory(ctx.packet().usedMemory());
+            }
+        }));
 
-        client.send(new RequestServicesPacket());
+        client.request(new RequestServicesPacket(), ServicesResponsePacket.class).thenAccept(response -> response.services().forEach(this::addService));
     }
 
     public void addService(Service service) {
@@ -55,7 +57,7 @@ public class ServiceManagerImpl implements ServiceManager {
                 service.name(),
                 service.state().name(),
                 service.maxPlayers(),
-                service.propertyMap())
+                service.properties())
         );
     }
 
@@ -85,6 +87,10 @@ public class ServiceManagerImpl implements ServiceManager {
     @Override
     public void copyTo(Service service, String template, String filter) {
         client.send(new ServiceCopyPacket(service.name(), template, filter));
+    }
+
+    public Map<String, CompletableFuture<Service>> pendingStarts() {
+        return pendingStarts;
     }
 
     @Override
