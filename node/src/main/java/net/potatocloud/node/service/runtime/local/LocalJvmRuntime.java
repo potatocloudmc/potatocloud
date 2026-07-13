@@ -98,8 +98,8 @@ public final class LocalJvmRuntime implements ServiceRuntime {
         final Platform platform = group.platform();
         downloadManager.downloadPlatformVersion(platform, platform.version(group.platformVersion().name()).get());
 
-        final Path cacheDirectory = cacheManager.preCachePlatform(group);
-        cacheManager.copyCacheToService(group, cacheDirectory, directory);
+        final Path cacheDirectory = cacheManager.cache(group).join();
+        cacheManager.copyToService(group, cacheDirectory, directory);
 
         final PlatformVersion version = group.platformVersion();
         try {

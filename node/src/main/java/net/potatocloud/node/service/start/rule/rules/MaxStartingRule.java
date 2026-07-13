@@ -20,13 +20,13 @@ public class MaxStartingRule implements ServiceStartRule {
     public boolean allows(Group group) {
         final int maxStarting = config.service().maxStartingServices();
 
-        // If max starting services is set to -1 (unlimited), always allow starting new services
+        // if max starting services is set to -1 (unlimited), always allow starting new services
         if (maxStarting == -1) {
             return true;
         }
 
         final long startingServices = serviceManager.services().stream()
-                .filter(service -> service.state() == ServiceState.STARTING)
+                .filter(service -> service.state() == ServiceState.PREPARING || service.state() == ServiceState.STARTING)
                 .count();
 
         return startingServices < maxStarting;

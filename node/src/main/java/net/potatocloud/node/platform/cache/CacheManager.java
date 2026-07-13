@@ -1,6 +1,5 @@
 package net.potatocloud.node.platform.cache;
 
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.platform.Platform;
@@ -9,94 +8,104 @@ import net.potatocloud.common.FileUtils;
 import net.potatocloud.node.platform.PlatformUtils;
 import net.potatocloud.node.utils.HashUtils;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-@RequiredArgsConstructor
-public class CacheManager {
+public final class CacheManager {
 
     private final Logger logger;
+    private final CacheRegistry registry;
 
-    private final Map<String, PlatformPreCacheBuilder> cacheBuilders = Map.of(
-            "paper", new PaperPlatformPreCacheBuilder()
-    );
+    private final Map<String, CompletableFuture<Path>> runningCaches = new ConcurrentHashMap<>();
 
-    private final Set<String> runningCacheKeys = ConcurrentHashMap.newKeySet();
+    public CacheManager(Logger logger) {
+        this.logger = logger;
+        this.registry = new CacheRegistry();
+    }
 
-    public Path preCachePlatform(Group group) {
+    public CompletableFuture<Path> cache(Group group) {
         final Platform platform = group.platform();
         final PlatformVersion version = group.platformVersion();
-        final String builderName = platform.preCacheBuilder();
 
+        final String builderName = platform.preCacheBuilder();
         if (builderName == null) {
-            // The platform does not have a pre-cacher
-            return null;
+            return CompletableFuture.completedFuture(null);
         }
 
-        final PlatformPreCacheBuilder builder = getPreCacheBuilder(platform.preCacheBuilder());
+        final CacheBuilder builder = registry.get(builderName);
 
-        if (version.legacy() && builder instanceof PaperPlatformPreCacheBuilder) {
-            // Legacy versions not supported by Paper pre-cacher
-            return null;
+        if (!builder.supports(version)) {
+            return CompletableFuture.completedFuture(null);
         }
 
         final Path platformDirectory = PlatformUtils.getDirectoryOfPlatform(platform, version);
-        final Path platformJarPath = PlatformUtils.getPlatformJarPath(platform, version);
+        final Path platformJar = PlatformUtils.getPlatformJarPath(platform, version);
 
-        if (Files.notExists(platformJarPath)) {
-            return null;
+        if (!Files.exists(platformJar)) {
+            return CompletableFuture.completedFuture(null);
         }
 
-        final String jarHash = HashUtils.sha256(platformJarPath);
-        final Path cacheDirectory = platformDirectory.resolve("cache-" + jarHash);
-        final String cacheKey = platform.name() + "-" + version.name() + "-" + jarHash;
+        final String hash = HashUtils.sha256(platformJar);
+        final Path cacheDirectory = platformDirectory.resolve("cache-" + hash);
 
+        if (Files.exists(cacheDirectory)) {
+            return CompletableFuture.completedFuture(cacheDirectory);
+        }
 
-        if (Files.exists(cacheDirectory) || !runningCacheKeys.add(cacheKey)) {
-            // Cache exists or is currently being built
-            return cacheDirectory;
+        final String cacheKey = platform.name() + "-" + version.name() + "-" + hash;
+
+        final CompletableFuture<Path> running = runningCaches.get(cacheKey);
+        if (running != null) {
+            return running;
         }
 
         try {
-            // Delete old cache directories
             FileUtils.list(platformDirectory).stream()
                     .filter(Files::isDirectory)
                     .filter(path -> path.getFileName().toString().startsWith("cache-"))
                     .forEach(FileUtils::deleteDirectory);
 
-            logger.info("Started caching for &a" + platform.name() + "&7 version &a" + version.name());
             Files.createDirectories(cacheDirectory);
-
-            // Start the pre cacher implementation of the platform
-            builder.buildCache(platform, version, group, cacheDirectory);
-            logger.info("Finished caching for &a" + platform.name() + "&7 version &a" + version.name());
-
-        } catch (Exception e) {
-            logger.error("Caching failed for version " + version.fullName());
-        } finally {
-            runningCacheKeys.remove(cacheKey);
+        } catch (IOException e) {
+            return CompletableFuture.failedFuture(e);
         }
 
-        return cacheDirectory;
+        logger.info("Started caching for &a" + platform.name() + "&7 version &a" + version.name());
+
+        final CompletableFuture<Path> future = builder.build(group, platform, version, cacheDirectory).thenApply(v -> cacheDirectory);
+
+        future.whenComplete((_, throwable) -> {
+            runningCaches.remove(cacheKey);
+
+            if (throwable == null) {
+                logger.info("Finished caching for &a" + platform.name() + "&7 version &a" + version.name());
+            } else {
+                logger.error("Failed to cache &a" + platform.name() + "&7 version &a" + version.name() + " &c" + throwable.getMessage());
+
+                FileUtils.deleteDirectory(cacheDirectory);
+            }
+        });
+
+        runningCaches.put(cacheKey, future);
+
+        return future;
     }
 
-    public void copyCacheToService(Group group, Path cacheFolder, Path serviceDir) {
+    public void copyToService(Group group, Path cacheDirectory, Path serviceDirectory) {
+        if (cacheDirectory == null) {
+            return;
+        }
+
         final String builderName = group.platform().preCacheBuilder();
-        if (builderName != null) {
-            // Copy pre-built cache into a service directory
-            final PlatformPreCacheBuilder builder = getPreCacheBuilder(builderName);
-            builder.copyCacheToService(cacheFolder, serviceDir);
-        }
-    }
 
-    private PlatformPreCacheBuilder getPreCacheBuilder(String name) {
-        final PlatformPreCacheBuilder builder = cacheBuilders.get(name.toLowerCase());
-        if (builder == null) {
-            throw new IllegalStateException("Unknown PlatformPreCacheBuilder: " + name);
+        if (builderName == null) {
+            return;
         }
-        return builder;
+
+        registry.get(builderName).copyToService(cacheDirectory, serviceDirectory);
     }
 }

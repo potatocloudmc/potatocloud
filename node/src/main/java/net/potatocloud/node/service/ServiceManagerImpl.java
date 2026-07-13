@@ -39,7 +39,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class ServiceManagerImpl implements ServiceManager {
+public final class ServiceManagerImpl implements ServiceManager {
 
     private final List<Service> services = new CopyOnWriteArrayList<>();
     private final Map<String, ServiceRuntime> runtimes = new ConcurrentHashMap<>();
@@ -239,21 +239,32 @@ public class ServiceManagerImpl implements ServiceManager {
         clusterManager.broadcast(new ServiceAddPacket(service, null));
 
         service.startedAt(Instant.now());
-
         service.state(ServiceState.PREPARING);
-        runtime.prepare(service);
 
-        service.state(ServiceState.STARTING);
-        update(service);
-        runtime.start(service);
+        executor.execute(() -> {
+            try {
+                runtime.prepare(service);
 
-        final String nodeInfo = config.cluster().enabled() ? " on node &a" + clusterManager.localNode().name() + "&7" : "";
-        logger.info("Service &a" + service.name() + "&7 is starting" + nodeInfo
-                + " &8[&7Port&8: &a" + service.port()
-                + "&8, &7Group&8: &a" + groupName + "&8]");
+                service.state(ServiceState.STARTING);
+                update(service);
+                runtime.start(service);
 
-        clusterManager.broadcast(new ServiceStartingPacket(service.name()));
-        eventBus.publish(new ServiceStartingEvent(service.name()));
+                final String nodeInfo = config.cluster().enabled() ? " on node &a" + clusterManager.localNode().name() + "&7" : "";
+                logger.info("Service &a" + service.name() + "&7 is starting" + nodeInfo
+                        + " &8[&7Port&8: &a" + service.port()
+                        + "&8, &7Group&8: &a" + groupName + "&8]");
+
+                clusterManager.broadcast(new ServiceStartingPacket(service.name()));
+                eventBus.publish(new ServiceStartingEvent(service.name()));
+            } catch (Exception e) {
+                logger.error("Failed to start service &a" + service.name() + "&8: &c" + e.getMessage());
+                runtimes.remove(service.name());
+                services.remove(service);
+                screenManager.unregister(service.name());
+                clusterManager.broadcast(new ServiceRemovePacket(service.name(), service.port()));
+            }
+        });
+
         return service;
     }
 
