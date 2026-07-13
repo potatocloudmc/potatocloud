@@ -6,51 +6,44 @@ import net.potatocloud.node.platform.BuildParser;
 import net.potatocloud.node.utils.RequestUtil;
 import tools.jackson.databind.JsonNode;
 
-public class PurpurBuildParser implements BuildParser {
+public final class PurpurBuildParser implements BuildParser {
+
+    private static final String API = "https://api.purpurmc.org/v2/purpur/";
 
     @Override
     public void parse(PlatformVersion version, String baseUrl) {
         try {
             String versionName = version.name();
 
-            // Find the latest Minecraft version if the user wants the latest
             if (versionName.equalsIgnoreCase("latest")) {
-                final JsonNode project = RequestUtil.request("https://api.purpurmc.org/v2/purpur/");
+                final JsonNode project = RequestUtil.request(API);
 
-                final JsonNode versionsArray = project.get("versions");
-                if (versionsArray == null || versionsArray.isEmpty()) {
-                    throw new RuntimeException("No versions found in Purpur API");
-                }
-
-                versionName = versionsArray
-                        .get(versionsArray.size() - 1)
+                versionName = project
+                        .get("metadata")
+                        .get("current")
                         .asString();
             }
 
-            // Get version info
-            final JsonNode versionInfo = RequestUtil.request("https://api.purpurmc.org/v2/purpur/" + versionName);
-            final JsonNode buildsObject = versionInfo.get("builds");
+            final JsonNode versionInfo = RequestUtil.request(API + versionName);
+            final JsonNode builds = versionInfo.get("builds");
 
-            if (buildsObject == null || buildsObject.isEmpty()) {
+            if (builds == null || builds.isEmpty()) {
                 throw new RuntimeException("No builds found for version: " + versionName);
             }
 
-            // Get the latest build of the chosen version
-            final String latestBuildName = buildsObject.get("latest").asString();
+            final String build = builds.get("latest").asString();
 
-            // Replace placeholders in the platform download URL
             final String downloadUrl = baseUrl
                     .replace("{version}", versionName)
-                    .replace("{build}", latestBuildName);
+                    .replace("{build}", build);
 
-            final JsonNode latestBuild = RequestUtil
-                    .request("https://api.purpurmc.org/v2/purpur/" + versionName + "/" + latestBuildName);
+            final JsonNode latestBuild = RequestUtil.request(API + versionName + "/" + build);
 
             final String md5 = latestBuild.get("md5").asString();
 
-            if (version instanceof PlatformVersionImpl versionImpl) {
-                versionImpl.fileHash(md5);
-                versionImpl.downloadUrl(downloadUrl);
+            if (version instanceof PlatformVersionImpl platformVersion) {
+                platformVersion.fileHash(md5);
+                platformVersion.downloadUrl(downloadUrl);
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse Purpur build for: " + version.name(), e);
