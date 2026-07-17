@@ -4,7 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.Group;
-import net.potatocloud.api.property.Property;
+import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.node.Node;
 import net.potatocloud.webinterface.dto.request.GroupCreateRequest;
@@ -26,6 +26,8 @@ public class GroupMapper {
     PropertyMapper propertyMapper;
 
     public ApiGroup toApi(Group group) {
+        Map<PropertyKey<?>, Object> properties = group.properties();
+
         return new ApiGroup()
                 .name(group.name())
                 .javaCommand(group.javaCommand())
@@ -43,11 +45,13 @@ public class GroupMapper {
                 .startPercentage(group.startPercentage())
                 .customJvmFlags(group.customJvmFlags())
                 .templates(group.templates())
-                .properties(group.properties().stream().map(propertyMapper::toApi).toList())
-                .useModernVelocityForwarding(group.properties().stream().anyMatch(property -> "velocityModernForwarding".equals(property.name()) && Boolean.TRUE.equals(property.value())));
+                .properties(propertyMapper.toApiList(properties))
+                .useModernVelocityForwarding(properties.entrySet().stream()
+                        .anyMatch(entry -> "velocityModernForwarding".equals(entry.getKey().name()) && Boolean.TRUE.equals(entry.getValue()))
+                );
     }
 
-    public Group toGroup(GroupCreateRequest request, String javaCommand, Set<String> customJvmFlags, Map<String, Property<?>> propertyMap) {
+    public Group toGroup(GroupCreateRequest request, String javaCommand, Set<String> customJvmFlags, Map<PropertyKey<?>, Object> propertyMap) {
         return CloudAPI.instance().groupManager().builder(request.name())
                 .node(Node.instance().config().cluster().name())
                 .platform(request.platform())
