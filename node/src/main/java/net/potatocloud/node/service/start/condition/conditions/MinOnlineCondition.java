@@ -9,7 +9,7 @@ public class MinOnlineCondition implements ServiceStartCondition {
     @Override
     public boolean shouldStart(Group group) {
         final long serviceCount = group.services().stream()
-                .filter(service -> service.running() || service.state() == ServiceState.STARTING || service.state() == ServiceState.STOPPING)
+                .filter(service -> service.running() || service.state() == ServiceState.PREPARING || service.state() == ServiceState.STARTING || service.state() == ServiceState.STOPPING)
                 .count();
 
         return group.minServices() > serviceCount;
