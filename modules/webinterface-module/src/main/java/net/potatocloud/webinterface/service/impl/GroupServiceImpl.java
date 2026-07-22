@@ -4,7 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.Group;
-import net.potatocloud.api.property.Property;
+import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.webinterface.dto.request.GroupCreateRequest;
 import net.potatocloud.webinterface.dto.request.GroupUpdateRequest;
@@ -19,9 +19,10 @@ import java.util.*;
 @ApplicationScoped
 public class GroupServiceImpl implements GroupService {
 
+    private static final PropertyKey<Boolean> VELOCITY_MODERN_FORWARDING =
+            PropertyKey.of("velocityModernForwarding", false);
     @Inject
     GroupMapper groupMapper;
-
     @Inject
     PropertyMapper propertyMapper;
 
@@ -40,7 +41,6 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public List<ApiGroup> findAll() {
         List<Group> groups = CloudAPI.instance().groupManager().groups();
-
         List<ApiGroup> apiGroups = new ArrayList<>();
 
         for (Group group : groups) {
@@ -59,9 +59,18 @@ public class GroupServiceImpl implements GroupService {
             return false;
         }
 
-        HashMap<String, Property<?>> generatedProperties = new HashMap<>();
+        Map<PropertyKey<?>, Object> customProperties = new HashMap<>();
+
         if (request.useModernVelocityForwarding()) {
-            generatedProperties.put("velocityModernForwarding", new Property<>("velocityModernForwarding", false, true));
+            customProperties.put(VELOCITY_MODERN_FORWARDING, true);
+        }
+
+        if (request.properties() != null) {
+            for (ApiProperty apiProperty : request.properties()) {
+                PropertyKey<Object> key = PropertyKey.of(apiProperty.name(), null);
+                Object value = propertyMapper.toPropertyValue(apiProperty);
+                customProperties.put(key, value);
+            }
         }
 
         String startCommand = defaultIfBlank(request.javaCommand(), "java");
@@ -69,16 +78,6 @@ public class GroupServiceImpl implements GroupService {
         Set<String> customJvmFlags = new HashSet<>();
         if (request.customJvmFlags() != null) {
             customJvmFlags.addAll(request.customJvmFlags());
-        }
-
-        Map<String, Property<?>> customProperties = new HashMap<>(generatedProperties);
-        if (request.properties() != null) {
-            for (ApiProperty apiProperty : request.properties()) {
-                customProperties.put(
-                        apiProperty.name(),
-                        propertyMapper.toProperty(apiProperty)
-                );
-            }
         }
 
         cloudAPI.groupManager().create(groupMapper.toGroup(request, startCommand, customJvmFlags, customProperties));
@@ -124,14 +123,15 @@ public class GroupServiceImpl implements GroupService {
         }
 
         if (request.properties() != null) {
-            group.propertyMap().clear();
-            for (ApiProperty apiProperty : request.properties()) {
-                Property<?> newProperty = propertyMapper.toProperty(apiProperty);
-                Property<?> currentProperty = group.propertyMap().get(apiProperty.name());
+            Map<PropertyKey<?>, Object> propertyMap = group.properties();
+            propertyMap.clear();
 
-                if (currentProperty == null || !currentProperty.equals(newProperty)) {
-                    group.propertyMap().put(apiProperty.name(), newProperty);
-                }
+            for (ApiProperty apiProperty : request.properties()) {
+                PropertyKey<?> key = findMatchingKey(propertyMap, apiProperty.name())
+                        .orElseGet(() -> PropertyKey.of(apiProperty.name(), null));
+
+                Object value = propertyMapper.toPropertyValue(apiProperty);
+                propertyMap.put(key, value);
             }
         }
 
@@ -195,6 +195,12 @@ public class GroupServiceImpl implements GroupService {
         }
 
         return true;
+    }
+
+    private Optional<PropertyKey<?>> findMatchingKey(Map<PropertyKey<?>, Object> map, String keyName) {
+        return map.keySet().stream()
+                .filter(k -> k.name().equals(keyName))
+                .findFirst();
     }
 
     private String defaultIfBlank(String value, String fallback) {

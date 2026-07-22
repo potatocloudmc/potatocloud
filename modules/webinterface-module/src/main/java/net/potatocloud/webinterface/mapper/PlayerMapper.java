@@ -24,7 +24,9 @@ public class PlayerMapper {
                 .serverName(cloudPlayer.service().orElse(null) != null ? cloudPlayer.service().get().name() : null)
                 .proxyGroup(cloudPlayer.proxy().group().name())
                 .serverGroup(cloudPlayer.service().orElse(null) != null ? cloudPlayer.service().get().group().name() : null)
-                .properties(cloudPlayer.properties().stream().map(propertyMapper::toApi).toList());
+                .properties(cloudPlayer.properties().entrySet().stream()
+                        .map(entry -> propertyMapper.toApi(entry.getKey(), entry.getValue()))
+                        .toList());
     }
 
 }

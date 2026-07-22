@@ -26,7 +26,7 @@ public class PropertyMapper {
                 .toList();
     }
 
-    public Map<PropertyKey<?>, Object> toProperty(ApiProperty apiProperty) {
+    public Map<PropertyKey<?>, Object> toPropertyValue(ApiProperty apiProperty) {
         return Map.of(new PropertyKey<>(apiProperty.name(), apiProperty.defaultValue()), apiProperty.value());
     }
 
