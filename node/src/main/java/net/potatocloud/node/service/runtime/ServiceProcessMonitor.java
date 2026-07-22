@@ -1,6 +1,7 @@
 package net.potatocloud.node.service.runtime;
 
 import net.potatocloud.api.service.ServiceManager;
+import net.potatocloud.api.service.ServiceState;
 
 import java.util.Map;
 
@@ -25,7 +26,8 @@ public final class ServiceProcessMonitor implements Runnable {
             }
 
             serviceManager.find(name).ifPresent(service -> {
-                if (service.running()) {
+                final ServiceState state = service.state();
+                if (state == ServiceState.RUNNING || state == ServiceState.STARTING) {
                     serviceManager.stop(service);
                 }
             });

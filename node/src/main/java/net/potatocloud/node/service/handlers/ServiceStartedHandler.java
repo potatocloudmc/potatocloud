@@ -38,6 +38,10 @@ public final class ServiceStartedHandler implements PacketHandler<ServiceStarted
         final ServiceStartedPacket packet = ctx.packet();
 
         serviceManager.find(packet.serviceName()).ifPresent(service -> {
+            if (service.state() != ServiceState.STARTING) {
+                return;
+            }
+
             final Optional<ClusterNode> node = service.node();
             if (node.isEmpty()) {
                 return;

@@ -12,7 +12,7 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 
-public class ServiceImpl implements Service {
+public final class ServiceImpl implements Service {
 
     private final int serviceId;
     private final int port;
@@ -126,14 +126,14 @@ public class ServiceImpl implements Service {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof ServiceImpl service)) {
+        if (!(o instanceof Service service)) {
             return false;
         }
-        return serviceId == service.serviceId;
+        return name.equalsIgnoreCase(service.name());
     }
 
     @Override
     public int hashCode() {
-        return serviceId;
+        return name.toLowerCase().hashCode();
     }
 }
