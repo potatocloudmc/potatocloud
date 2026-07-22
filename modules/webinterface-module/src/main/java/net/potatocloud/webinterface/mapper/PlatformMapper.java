@@ -1,8 +1,14 @@
 package net.potatocloud.webinterface.mapper;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.platform.Platform;
+import net.potatocloud.api.platform.PlatformBase;
 import net.potatocloud.api.platform.PlatformVersion;
+import net.potatocloud.api.platform.impl.PlatformVersionImpl;
+import net.potatocloud.webinterface.dto.request.PlatformCreateRequest;
+import net.potatocloud.webinterface.dto.request.PlatformUpdateRequest;
+import net.potatocloud.webinterface.dto.request.PlatformVersionRequest;
 import net.potatocloud.webinterface.dto.response.PlatformDetailResponse;
 import net.potatocloud.webinterface.dto.response.PlatformSummaryResponse;
 import net.potatocloud.webinterface.model.ApiPlatform;
@@ -87,5 +93,46 @@ public class PlatformMapper {
         detail.versions(mapVersions(platform.versions()));
 
         return detail;
+    }
+
+    public Platform toPlatform(PlatformCreateRequest request) {
+        return CloudAPI.instance().platformManager().builder(request.name())
+                .base(PlatformBase.fromId(request.base()))
+                .downloadUrl(defaultIfNull(request.downloadUrl()))
+                .custom(true)
+                .proxy(request.proxy())
+                .preCacheBuilder(defaultIfNull(request.preCacheBuilder()))
+                .parser(defaultIfNull(request.parser()))
+                .hashType(defaultIfNull(request.hashType()))
+                .prepareSteps(request.prepareSteps() != null ? request.prepareSteps() : List.of())
+                .build();
+    }
+
+    public Platform buildUpdatedPlatform(Platform existing, PlatformUpdateRequest request) {
+        return CloudAPI.instance().platformManager().builder(existing.name())
+                .base(existing.base())
+                .downloadUrl(request.downloadUrl() != null ? request.downloadUrl() : existing.downloadUrl())
+                .custom(existing.custom())
+                .proxy(request.proxy() != null ? request.proxy() : existing.proxy())
+                .preCacheBuilder(request.preCacheBuilder() != null ? request.preCacheBuilder() : existing.preCacheBuilder())
+                .parser(request.parser() != null ? request.parser() : existing.parser())
+                .hashType(request.hashType() != null ? request.hashType() : existing.hashType())
+                .prepareSteps(request.prepareSteps() != null ? request.prepareSteps() : existing.prepareSteps())
+                .build();
+    }
+
+    public PlatformVersion toPlatformVersion(String platformName, PlatformVersionRequest request) {
+        return new PlatformVersionImpl(
+                platformName,
+                request.name(),
+                request.local(),
+                request.downloadUrl(),
+                request.fileHash(),
+                request.legacy()
+        );
+    }
+
+    private String defaultIfNull(String value) {
+        return value == null ? "" : value;
     }
 }

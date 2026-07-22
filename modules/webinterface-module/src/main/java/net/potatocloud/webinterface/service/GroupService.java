@@ -24,4 +24,6 @@ public interface GroupService {
 
     boolean shutdown(String name);
 
+    boolean delete(String name);
+
 }

@@ -51,6 +51,30 @@ public class GroupController {
         return groupService.findAll();
     }
 
+    @DELETE
+    @Path("/{id}")
+    @Operation(summary = "Delete a group by name", description = "Deletes the group with the specified name. If the group does not exist, a 404 error is returned.")
+    @APIResponses(value = {
+            @APIResponse(
+                    responseCode = "204",
+                    description = "Group deleted successfully"
+            ),
+            @APIResponse(
+                    responseCode = "404",
+                    description = "Group with the specified name not found",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ApiError.class)
+                    )
+            )
+    })
+    public Response deleteGroup(@PathParam("id") String id) {
+        if (!groupService.delete(id)) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
     @POST
     @APIResponses(value = {
             @APIResponse(

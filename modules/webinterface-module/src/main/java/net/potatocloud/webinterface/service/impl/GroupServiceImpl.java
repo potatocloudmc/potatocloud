@@ -197,6 +197,18 @@ public class GroupServiceImpl implements GroupService {
         return true;
     }
 
+    @Override
+    public boolean delete(String name) {
+        Group group = CloudAPI.instance().groupManager().find(name).orElse(null);
+
+        if (group == null) {
+            return false;
+        }
+
+        CloudAPI.instance().groupManager().delete(group);
+        return true;
+    }
+
     private Optional<PropertyKey<?>> findMatchingKey(Map<PropertyKey<?>, Object> map, String keyName) {
         return map.keySet().stream()
                 .filter(k -> k.name().equals(keyName))
