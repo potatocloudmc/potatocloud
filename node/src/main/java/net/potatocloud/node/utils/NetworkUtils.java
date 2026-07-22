@@ -9,8 +9,7 @@ public final class NetworkUtils {
     }
 
     public static boolean isPortFree(int port) {
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
-            serverSocket.setReuseAddress(true);
+        try (ServerSocket _ = new ServerSocket(port)) {
             return true;
         } catch (IOException e) {
             return false;
