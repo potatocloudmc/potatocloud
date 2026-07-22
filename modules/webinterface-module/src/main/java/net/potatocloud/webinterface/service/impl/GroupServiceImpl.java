@@ -67,8 +67,8 @@ public class GroupServiceImpl implements GroupService {
 
         if (request.properties() != null) {
             for (ApiProperty apiProperty : request.properties()) {
-                PropertyKey<Object> key = PropertyKey.of(apiProperty.name(), null);
-                Object value = propertyMapper.toPropertyValue(apiProperty);
+                PropertyKey<Object> key = PropertyKey.of(apiProperty.name(), apiProperty.defaultValue());
+                Object value = apiProperty.value();
                 customProperties.put(key, value);
             }
         }
@@ -128,9 +128,9 @@ public class GroupServiceImpl implements GroupService {
 
             for (ApiProperty apiProperty : request.properties()) {
                 PropertyKey<?> key = findMatchingKey(propertyMap, apiProperty.name())
-                        .orElseGet(() -> PropertyKey.of(apiProperty.name(), null));
+                        .orElseGet(() -> PropertyKey.of(apiProperty.name(), apiProperty.defaultValue()));
 
-                Object value = propertyMapper.toPropertyValue(apiProperty);
+                Object value = apiProperty.value();
                 propertyMap.put(key, value);
             }
         }

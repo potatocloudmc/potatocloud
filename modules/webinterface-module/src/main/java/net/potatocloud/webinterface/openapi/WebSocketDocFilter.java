@@ -12,7 +12,7 @@ import java.util.List;
 public class WebSocketDocFilter implements OASFilter {
 
     private static final List<Class<?>> WEBSOCKET_ENDPOINTS = List.of(
-            PlayersSocket.class, ServicesSocket.class, ServiceStatsSocket.class, ScreenLogSocket.class, ServiceDetailsSocket.class
+            PlayersSocket.class, ServicesSocket.class, ServiceStatsSocket.class, ScreenLogSocket.class, ServiceDetailsSocket.class, NodesSocket.class
     );
 
     @Override

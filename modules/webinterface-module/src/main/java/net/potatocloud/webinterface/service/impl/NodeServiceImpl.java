@@ -1,9 +1,12 @@
 package net.potatocloud.webinterface.service.impl;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.node.Node;
 import net.potatocloud.webinterface.dto.response.ScreenLogsResponse;
+import net.potatocloud.webinterface.mapper.NodeMapper;
+import net.potatocloud.webinterface.model.ApiClusterNode;
 import net.potatocloud.webinterface.service.NodeService;
 
 import java.util.List;
@@ -13,6 +16,8 @@ public class NodeServiceImpl implements NodeService {
 
     private final CloudAPI cloudAPI = CloudAPI.instance();
     private final Node node = Node.instance();
+    @Inject
+    NodeMapper nodeMapper;
 
     @Override
     public List<String> findScreens() {
@@ -33,4 +38,10 @@ public class NodeServiceImpl implements NodeService {
 
         return new ScreenLogsResponse(name, logs);
     }
+
+    @Override
+    public List<ApiClusterNode> clusterNodes() {
+        return cloudAPI.clusterManager().nodes().stream().map(nodeMapper::toApiClusterNode).toList();
+    }
+
 }
