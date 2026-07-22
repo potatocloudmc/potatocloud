@@ -274,6 +274,7 @@ public final class ServiceManagerImpl implements ServiceManager {
         }
 
         service.state(ServiceState.STOPPING);
+
         logger.info("Service &a" + service.name() + "&7 is now stopping&8...");
         eventBus.publish(new ServiceStoppingEvent(service.name()));
 
@@ -284,11 +285,12 @@ public final class ServiceManagerImpl implements ServiceManager {
             }
 
             services.remove(service);
-            screenManager.unregister(service.name());
 
-            if (screenManager.current().name().equals(service.name())) {
+            if (screenManager.current() != null && screenManager.current().name().equals(service.name())) {
                 screenManager.open(screenManager.get(NodeScreen.NODE_SCREEN_NAME));
             }
+
+            screenManager.unregister(service.name());
 
             server.broadcast().connectors().send(new ServiceRemovePacket(service.name(), service.port()));
             clusterManager.broadcast(new ServiceRemovePacket(service.name(), service.port()));
