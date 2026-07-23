@@ -243,7 +243,16 @@ public final class ServiceManagerImpl implements ServiceManager {
 
         executor.execute(() -> {
             try {
+                if (service.state() == ServiceState.STOPPING || service.state() == ServiceState.STOPPED) {
+                    return;
+                }
+
                 runtime.prepare(service);
+
+                if (service.state() == ServiceState.STOPPING || service.state() == ServiceState.STOPPED) {
+                    runtime.stop(service);
+                    return;
+                }
 
                 service.state(ServiceState.STARTING);
                 update(service);
@@ -269,11 +278,12 @@ public final class ServiceManagerImpl implements ServiceManager {
     }
 
     private CompletableFuture<Void> stopService(Service service) {
-        if (service.state() == ServiceState.STOPPED || service.state() == ServiceState.STOPPING) {
-            return CompletableFuture.completedFuture(null);
+        synchronized (service) {
+            if (service.state() == ServiceState.STOPPED || service.state() == ServiceState.STOPPING) {
+                return CompletableFuture.completedFuture(null);
+            }
+            service.state(ServiceState.STOPPING);
         }
-
-        service.state(ServiceState.STOPPING);
 
         logger.info("Service &a" + service.name() + "&7 is now stopping&8...");
         eventBus.publish(new ServiceStoppingEvent(service.name()));
