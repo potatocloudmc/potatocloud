@@ -7,6 +7,7 @@ import net.potatocloud.api.platform.PlatformVersion;
 import net.potatocloud.common.FileUtils;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.platform.parser.LeafBuildParser;
+import net.potatocloud.node.platform.parser.McJarsBuildParser;
 import net.potatocloud.node.platform.parser.PaperBuildParser;
 import net.potatocloud.node.platform.parser.PurpurBuildParser;
 import net.potatocloud.node.utils.HashUtils;
@@ -14,6 +15,7 @@ import net.potatocloud.node.utils.HashUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -26,7 +28,9 @@ public class DownloadManager {
             new PaperBuildParser("paper"),
             new PaperBuildParser("velocity"),
             new PurpurBuildParser(),
-            new LeafBuildParser()
+            new LeafBuildParser(),
+            new McJarsBuildParser("mcjars-fabric", "FABRIC"),
+            new McJarsBuildParser("mcjars-neoforge", "NEOFORGE")
     );
 
     public void downloadPlatformVersion(Platform platform, PlatformVersion version) {
@@ -72,7 +76,10 @@ public class DownloadManager {
             return;
         }
 
-        if (Files.notExists(platformJarPath)) {
+        final Path platformDirectory = PlatformUtils.getDirectoryOfPlatform(platform, version);
+        final boolean missingLibraries = platform.neoForgeBased() && !Files.exists(platformDirectory.resolve("libraries"));
+
+        if (Files.notExists(platformJarPath) || missingLibraries) {
             download(platform, version, platformJarPath);
             return;
         }
@@ -91,8 +98,38 @@ public class DownloadManager {
             logger.error("No download URL found for platform: " + platform.name());
             return;
         }
-        FileUtils.downloadFile(version.downloadUrl(), platformJarPath);
+
+        if (version.downloadUrl().toLowerCase().endsWith(".zip")) {
+            downloadServerArchive(version.downloadUrl(), platformJarPath);
+        } else {
+            FileUtils.downloadFile(version.downloadUrl(), platformJarPath);
+        }
+
         logger.info("&7Finished downloading platform &a" + platform.name() + "&7 version &a" + version.name());
+    }
+
+    private void downloadServerArchive(String downloadUrl, Path platformJarPath) {
+        final Path platformDirectory = platformJarPath.getParent();
+        final Path archive = platformDirectory.resolve("server.zip");
+        final Path serverJar = platformDirectory.resolve("server.jar");
+
+        try {
+            FileUtils.downloadFile(downloadUrl, archive);
+            FileUtils.unzip(archive, platformDirectory);
+
+            if (Files.notExists(serverJar)) {
+                throw new IllegalStateException("Downloaded server archive does not contain server.jar: " + downloadUrl);
+            }
+
+            Files.move(serverJar, platformJarPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to copy server archive from URL: " + downloadUrl, e);
+        } finally {
+            try {
+                Files.deleteIfExists(archive);
+            } catch (IOException ignored) {
+            }
+        }
     }
 
     private boolean needsUpdate(PlatformVersion version, Path platformJarPath) {

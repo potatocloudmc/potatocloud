@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "net.potatocloud.plugins.platform.fabric.v26_1.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "MinecraftServerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

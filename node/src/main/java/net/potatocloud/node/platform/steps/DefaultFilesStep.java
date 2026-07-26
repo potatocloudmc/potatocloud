@@ -17,13 +17,17 @@ public class DefaultFilesStep extends AbstractPrepareStep {
         try {
             final NodeConfig config = Node.instance().config();
 
-            if (platform.bukkitBased()) {
+            if (platform.bukkitBased() || platform.moddedBased()) {
                 final Path serverProperties = serverDirectory.resolve("server.properties");
-                if (!serverProperties.toFile().exists()) {
+                if (!Files.exists(serverProperties)) {
                     Files.copy(Path.of(config.folders().data(), "server.properties"), serverProperties);
                 }
 
-                // The spigot yml is only needed when velocity uses legacy forwarding
+                if (platform.moddedBased()) {
+                    return;
+                }
+
+                // the spigot yml is only needed when the proxy uses legacy forwarding
                 if (!ProxyUtils.isProxyModernForwarding()) {
                     final Path spigotYml = serverDirectory.resolve("spigot.yml");
 

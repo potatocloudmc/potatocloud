@@ -11,6 +11,8 @@ import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public final class FileUtils {
 
@@ -73,6 +75,38 @@ public final class FileUtils {
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to download file from URL: " + url, e);
+        }
+    }
+
+    public static void unzip(Path archive, Path targetDirectory) {
+        final Path normalizedTargetDirectory = targetDirectory.toAbsolutePath().normalize();
+
+        try (ZipInputStream input = new ZipInputStream(Files.newInputStream(archive))) {
+            Files.createDirectories(normalizedTargetDirectory);
+
+            ZipEntry entry;
+            while ((entry = input.getNextEntry()) != null) {
+                final Path destination = normalizedTargetDirectory.resolve(entry.getName()).normalize();
+
+                if (!destination.startsWith(normalizedTargetDirectory)) {
+                    throw new IllegalStateException("Zip entry points outside the target directory: " + entry.getName());
+                }
+
+                if (entry.isDirectory()) {
+                    Files.createDirectories(destination);
+                } else {
+                    final Path parentDirectory = destination.getParent();
+                    if (parentDirectory != null) {
+                        Files.createDirectories(parentDirectory);
+                    }
+
+                    Files.copy(input, destination, StandardCopyOption.REPLACE_EXISTING);
+                }
+
+                input.closeEntry();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to unzip " + archive + " to " + targetDirectory, e);
         }
     }
 

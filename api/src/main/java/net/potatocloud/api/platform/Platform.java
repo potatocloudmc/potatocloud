@@ -114,7 +114,7 @@ public interface Platform {
     /**
      * Checks whether the platform is a bukkit based platform.
      *
-     * @return {@code true} if the platform is a bukkit based platform, otherwise {@code false}
+     * @return {@code true} if the platform is a Bukkit-based platform, otherwise {@code false}
      */
     default boolean bukkitBased() {
         return base() == PlatformBase.BUKKIT || base() == PlatformBase.SPIGOT || paperBased();
@@ -132,7 +132,7 @@ public interface Platform {
     /**
      * Checks whether the platform is a velocity-based platform.
      *
-     * @return {@code true} if the platform is a velocity-based platform, otherwise {@code false}
+     * @return {@code true} if the platform is a Velocity-based platform, otherwise {@code false}
      */
     default boolean velocityBased() {
         return base() == PlatformBase.VELOCITY;
@@ -141,9 +141,36 @@ public interface Platform {
     /**
      * Checks whether the platform is a limbo-based platform.
      *
-     * @return {@code true} if the platform is a limbo-based platform, otherwise {@code false}
+     * @return {@code true} if the platform is a Limbo-based platform, otherwise {@code false}
      */
     default boolean limboBased() {
         return base() == PlatformBase.LIMBO;
+    }
+
+    /**
+     * Checks whether the platform is a Fabric-based platform.
+     *
+     * @return {@code true} if the platform is a Fabric-based platform, otherwise {@code false}
+     */
+    default boolean fabricBased() {
+        return base() == PlatformBase.FABRIC;
+    }
+
+    /**
+     * Checks whether the platform is a NeoForge-based platform.
+     *
+     * @return {@code true} if the platform is a NeoForge-based platform, otherwise {@code false}
+     */
+    default boolean neoForgeBased() {
+        return base() == PlatformBase.NEOFORGE;
+    }
+
+    /**
+     * Checks whether the platform is a modded platform.
+     *
+     * @return {@code true} if the platform is a modded platform, otherwise {@code false}
+     */
+    default boolean moddedBased() {
+        return fabricBased() || neoForgeBased();
     }
 }

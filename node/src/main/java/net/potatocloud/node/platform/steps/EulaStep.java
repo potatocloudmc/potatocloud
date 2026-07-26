@@ -13,7 +13,7 @@ public class EulaStep extends AbstractPrepareStep {
     @Override
     public void execute(String serviceName, Platform platform, Path serverDirectory) {
         try {
-            if (platform.bukkitBased()) {
+            if (platform.bukkitBased() || platform.moddedBased()) {
                 final Path eulaFile = serverDirectory.resolve("eula.txt");
 
                 Files.writeString(eulaFile, "eula=true", StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);

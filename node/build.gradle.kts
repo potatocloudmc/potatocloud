@@ -50,4 +50,16 @@ tasks.named<ShadowJar>("shadowJar") {
     from(project(":plugins:platform:limbo").tasks.named("shadowJar")) {
         into("default-files")
     }
+    from(project(":plugins:platform:fabric:1_21_11").tasks.named("remapJar")) {
+        into("default-files")
+    }
+    from(project(":plugins:platform:fabric:26_1").tasks.named("shadowJar")) {
+        into("default-files")
+    }
+    from(project(":plugins:platform:neoforge:1_21_11").tasks.named("shadowJar")) {
+        into("default-files")
+    }
+    from(project(":plugins:platform:neoforge:26_1").tasks.named("shadowJar")) {
+        into("default-files")
+    }
 }

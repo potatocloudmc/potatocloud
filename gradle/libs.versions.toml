@@ -11,6 +11,7 @@ slf4j-nop = "2.0.18"
 spigot = "1.21.4-R0.1-SNAPSHOT"
 limbo = "0.7.18-ALPHA"
 velocity = "3.5.0-SNAPSHOT"
+fabric-loader = "0.19.3"
 labymod = "1.0.6"
 minimessage = "4.25.0"
 
@@ -27,6 +28,7 @@ slf4j-nop = { module = "org.slf4j:slf4j-nop", version.ref = "slf4j-nop" }
 spigot = { module = "org.spigotmc:spigot-api", version.ref = "spigot" }
 limbo = { module = "com.loohp:Limbo", version.ref = "limbo" }
 velocity = { module = "com.velocitypowered:velocity-api", version.ref = "velocity" }
+fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-loader" }
 labymod-common = { module = "net.labymod.serverapi:server-common", version.ref = "labymod" }
 labymod-bukkit = { module = "net.labymod.serverapi:server-bukkit", version.ref = "labymod" }
 labymod-velocity = { module = "net.labymod.serverapi:server-velocity", version.ref = "labymod" }

@@ -16,7 +16,7 @@ public class PortStep extends AbstractPrepareStep {
         try {
             final int port = (int) data().get("port");
 
-            if (platform.bukkitBased()) {
+            if (platform.bukkitBased() || platform.moddedBased()) {
                 final Path propertiesPath = serverDirectory.resolve("server.properties");
                 final Properties properties = PropertiesFileUtils.loadProperties(propertiesPath);
 

@@ -10,6 +10,15 @@ public interface PlatformVersion {
     String name();
 
     /**
+     * Gets the actual version name when using an alias such as {@code latest}.
+     *
+     * @return the actual version name
+     */
+    default String resolvedName() {
+        return name();
+    }
+
+    /**
      * Checks whether the platform version is local.
      * <p>
      * Local versions are not downloaded automatically.

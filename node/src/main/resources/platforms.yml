@@ -40,6 +40,34 @@ platforms:
     versions:
       - version: latest
       - version: 3.5.0-SNAPSHOT
+  fabric:
+    base: fabric
+    download:
+      parser: mcjars-fabric
+    prepare-steps:
+      - default-files
+      - eula
+      - port
+      - install-proxyforward
+    versions:
+      - version: latest
+      - version: 26.2
+      - version: 26.1.2
+      - version: 1.21.11
+  neoforge:
+    base: neoforge
+    download:
+      parser: mcjars-neoforge
+    prepare-steps:
+      - default-files
+      - eula
+      - port
+      - install-proxyforward
+    versions:
+      - version: latest
+      - version: 26.2
+      - version: 26.1.2
+      - version: 1.21.11
   purpur:
     base: paper
     download:

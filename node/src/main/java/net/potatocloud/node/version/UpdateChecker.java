@@ -1,19 +1,20 @@
 package net.potatocloud.node.version;
 
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.version.Version;
-import net.potatocloud.node.utils.RequestUtil;
+import net.potatocloud.node.utils.GitHubClient;
 import tools.jackson.databind.JsonNode;
 
-@RequiredArgsConstructor
-public class UpdateChecker {
+public final class UpdateChecker {
 
-    private static final String REPO_OWNER = "potatocloudmc";
-    private static final String REPO_NAME = "potatocloud";
+    private static final String REPOSITORY = "potatocloudmc/potatocloud";
 
     private final Logger logger;
+
+    public UpdateChecker(Logger logger) {
+        this.logger = logger;
+    }
 
     public void checkForUpdates() {
         logger.info("Checking for updates&8...");
@@ -40,8 +41,7 @@ public class UpdateChecker {
 
     public Version getLatestVersion() {
         try {
-            final String url = "https://api.github.com/repos/" + REPO_OWNER + "/" + REPO_NAME + "/releases/latest";
-            final JsonNode response = RequestUtil.request(url);
+            final JsonNode response = GitHubClient.latestRelease(REPOSITORY);
 
             if (response == null || !response.has("tag_name")) {
                 return null;

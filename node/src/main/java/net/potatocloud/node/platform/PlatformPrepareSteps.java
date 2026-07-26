@@ -15,6 +15,7 @@ public final class PlatformPrepareSteps {
             case "port" -> new PortStep();
             case "setup-forwarding" -> new SetupForwardingStep();
             case "setup-proxy" -> new SetupProxyStep();
+            case "install-proxyforward" -> new InstallProxyForwardStep();
             default -> null;
         };
     }

@@ -24,7 +24,11 @@ public final class ServiceDefaultFiles {
                     "potatocloud-plugin-spigot.jar",
                     "potatocloud-plugin-spigot-legacy.jar",
                     "potatocloud-plugin-velocity.jar",
-                    "potatocloud-plugin-limbo.jar"
+                    "potatocloud-plugin-limbo.jar",
+                    "potatocloud-plugin-fabric-1.21.11.jar",
+                    "potatocloud-plugin-fabric-26.1.jar",
+                    "potatocloud-plugin-neoforge-1.21.11.jar",
+                    "potatocloud-plugin-neoforge-26.1.jar"
             };
 
             for (String name : files) {

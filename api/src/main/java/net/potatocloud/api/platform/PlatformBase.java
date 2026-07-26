@@ -9,6 +9,8 @@ public enum PlatformBase {
     PAPER("paper"),
     VELOCITY("velocity"),
     LIMBO("limbo"),
+    FABRIC("fabric"),
+    NEOFORGE("neoforge"),
     UNKNOWN("unknown");
 
     private final String id;

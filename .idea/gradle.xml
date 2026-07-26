@@ -24,7 +24,13 @@
             <option value="$PROJECT_DIR$/plugins/addons/notify" />
             <option value="$PROJECT_DIR$/plugins/addons/proxy" />
             <option value="$PROJECT_DIR$/plugins/platform" />
+            <option value="$PROJECT_DIR$/plugins/platform/fabric" />
+            <option value="$PROJECT_DIR$/plugins/platform/fabric/1_21_11" />
+            <option value="$PROJECT_DIR$/plugins/platform/fabric/26_1" />
             <option value="$PROJECT_DIR$/plugins/platform/limbo" />
+            <option value="$PROJECT_DIR$/plugins/platform/neoforge" />
+            <option value="$PROJECT_DIR$/plugins/platform/neoforge/1_21_11" />
+            <option value="$PROJECT_DIR$/plugins/platform/neoforge/26_1" />
             <option value="$PROJECT_DIR$/plugins/platform/spigot" />
             <option value="$PROJECT_DIR$/plugins/platform/spigot-legacy" />
             <option value="$PROJECT_DIR$/plugins/platform/velocity" />

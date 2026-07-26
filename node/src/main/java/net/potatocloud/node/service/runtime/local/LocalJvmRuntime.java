@@ -12,10 +12,12 @@ import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.platform.DownloadManager;
 import net.potatocloud.node.platform.PlatformPrepareSteps;
 import net.potatocloud.node.platform.PlatformUtils;
+import net.potatocloud.node.platform.VelocityForwardingSecret;
 import net.potatocloud.node.platform.cache.CacheManager;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.service.runtime.ServiceRuntime;
 import net.potatocloud.node.template.TemplateManager;
+import net.potatocloud.node.utils.ProxyUtils;
 import oshi.ffm.SystemInfo;
 import oshi.software.os.OSProcess;
 
@@ -77,31 +79,33 @@ public final class LocalJvmRuntime implements ServiceRuntime {
             templateManager.copyTemplate(template, directory);
         }
 
-        final Path pluginsFolder = directory.resolve("plugins");
+        final Platform platform = group.platform();
+        final Path pluginsFolder = directory.resolve(platform.moddedBased() ? "mods" : "plugins");
+
+        downloadManager.downloadPlatformVersion(platform, platform.version(group.platformVersion().name()).orElseThrow());
+
         try {
             Files.createDirectories(pluginsFolder);
 
             final String pluginName = resolvePluginName();
-            if (pluginName.isEmpty()) {
-                return;
+            if (!pluginName.isEmpty()) {
+                Files.copy(
+                        Path.of(config.folders().data()).resolve(pluginName),
+                        pluginsFolder.resolve(pluginName),
+                        StandardCopyOption.REPLACE_EXISTING
+                );
             }
-
-            Files.copy(
-                    Path.of(config.folders().data()).resolve(pluginName),
-                    pluginsFolder.resolve(pluginName),
-                    StandardCopyOption.REPLACE_EXISTING
-            );
         } catch (IOException e) {
             throw new RuntimeException("Failed to install plugin for service " + service.name(), e);
         }
-
-        final Platform platform = group.platform();
-        downloadManager.downloadPlatformVersion(platform, platform.version(group.platformVersion().name()).get());
 
         final Path cacheDirectory = cacheManager.cache(group).join();
         cacheManager.copyToService(group, cacheDirectory, directory);
 
         final PlatformVersion version = group.platformVersion();
+
+        copyPlatformLibraries(platform, version);
+
         try {
             Files.copy(
                     PlatformUtils.getPlatformJarPath(platform, version),
@@ -128,9 +132,10 @@ public final class LocalJvmRuntime implements ServiceRuntime {
         final List<String> args = buildArguments(directory, service.name());
 
         try {
-            process = new ProcessBuilder(args)
-                    .directory(directory.toFile())
-                    .start();
+            final ProcessBuilder processBuilder = new ProcessBuilder(args).directory(directory.toFile());
+            processBuilder.redirectErrorStream(true);
+            configureProxyForwardEnvironment(processBuilder);
+            process = processBuilder.start();
         } catch (IOException e) {
             throw new RuntimeException("Failed to start server process for service " + service.name(), e);
         }
@@ -140,15 +145,17 @@ public final class LocalJvmRuntime implements ServiceRuntime {
         processWriter = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
         processReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-        Thread.startVirtualThread(() -> {
-            try {
-                String line;
-                while (process.isAlive() && (line = processReader.readLine()) != null) {
-                    screen.append(line);
-                }
-            } catch (IOException ignored) {
-            }
-        });
+        Thread.ofVirtual()
+                .name("service-output-" + service.name())
+                .start(() -> {
+                    try {
+                        String line;
+                        while ((line = processReader.readLine()) != null) {
+                            screen.append(line);
+                        }
+                    } catch (IOException ignored) {
+                    }
+                });
     }
 
     @Override
@@ -254,11 +261,11 @@ public final class LocalJvmRuntime implements ServiceRuntime {
         args.add("-jar");
         args.add(directory.resolve("server.jar").toAbsolutePath().toString());
 
-        if (group.platform().bukkitBased() && !group.platformVersion().legacy()) {
+        if ((group.platform().bukkitBased() || group.platform().fabricBased()) && !group.platformVersion().legacy()) {
             args.add("-nogui");
         }
 
-        if (group.platform().limboBased()) {
+        if (group.platform().limboBased() || group.platform().neoForgeBased()) {
             args.add("--nogui");
         }
 
@@ -283,7 +290,44 @@ public final class LocalJvmRuntime implements ServiceRuntime {
             return "potatocloud-plugin-limbo.jar";
         }
 
-        logger.error("No plugin found for platform " + platform.name());
+        if (platform.fabricBased()) {
+            return resolveModdedPluginName("fabric", version);
+        }
+
+        if (platform.neoForgeBased()) {
+            return resolveModdedPluginName("neoforge", version);
+        }
+
         return "";
+    }
+
+    private void copyPlatformLibraries(Platform platform, PlatformVersion version) {
+        if (!platform.neoForgeBased()) {
+            return;
+        }
+
+        final Path libraries = PlatformUtils.getDirectoryOfPlatform(platform, version).resolve("libraries");
+        if (Files.exists(libraries)) {
+            FileUtils.copyDirectory(libraries, directory.resolve("libraries"));
+        }
+    }
+
+    private String resolveModdedPluginName(String loader, PlatformVersion version) {
+        final boolean legacy = version.resolvedName().startsWith("1.21.");
+        final String pluginVersion = legacy ? "1.21.11" : "26.1";
+        return "potatocloud-plugin-" + loader + "-" + pluginVersion + ".jar";
+    }
+
+    private void configureProxyForwardEnvironment(ProcessBuilder processBuilder) {
+        if (!group.platform().moddedBased()) {
+            return;
+        }
+
+        final boolean modernForwarding = ProxyUtils.isProxyModernForwarding();
+        processBuilder.environment().put("PROXYFORWARD_FORWARDING_MODE", modernForwarding ? "velocity" : "bungee");
+
+        if (modernForwarding) {
+            processBuilder.environment().put("PROXYFORWARD_VELOCITY_SECRET", VelocityForwardingSecret.FORWARDING_SECRET);
+        }
     }
 }

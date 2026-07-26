@@ -1,0 +1,9 @@
+modLoader="javafml"
+loaderVersion="[1,)"
+license="GPL-3.0-only"
+
+[[mods]]
+modId="potatocloud"
+version="2.0.0"
+displayName="potatocloud"
+description="Connects this NeoForge server to potatocloud"

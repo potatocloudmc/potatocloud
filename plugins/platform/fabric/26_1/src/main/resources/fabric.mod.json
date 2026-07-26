@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "potatocloud",
+  "version": "2.0.0",
+  "name": "potatocloud",
+  "environment": "server",
+  "entrypoints": {
+    "main": ["net.potatocloud.plugins.platform.fabric.v26_1.Fabric26_1Plugin"]
+  },
+  "mixins": [
+    "potatocloud.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.3"
+  }
+}

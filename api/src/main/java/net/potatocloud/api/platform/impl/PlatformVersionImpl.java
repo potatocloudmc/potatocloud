@@ -11,6 +11,7 @@ public class PlatformVersionImpl implements PlatformVersion {
     private final String platformName;
     private final String name;
     private final boolean local;
+    private String resolvedName;
     private String downloadUrl;
     private String fileHash;
     private final boolean legacy;
@@ -35,6 +36,15 @@ public class PlatformVersionImpl implements PlatformVersion {
     @Override
     public String name() {
         return name;
+    }
+
+    @Override
+    public String resolvedName() {
+        return resolvedName == null ? name : resolvedName;
+    }
+
+    public void resolvedName(String resolvedName) {
+        this.resolvedName = resolvedName;
     }
 
     @Override
@@ -75,10 +85,10 @@ public class PlatformVersionImpl implements PlatformVersion {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof PlatformVersionImpl that)) {
+        if (!(o instanceof PlatformVersionImpl other)) {
             return false;
         }
-        return platformName.equals(that.platformName) && name.equals(that.name);
+        return platformName.equals(other.platformName) && name.equals(other.name);
     }
 
     @Override
