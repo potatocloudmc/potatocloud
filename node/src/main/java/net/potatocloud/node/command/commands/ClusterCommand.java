@@ -3,6 +3,7 @@ package net.potatocloud.node.command.commands;
 import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.utils.TimeFormatter;
+import net.potatocloud.node.Node;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.command.ArgumentType;
 import net.potatocloud.node.command.Command;
@@ -15,7 +16,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @CommandInfo(name = "cluster", description = "Manage cluster nodes", aliases = {"cl"})
-public class ClusterCommand extends Command {
+public final class ClusterCommand extends Command {
 
     public ClusterCommand(Logger logger, ClusterManagerImpl clusterManager) {
         defaultExecutor(_ -> sendHelp());
@@ -36,6 +37,15 @@ public class ClusterCommand extends Command {
                             .count();
 
                     logger.info("&8» &7Connected nodes&8: &a" + connectedNodes);
+                });
+
+        sub("token", "Show the current cluster token")
+                .executes(_ -> {
+                    final String token = Node.instance().config().cluster().token();
+
+                    logger.info("Cluster token&8:");
+                    logger.info("&8» &a" + token);
+                    logger.info("Use this token when adding other nodes to the cluster");
                 });
 
         sub("list", "List all cluster nodes")
