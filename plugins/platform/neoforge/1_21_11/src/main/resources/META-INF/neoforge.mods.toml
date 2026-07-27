@@ -7,3 +7,6 @@ modId="potatocloud"
 version="2.0.0"
 displayName="potatocloud"
 description="Connects this NeoForge server to potatocloud"
+
+[[mixins]]
+config="potatocloud.mixins.json"

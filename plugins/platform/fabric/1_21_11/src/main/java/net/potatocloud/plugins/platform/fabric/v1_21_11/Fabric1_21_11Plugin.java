@@ -15,6 +15,7 @@ public final class Fabric1_21_11Plugin implements ModInitializer, PlatformPlugin
 
     private ConnectorAPI api;
     private MinecraftServer server;
+    private Service currentService;
 
     @Override
     public void onInitialize() {
@@ -37,6 +38,11 @@ public final class Fabric1_21_11Plugin implements ModInitializer, PlatformPlugin
 
     @Override
     public void onServiceReady(Service service) {
+        this.currentService = service;
+    }
+
+    public Integer maxPlayers() {
+        return currentService == null ? null : currentService.maxPlayers();
     }
 
     @Override

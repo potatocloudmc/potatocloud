@@ -15,10 +15,14 @@ import java.util.concurrent.TimeUnit;
 @Mod("potatocloud")
 public final class NeoForge1_21_11Plugin implements PlatformPlugin {
 
+    private static NeoForge1_21_11Plugin instance;
+
     private final ConnectorAPI api;
     private MinecraftServer server;
+    private Service currentService;
 
     public NeoForge1_21_11Plugin() {
+        instance = this;
         this.api = new ConnectorAPI();
 
         NeoForge.EVENT_BUS.addListener(ServerStartedEvent.class, event -> {
@@ -31,6 +35,15 @@ public final class NeoForge1_21_11Plugin implements PlatformPlugin {
 
     @Override
     public void onServiceReady(Service service) {
+        this.currentService = service;
+    }
+
+    public static NeoForge1_21_11Plugin instance() {
+        return instance;
+    }
+
+    public Integer maxPlayers() {
+        return currentService == null ? null : currentService.maxPlayers();
     }
 
     @Override
