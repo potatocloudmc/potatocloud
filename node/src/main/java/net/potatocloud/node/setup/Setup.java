@@ -165,7 +165,7 @@ public abstract class Setup {
         screenManager.register(questionScreen);
         screenManager.open(questionScreen);
 
-        console.setPrompt("> ");
+        console.prompt("> ");
         console.println("&7Setup: &a" + getName() + " &8(&7Question &a" + (currentIndex + 1) + "&8/&a" + questions.size() + "&8)");
         console.println(" ");
         console.println("&8» &7" + question.getPrompt());
@@ -208,7 +208,7 @@ public abstract class Setup {
         screenManager.register(summaryScreen);
         screenManager.open(summaryScreen);
 
-        console.setPrompt("> ");
+        console.prompt("> ");
         console.println("&7Setup: &a" + getName() + " &8(&7Summary&8)");
         console.println("");
 

@@ -13,7 +13,7 @@ public class LocalServiceScreen extends ServiceScreen {
     public void open() {
         logs().forEach(console::println);
 
-        console.setPrompt(buildPrompt());
+        console.prompt(buildPrompt());
     }
 
     @Override

@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 
-public class NodeLogger implements Logger {
+public final class NodeLogger implements Logger {
 
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -58,7 +58,7 @@ public class NodeLogger implements Logger {
         String colored;
 
         if (level == Level.COMMAND_INPUT) {
-            colored = console.getPrompt() + message;
+            colored = console.prompt() + message;
             raw = stripColors(colored);
         } else {
             raw = formatRaw(level, time, message);

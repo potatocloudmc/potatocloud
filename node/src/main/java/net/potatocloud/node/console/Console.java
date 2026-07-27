@@ -1,6 +1,5 @@
 package net.potatocloud.node.console;
 
-import lombok.Getter;
 import net.potatocloud.node.command.CommandManager;
 import net.potatocloud.node.config.NodeConfig;
 import org.jline.reader.LineReader;
@@ -10,18 +9,17 @@ import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.InfoCmp;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-@Getter
-public class Console {
+public final class Console {
 
     private final NodeConfig config;
-
     private final Terminal terminal;
     private final LineReader lineReader;
     private final ConsoleReader consoleReader;
 
-    private String prompt;
+    private final String prompt;
 
     public Console(NodeConfig config, CommandManager commandManager) {
         this.config = config;
@@ -32,8 +30,9 @@ public class Console {
                     .system(true)
                     .encoding(StandardCharsets.UTF_8)
                     .build();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize terminal", e);
+
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to initialize terminal", e);
         }
 
         this.lineReader = LineReaderBuilder.builder()
@@ -42,7 +41,6 @@ public class Console {
                 .build();
 
         this.prompt = defaultPrompt();
-
         this.consoleReader = new ConsoleReader(this, commandManager);
     }
 
@@ -62,12 +60,14 @@ public class Console {
 
     public String defaultPrompt() {
         final String rawPrompt = config.console().prompt();
-
         return ConsoleColor.format(rawPrompt.replace("%user%", System.getProperty("user.name")));
     }
 
-    public void setPrompt(String prompt) {
-        this.prompt = prompt;
+    public String prompt() {
+        return prompt;
+    }
+
+    public void prompt(String prompt) {
         if (lineReader instanceof LineReaderImpl impl) {
             impl.setPrompt(prompt);
         }
@@ -80,6 +80,7 @@ public class Console {
 
     public void updateScreen() {
         terminal.flush();
+
         if (lineReader.isReading()) {
             lineReader.callWidget(LineReader.REDRAW_LINE);
             lineReader.callWidget(LineReader.REDISPLAY);
@@ -87,11 +88,19 @@ public class Console {
     }
 
     public void close() {
+        consoleReader.interrupt();
         try {
             terminal.close();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to close terminal", e);
+        } catch (IOException exception) {
+            throw new IllegalStateException("Failed to close terminal", exception);
         }
-        consoleReader.interrupt();
+    }
+
+    public Terminal terminal() {
+        return terminal;
+    }
+
+    public LineReader lineReader() {
+        return lineReader;
     }
 }

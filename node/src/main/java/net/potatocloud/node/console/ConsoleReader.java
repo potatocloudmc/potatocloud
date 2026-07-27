@@ -10,7 +10,7 @@ import org.jline.jansi.Ansi;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.UserInterruptException;
 
-public class ConsoleReader extends Thread {
+public final class ConsoleReader extends Thread {
 
     private final Console console;
     private final CommandManager commandManager;
@@ -24,14 +24,13 @@ public class ConsoleReader extends Thread {
     public void run() {
         try {
             while (!isInterrupted()) {
-
                 final Node node = Node.instance();
 
                 if (!node.ready()) {
                     continue;
                 }
 
-                final String input = console.getLineReader().readLine(console.getPrompt());
+                final String input = console.lineReader().readLine(console.prompt());
 
                 final ScreenManager screenManager = node.screenManager();
                 final Screen currentScreen = screenManager.current();
@@ -62,9 +61,7 @@ public class ConsoleReader extends Thread {
                     continue;
                 }
 
-                node.serviceManager().find(currentScreen.name()).ifPresent(service -> {
-                    node.serviceManager().execute(service, input);
-                });
+                node.serviceManager().find(currentScreen.name()).ifPresent(service -> node.serviceManager().execute(service, input));
 
             }
         } catch (UserInterruptException e) {

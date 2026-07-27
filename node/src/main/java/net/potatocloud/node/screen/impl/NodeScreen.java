@@ -19,7 +19,7 @@ public class NodeScreen extends AbstractScreen {
                 .filter(log -> !log.toLowerCase().contains("service screen"))
                 .forEach(console::println);
 
-        console.setPrompt(console.defaultPrompt());
+        console.prompt(console.defaultPrompt());
     }
 
     @Override

@@ -20,7 +20,7 @@ public final class RemoteServiceScreen extends ServiceScreen {
         service.node().ifPresent(node ->
                 clusterManager.sendTo(node.name(), new ServiceScreenSubscribePacket(service.name())));
 
-        console.setPrompt(buildPrompt());
+        console.prompt(buildPrompt());
     }
 
     @Override
