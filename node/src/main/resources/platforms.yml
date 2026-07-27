@@ -44,6 +44,8 @@ platforms:
     base: fabric
     download:
       parser: mcjars-fabric
+    processing:
+      cache-builder: fabric
     prepare-steps:
       - default-files
       - eula

@@ -64,6 +64,13 @@ public class PlatformConfigurationSetup extends Setup {
                 prepareSteps = List.of("default-files", "port", "setup-forwarding");
             }
             case LIMBO -> prepareSteps = List.of("default-files", "port", "setup-proxy");
+            case FABRIC -> {
+                preCache = "fabric";
+                prepareSteps = List.of("default-files", "eula", "port", "install-proxyforward");
+            }
+            case NEOFORGE -> {
+                prepareSteps = List.of("default-files", "eula", "port", "install-proxyforward");
+            }
             default -> {
             }
         }

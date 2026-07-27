@@ -9,6 +9,7 @@ public final class CacheRegistry {
 
     public CacheRegistry() {
         register("paper", new PaperCacheBuilder());
+        register("fabric", new FabricCacheBuilder());
     }
 
     public void register(String name, CacheBuilder builder) {
