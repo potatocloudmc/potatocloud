@@ -239,7 +239,6 @@ public final class LocalJvmRuntime implements ServiceRuntime {
     private List<String> buildArguments(Path directory, String name) {
         final List<String> args = new ArrayList<>();
         args.add(group.javaCommand());
-        args.add("-Xms" + group.maxMemory() + "M");
         args.add("-Xmx" + group.maxMemory() + "M");
         args.add("-Dpotatocloud.service.name=" + name);
         args.add("-Dpotatocloud.node.host=" + config.node().host());
