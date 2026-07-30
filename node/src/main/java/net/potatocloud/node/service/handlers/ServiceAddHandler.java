@@ -43,6 +43,6 @@ public final class ServiceAddHandler implements PacketHandler<ServiceAddPacket> 
             screenManager.register(screen);
         }
 
-        server.broadcast().connectors().send(new ServiceAddPacket(packet.service(), null));
+        server.broadcast().connectors().send(new ServiceAddPacket(packet.service()));
     }
 }

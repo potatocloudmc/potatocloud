@@ -41,5 +41,9 @@ public final class NettyPacketEncoder extends MessageToByteEncoder<Packet> {
         }
 
         codec.encode(packet, packetBuffer);
+
+        if (packet instanceof ResponsePacket) {
+            requestManager.removeRequest(packet);
+        }
     }
 }

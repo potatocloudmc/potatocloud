@@ -3,6 +3,8 @@ package net.potatocloud.network.request;
 import net.potatocloud.network.NetworkConnection;
 import net.potatocloud.network.protocol.Packet;
 
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,7 +17,7 @@ public final class RequestManager {
 
     private final Map<Integer, PendingRequest<?>> pending = new ConcurrentHashMap<>();
     private final AtomicInteger requestCounter = new AtomicInteger(1);
-    private final Map<Packet, Integer> requestIds = new ConcurrentHashMap<>();
+    private final Map<Packet, Integer> requestIds = Collections.synchronizedMap(new IdentityHashMap<>());
 
     public <T extends ResponsePacket> CompletableFuture<T> request(NetworkConnection connection, RequestPacket packet, Class<T> type) {
         final int id = requestCounter.getAndIncrement();

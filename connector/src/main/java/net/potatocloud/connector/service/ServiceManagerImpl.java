@@ -11,14 +11,11 @@ import net.potatocloud.network.NetworkClient;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ServiceManagerImpl implements ServiceManager {
 
     private final List<Service> services = new CopyOnWriteArrayList<>();
-
-    private final Map<String, CompletableFuture<Service>> pendingStarts = new ConcurrentHashMap<>();
 
     private final NetworkClient client;
 
@@ -63,13 +60,10 @@ public class ServiceManagerImpl implements ServiceManager {
 
     @Override
     public CompletableFuture<Service> start(Group group) {
-        final CompletableFuture<Service> future = new CompletableFuture<>();
-        final String requestId = UUID.randomUUID().toString();
-
-        pendingStarts.put(requestId, future);
-        client.send(new StartServicePacket(group.name(), requestId));
-
-        return future;
+        return client.request(
+                new StartServicePacket(group.name()),
+                StartServiceResponsePacket.class
+        ).thenApply(StartServiceResponsePacket::service);
     }
 
     @Override
@@ -87,10 +81,6 @@ public class ServiceManagerImpl implements ServiceManager {
     @Override
     public void copyTo(Service service, String template, String filter) {
         client.send(new ServiceCopyPacket(service.name(), template, filter));
-    }
-
-    public Map<String, CompletableFuture<Service>> pendingStarts() {
-        return pendingStarts;
     }
 
     @Override

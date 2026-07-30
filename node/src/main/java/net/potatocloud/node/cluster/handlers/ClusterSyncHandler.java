@@ -75,7 +75,7 @@ public final class ClusterSyncHandler implements PacketHandler<ClusterSyncPacket
             final Screen screen = new RemoteServiceScreen(service, console, clusterManager);
             screenManager.register(screen);
 
-            server.broadcast().connectors().send(new ServiceAddPacket(service, null));
+            server.broadcast().connectors().send(new ServiceAddPacket(service));
         }
 
         for (CloudPlayer player : packet.players()) {

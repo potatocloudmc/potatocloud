@@ -15,6 +15,8 @@ import net.potatocloud.network.packets.group.GroupDeletePacket;
 import net.potatocloud.network.packets.player.CloudPlayerRemovePacket;
 import net.potatocloud.network.packets.service.ServiceRemovePacket;
 import net.potatocloud.network.protocol.Packet;
+import net.potatocloud.network.request.RequestPacket;
+import net.potatocloud.network.request.ResponsePacket;
 import net.potatocloud.network.security.SecurityConfig;
 import net.potatocloud.network.ConnectionType;
 import net.potatocloud.node.cluster.handlers.*;
@@ -28,6 +30,7 @@ import net.potatocloud.node.service.ServiceManagerImpl;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CompletableFuture;
 
 public class ClusterManagerImpl implements ClusterManager {
 
@@ -212,6 +215,19 @@ public class ClusterManagerImpl implements ClusterManager {
             return;
         }
         node.connection().send(packet);
+    }
+
+    public <T extends ResponsePacket> CompletableFuture<T> request(
+            String nodeName,
+            RequestPacket packet,
+            Class<T> responseType
+    ) {
+        final ClusterNodeImpl node = nodes.get(nodeName);
+        if (node == null || node.connection() == null) {
+            return CompletableFuture.failedFuture(new IllegalStateException("Node is not connected: " + nodeName));
+        }
+
+        return server.request(node.connection(), packet, responseType);
     }
 
     public void broadcast(Packet packet) {

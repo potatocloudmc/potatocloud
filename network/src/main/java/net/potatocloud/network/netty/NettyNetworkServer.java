@@ -15,6 +15,8 @@ import net.potatocloud.network.protocol.PacketHandler;
 import net.potatocloud.network.protocol.PacketManager;
 import net.potatocloud.network.protocol.PacketRegistry;
 import net.potatocloud.network.request.RequestManager;
+import net.potatocloud.network.request.RequestPacket;
+import net.potatocloud.network.request.ResponsePacket;
 import net.potatocloud.network.security.SecurityConfig;
 import net.potatocloud.network.security.SecurityProvider;
 
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public final class NettyNetworkServer implements NetworkServer {
@@ -116,6 +119,11 @@ public final class NettyNetworkServer implements NetworkServer {
     @Override
     public void sendTo(NetworkConnection connection, Packet packet) {
         connection.send(packet);
+    }
+
+    @Override
+    public <T extends ResponsePacket> CompletableFuture<T> request(NetworkConnection connection, RequestPacket packet, Class<T> type) {
+        return requestManager.request(connection, packet, type);
     }
 
     @Override

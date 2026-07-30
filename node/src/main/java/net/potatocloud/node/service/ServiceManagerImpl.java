@@ -4,6 +4,7 @@ import net.potatocloud.api.event.EventBus;
 import net.potatocloud.api.event.events.service.ServiceStartingEvent;
 import net.potatocloud.api.event.events.service.ServiceStoppedEvent;
 import net.potatocloud.api.event.events.service.ServiceStoppingEvent;
+import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.group.GroupManager;
 import net.potatocloud.api.logging.Logger;
@@ -130,17 +131,20 @@ public final class ServiceManagerImpl implements ServiceManager {
             return CompletableFuture.completedFuture(null);
         }
 
-        return group.node()
-                .map(node -> {
-                    if (!clusterManager.isLocal(node.name())) {
-                        clusterManager.sendTo(node.name(), new StartServicePacket(group.name(), null));
-                        return null;
-                    }
+        final Optional<ClusterNode> node = group.node();
+        if (node.isEmpty()) {
+            return CompletableFuture.completedFuture(null);
+        }
 
-                    return startService(group.name(), null);
-                })
-                .map(CompletableFuture::completedFuture)
-                .orElseGet(() -> CompletableFuture.completedFuture(null));
+        if (!clusterManager.isLocal(node.get().name())) {
+            return clusterManager.request(
+                    node.get().name(),
+                    new StartServicePacket(group.name()),
+                    StartServiceResponsePacket.class
+            ).thenApply(StartServiceResponsePacket::service);
+        }
+
+        return CompletableFuture.completedFuture(startService(group.name()));
     }
 
     @Override
@@ -202,7 +206,7 @@ public final class ServiceManagerImpl implements ServiceManager {
         }
     }
 
-    public Service startService(String groupName, String requestId) {
+    public Service startService(String groupName) {
         final Optional<Group> group = groupManager.find(groupName);
         if (group.isEmpty()) {
             return null;
@@ -235,8 +239,8 @@ public final class ServiceManagerImpl implements ServiceManager {
         addService(service);
         runtimes.put(name, runtime);
 
-        server.broadcast().connectors().send(new ServiceAddPacket(service, requestId));
-        clusterManager.broadcast(new ServiceAddPacket(service, null));
+        server.broadcast().connectors().send(new ServiceAddPacket(service));
+        clusterManager.broadcast(new ServiceAddPacket(service));
 
         service.startedAt(Instant.now());
         service.state(ServiceState.PREPARING);

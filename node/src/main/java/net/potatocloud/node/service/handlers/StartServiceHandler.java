@@ -3,6 +3,8 @@ package net.potatocloud.node.service.handlers;
 import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.group.GroupManager;
+import net.potatocloud.api.service.Service;
+import net.potatocloud.network.packets.service.StartServiceResponsePacket;
 import net.potatocloud.network.protocol.PacketContext;
 import net.potatocloud.network.protocol.PacketHandler;
 import net.potatocloud.network.packets.service.StartServicePacket;
@@ -32,7 +34,8 @@ public final class StartServiceHandler implements PacketHandler<StartServicePack
 
         final Optional<ClusterNode> node = group.get().node();
         if (node.isPresent() && !clusterManager.isLocal(node.get().name())) {
-            clusterManager.sendTo(node.get().name(), ctx.packet());
+            clusterManager.request(node.get().name(), ctx.packet(), StartServiceResponsePacket.class)
+                    .thenAccept(ctx::reply);
             return;
         }
 
@@ -41,6 +44,7 @@ public final class StartServiceHandler implements PacketHandler<StartServicePack
             return;
         }
 
-        serviceManager.startService(group.get().name(), ctx.packet().requestId());
+        final Service service = serviceManager.startService(group.get().name());
+        ctx.reply(new StartServiceResponsePacket(service));
     }
 }

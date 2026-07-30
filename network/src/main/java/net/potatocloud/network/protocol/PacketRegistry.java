@@ -41,6 +41,7 @@ public final class PacketRegistry {
         manager.register(12, ServiceScreenUnsubscribePacket.class, ServiceScreenUnsubscribePacket.CODEC);
         manager.register(13, ServiceScreenLogPacket.class, ServiceScreenLogPacket.CODEC);
         manager.register(14, ServicesResponsePacket.class, ServicesResponsePacket.CODEC);
+        manager.register(15, StartServiceResponsePacket.class, StartServiceResponsePacket.CODEC);
 
         manager.register(100, RequestGroupsPacket.class, RequestGroupsPacket.CODEC);
         manager.register(101, GroupAddPacket.class, GroupAddPacket.CODEC);
