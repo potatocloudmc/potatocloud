@@ -1,8 +1,7 @@
-package net.potatocloud.node.service.start.condition.conditions;
+package net.potatocloud.node.service.start.conditions;
 
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.service.ServiceState;
-import net.potatocloud.node.service.start.condition.ServiceStartCondition;
 
 public class MinOnlineCondition implements ServiceStartCondition {
 

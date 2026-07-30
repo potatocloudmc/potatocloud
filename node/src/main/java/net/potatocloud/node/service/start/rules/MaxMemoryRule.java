@@ -1,8 +1,7 @@
-package net.potatocloud.node.service.start.rule.rules;
+package net.potatocloud.node.service.start.rules;
 
 import net.potatocloud.api.group.Group;
 import net.potatocloud.node.service.ServiceManagerImpl;
-import net.potatocloud.node.service.start.rule.ServiceStartRule;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
