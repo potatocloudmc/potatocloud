@@ -10,11 +10,13 @@ import net.potatocloud.network.NetworkServer;
 import net.potatocloud.network.netty.NettyNetworkClient;
 import net.potatocloud.network.netty.NettyNetworkServer;
 import net.potatocloud.network.packets.cluster.*;
+import net.potatocloud.network.packets.event.EventPacket;
 import net.potatocloud.network.packets.group.GroupDeletePacket;
 import net.potatocloud.network.packets.player.CloudPlayerRemovePacket;
 import net.potatocloud.network.packets.service.ServiceRemovePacket;
 import net.potatocloud.network.protocol.Packet;
 import net.potatocloud.network.security.SecurityConfig;
+import net.potatocloud.network.ConnectionType;
 import net.potatocloud.node.cluster.handlers.*;
 import net.potatocloud.node.config.ClusterConfig;
 import net.potatocloud.node.group.GroupManagerImpl;
@@ -69,11 +71,18 @@ public class ClusterManagerImpl implements ClusterManager {
             ServiceManagerImpl serviceManager,
             CloudPlayerManagerImpl playerManager,
             NodePropertiesHolder properties,
-            ScreenManager screenManager
+            ScreenManager screenManager,
+            ClusterEventBus eventBus
     ) {
         this.groupManager = groupManager;
         this.serviceManager = serviceManager;
         this.playerManager = playerManager;
+
+        server.on(EventPacket.class, ctx -> {
+            if (ctx.connection().type() == ConnectionType.NODE) {
+                eventBus.publishEventFromCluster(ctx.packet());
+            }
+        });
 
         server.on(NodeJoinPacket.class, new NodeJoinHandler(localNode, this, config.token(), logger, groupManager, serviceManager, playerManager, properties));
         server.on(NodeJoinRejectPacket.class, ctx -> logger.warn("Could not join the cluster&8: &c" + ctx.packet().reason()));

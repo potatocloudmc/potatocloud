@@ -1,6 +1,6 @@
 package net.potatocloud.node;
 
-public class NodeMain {
+public final class NodeMain {
 
     static void main() {
         Node node = new Node(System.currentTimeMillis());

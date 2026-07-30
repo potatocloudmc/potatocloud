@@ -7,6 +7,7 @@ import net.potatocloud.api.group.Group;
 import net.potatocloud.api.group.GroupManager;
 import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.module.Module;
+import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformManager;
 import net.potatocloud.api.player.CloudPlayerManager;
 import net.potatocloud.api.property.PropertyHolder;
@@ -18,9 +19,7 @@ import net.potatocloud.eventbus.ServerEventBus;
 import net.potatocloud.network.NetworkServer;
 import net.potatocloud.network.security.SecurityConfig;
 import net.potatocloud.network.netty.NettyNetworkServer;
-import net.potatocloud.network.packets.event.EventPacket;
 import net.potatocloud.network.packets.logging.LogMessagePacket;
-import net.potatocloud.network.ConnectionType;
 import net.potatocloud.node.cluster.ClusterEventBus;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.command.CommandManager;
@@ -53,7 +52,6 @@ import net.potatocloud.node.version.VersionFile;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -61,36 +59,34 @@ public class Node extends CloudAPI {
 
     private final long startupTime;
     private final NodeConfigLoader configLoader;
+    private final MigrationManager migrationManager;
     private final NodeConfig config;
 
-    private final NodeLogger logger;
-    private final Console console;
-    private final ScreenManager screenManager;
     private final CommandManager commandManager;
+    private final Console console;
+    private final NodeLogger logger;
+    private final ScreenManager screenManager;
+    private final SetupManager setupManager;
+    private final UpdateChecker updateChecker;
 
-    private final MigrationManager migrationManager;
     private final NetworkServer server;
-    private final EventBus eventBus;
+    private final ClusterManagerImpl clusterManager;
+    private final ClusterEventBus eventBus;
 
     private final NodePropertiesHolder propertiesHolder;
-    private final CloudPlayerManager playerManager;
+    private final CloudPlayerManagerImpl playerManager;
     private final TemplateManager templateManager;
-    private final GroupManager groupManager;
-
-    private final ClusterManagerImpl clusterManager;
+    private final GroupManagerImpl groupManager;
 
     private final PlatformManagerImpl platformManager;
     private final DownloadManager downloadManager;
     private final CacheManager cacheManager;
 
-    private final ServiceManagerImpl serviceManager;
-    private final ServiceStartScheduler serviceStartScheduler;
-
-    private final SetupManager setupManager;
-    private final UpdateChecker updateChecker;
-
     private final ModuleManager moduleManager;
     private final ModuleLoader moduleLoader;
+
+    private final ServiceManagerImpl serviceManager;
+    private final ServiceStartScheduler serviceStartScheduler;
 
     private boolean ready;
     private boolean stopping;
@@ -108,6 +104,7 @@ public class Node extends CloudAPI {
         this.commandManager = new CommandManager();
         this.console = new Console(config, commandManager);
         this.logger = new NodeLogger(config, console, Path.of(config.folders().logs()));
+        this.commandManager.setLogger(logger);
         this.screenManager = new ScreenManager(console);
         this.setupManager = new SetupManager();
         this.updateChecker = new UpdateChecker(logger);
@@ -135,6 +132,7 @@ public class Node extends CloudAPI {
         this.serviceManager = new ServiceManagerImpl(
                 config, logger, server, eventBus, groupManager, screenManager, templateManager, downloadManager, cacheManager, this.clusterManager, console
         );
+
         this.serviceStartScheduler = new ServiceStartScheduler(config, groupManager, serviceManager, eventBus);
     }
 
@@ -143,8 +141,6 @@ public class Node extends CloudAPI {
             System.err.println("The configured node port is already in use. Is another instance of potatocloud already running on this port?");
             System.exit(0);
         }
-
-        commandManager.setLogger(logger);
 
         final Screen nodeScreen = new NodeScreen(console);
         screenManager.register(nodeScreen);
@@ -170,38 +166,43 @@ public class Node extends CloudAPI {
         server.on(LogMessagePacket.class, ctx -> logger.log(Logger.Level.valueOf(ctx.packet().level()), ctx.packet().message()));
 
         if (config.cluster().enabled()) {
-            if (eventBus instanceof ClusterEventBus clusterBus) {
-                server.on(EventPacket.class, ctx -> {
-                    if (ctx.connection().type() == ConnectionType.NODE) {
-                        clusterBus.publishEventFromCluster(ctx.packet());
-                    }
-                });
-            }
-
-            clusterManager.start((GroupManagerImpl) groupManager, serviceManager, (CloudPlayerManagerImpl) playerManager, propertiesHolder, screenManager);
+            clusterManager.start(
+                    groupManager,
+                    serviceManager,
+                    playerManager,
+                    propertiesHolder,
+                    screenManager,
+                    eventBus
+            );
         }
 
         final List<Group> groups = groupManager.groups();
 
         if (!groups.isEmpty()) {
-            final int count = groupManager.groups().size();
+            final int count = groups.size();
             final String groupText = count == 1 ? "group" : "groups";
 
             logger.info("Loaded &a" + count + "&7 " + groupText + "&8:");
             groups.forEach(group -> logger.info("&8» &a" + group.name()));
         }
 
-        if (!platformManager.platforms().isEmpty()) {
-            logger.info("Loaded &a" + platformManager.platforms().size() + "&7 platforms&8:");
-            platformManager.platforms().forEach(platform -> logger.info("&8» &a" + platform.name()));
+        final List<Platform> platforms = platformManager.platforms();
+
+        if (!platforms.isEmpty()) {
+            logger.info("Loaded &a" + platforms.size() + "&7 platforms&8:");
+            platforms.forEach(platform -> logger.info("&8» &a" + platform.name()));
         }
 
         moduleLoader.load(Path.of(config.folders().modules()));
 
-        final Collection<Module> modules = moduleManager.modules().values().stream().map(LoadedModule::module).toList();
+        final List<Module> modules = moduleManager.modules()
+                .values()
+                .stream()
+                .map(LoadedModule::module)
+                .toList();
 
         if (!modules.isEmpty()) {
-            final int count = moduleManager.modules().size();
+            final int count = modules.size();
             final String moduleText = count == 1 ? "module" : "modules";
 
             logger.info("Loaded &a" + count + "&7 " + moduleText + "&8:");
