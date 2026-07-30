@@ -245,43 +245,11 @@ public class Node extends CloudAPI {
 
         moduleManager.disableAll();
 
-        final boolean clustered = config.cluster().enabled();
-
-        if (clustered) {
+        if (config.cluster().enabled()) {
             clusterManager.close();
         }
 
-        // todo refactor this
-        final List<Service> servicesToStop = new ArrayList<>();
-
-        if (clustered) {
-            final String localNodeName = config.cluster().name();
-
-            for (Service service : serviceManager.services()) {
-                final Group group = service.group();
-                if (group == null) {
-                    continue;
-                }
-
-                if (group.node().isPresent() && group.node().get().name().equals(localNodeName)) {
-                    if (service.state() != ServiceState.STOPPING && service.state() != ServiceState.STOPPED) {
-                        servicesToStop.add(service);
-                    }
-                }
-            }
-        } else {
-            servicesToStop.addAll(serviceManager.services().stream().filter(service -> service.state() != ServiceState.STOPPING && service.state() != ServiceState.STOPPED).toList());
-        }
-
-        if (!servicesToStop.isEmpty()) {
-            logger.info("Shutting down all running services...");
-
-            final CompletableFuture<?>[] futures = servicesToStop.stream()
-                    .map(serviceManager::stop)
-                    .toArray(CompletableFuture[]::new);
-
-            CompletableFuture.allOf(futures).join();
-        }
+        stopServices();
 
         logger.info("Stopping network server&8...");
         server.close();
@@ -291,6 +259,43 @@ public class Node extends CloudAPI {
 
         logger.info("Shutdown complete. Goodbye!");
         console.close();
+    }
+
+    private void stopServices() {
+        final List<Service> servicesToStop = new ArrayList<>();
+        final String localNodeName = config.cluster().name();
+
+        for (Service service : serviceManager.services()) {
+            if (service.state() == ServiceState.STOPPING || service.state() == ServiceState.STOPPED) {
+                continue;
+            }
+
+            if (config.cluster().enabled()) {
+                final Group group = service.group();
+
+                if (group == null || group.node().isEmpty()) {
+                    continue;
+                }
+
+                if (!group.node().get().name().equals(localNodeName)) {
+                    continue;
+                }
+            }
+
+            servicesToStop.add(service);
+        }
+
+        if (servicesToStop.isEmpty()) {
+            return;
+        }
+
+        logger.info("Shutting down all running services...");
+
+        CompletableFuture.allOf(
+                servicesToStop.stream()
+                        .map(serviceManager::stop)
+                        .toArray(CompletableFuture[]::new))
+                .join();
     }
 
     public static Node instance() {
