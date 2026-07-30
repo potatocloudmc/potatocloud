@@ -55,7 +55,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class Node extends CloudAPI {
+public final class Node extends CloudAPI {
 
     private final long startupTime;
     private final NodeConfigLoader configLoader;
