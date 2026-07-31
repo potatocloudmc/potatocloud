@@ -11,16 +11,16 @@ import net.potatocloud.node.console.Console;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.screen.impl.RemoteServiceScreen;
-import net.potatocloud.node.service.ServiceManagerImpl;
+import net.potatocloud.node.service.NodeServiceManager;
 
 public final class ServiceAddHandler implements PacketHandler<ServiceAddPacket> {
 
-    private final ServiceManagerImpl serviceManager;
+    private final NodeServiceManager serviceManager;
     private final NetworkServer server;
     private final ScreenManager screenManager;
     private final ClusterManagerImpl clusterManager;
 
-    public ServiceAddHandler(ServiceManagerImpl serviceManager, NetworkServer server, ScreenManager screenManager, ClusterManagerImpl clusterManager) {
+    public ServiceAddHandler(NodeServiceManager serviceManager, NetworkServer server, ScreenManager screenManager, ClusterManagerImpl clusterManager) {
         this.serviceManager = serviceManager;
         this.server = server;
         this.screenManager = screenManager;

@@ -21,14 +21,14 @@ import net.potatocloud.node.properties.NodePropertiesHolder;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.screen.impl.RemoteServiceScreen;
-import net.potatocloud.node.service.ServiceManagerImpl;
+import net.potatocloud.node.service.NodeServiceManager;
 
 import java.util.Map;
 
 public final class ClusterSyncHandler implements PacketHandler<ClusterSyncPacket> {
 
     private final GroupManagerImpl groupManager;
-    private final ServiceManagerImpl serviceManager;
+    private final NodeServiceManager serviceManager;
     private final CloudPlayerManagerImpl playerManager;
     private final NetworkServer server;
     private final ScreenManager screenManager;
@@ -37,7 +37,7 @@ public final class ClusterSyncHandler implements PacketHandler<ClusterSyncPacket
 
     public ClusterSyncHandler(
             GroupManagerImpl groupManager,
-            ServiceManagerImpl serviceManager,
+            NodeServiceManager serviceManager,
             CloudPlayerManagerImpl playerManager,
             NetworkServer server,
             ScreenManager screenManager,

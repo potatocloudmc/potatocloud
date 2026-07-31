@@ -1,16 +1,16 @@
-package net.potatocloud.node.service.runtime;
+package net.potatocloud.node.service;
 
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.ServiceState;
 
 import java.util.Map;
 
-public final class ServiceProcessMonitor implements Runnable {
+public final class ServiceAliveChecker implements Runnable {
 
     private final Map<String, ServiceRuntime> runtimes;
     private final ServiceManager serviceManager;
 
-    public ServiceProcessMonitor(Map<String, ServiceRuntime> runtimes, ServiceManager serviceManager) {
+    public ServiceAliveChecker(Map<String, ServiceRuntime> runtimes, ServiceManager serviceManager) {
         this.runtimes = runtimes;
         this.serviceManager = serviceManager;
     }

@@ -25,7 +25,7 @@ import net.potatocloud.node.group.GroupManagerImpl;
 import net.potatocloud.node.player.CloudPlayerManagerImpl;
 import net.potatocloud.node.properties.NodePropertiesHolder;
 import net.potatocloud.node.screen.ScreenManager;
-import net.potatocloud.node.service.ServiceManagerImpl;
+import net.potatocloud.node.service.NodeServiceManager;
 
 import java.time.Instant;
 import java.util.*;
@@ -49,7 +49,7 @@ public class ClusterManagerImpl implements ClusterManager {
     private HeartbeatScheduler heartbeatScheduler;
 
     private GroupManagerImpl groupManager;
-    private ServiceManagerImpl serviceManager;
+    private NodeServiceManager serviceManager;
     private CloudPlayerManagerImpl playerManager;
 
     public ClusterManagerImpl(
@@ -71,7 +71,7 @@ public class ClusterManagerImpl implements ClusterManager {
 
     public void start(
             GroupManagerImpl groupManager,
-            ServiceManagerImpl serviceManager,
+            NodeServiceManager serviceManager,
             CloudPlayerManagerImpl playerManager,
             NodePropertiesHolder properties,
             ScreenManager screenManager,

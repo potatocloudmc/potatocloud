@@ -9,17 +9,17 @@ import net.potatocloud.network.protocol.PacketContext;
 import net.potatocloud.network.protocol.PacketHandler;
 import net.potatocloud.network.packets.service.StartServicePacket;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
-import net.potatocloud.node.service.ServiceManagerImpl;
+import net.potatocloud.node.service.NodeServiceManager;
 
 import java.util.Optional;
 
 public final class StartServiceHandler implements PacketHandler<StartServicePacket> {
 
-    private final ServiceManagerImpl serviceManager;
+    private final NodeServiceManager serviceManager;
     private final GroupManager groupManager;
     private final ClusterManagerImpl clusterManager;
 
-    public StartServiceHandler(ServiceManagerImpl serviceManager, GroupManager groupManager, ClusterManagerImpl clusterManager) {
+    public StartServiceHandler(NodeServiceManager serviceManager, GroupManager groupManager, ClusterManagerImpl clusterManager) {
         this.serviceManager = serviceManager;
         this.groupManager = groupManager;
         this.clusterManager = clusterManager;

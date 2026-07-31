@@ -6,18 +6,19 @@ import net.potatocloud.api.event.events.service.ServiceStoppedEvent;
 import net.potatocloud.api.event.events.service.ServiceStoppingEvent;
 import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.api.group.Group;
-import net.potatocloud.api.group.GroupManager;
 import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.ServiceState;
 import net.potatocloud.api.service.impl.ServiceImpl;
+import net.potatocloud.common.Closeable;
 import net.potatocloud.common.FileUtils;
 import net.potatocloud.network.NetworkServer;
 import net.potatocloud.network.packets.service.*;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.console.Console;
+import net.potatocloud.node.group.GroupManagerImpl;
 import net.potatocloud.node.platform.DownloadManager;
 import net.potatocloud.node.platform.cache.CacheManager;
 import net.potatocloud.node.screen.Screen;
@@ -26,12 +27,7 @@ import net.potatocloud.node.screen.impl.LocalServiceScreen;
 import net.potatocloud.node.screen.impl.NodeScreen;
 import net.potatocloud.node.service.helper.ServiceIds;
 import net.potatocloud.node.service.helper.ServicePorts;
-import net.potatocloud.node.service.handlers.*;
-import net.potatocloud.node.service.runtime.ServiceMemoryMonitor;
-import net.potatocloud.node.service.runtime.ServiceProcessMonitor;
-import net.potatocloud.node.service.runtime.ServiceRuntime;
-import net.potatocloud.node.service.runtime.local.LocalJvmRuntime;
-import net.potatocloud.node.service.runtime.local.ServiceDefaultFiles;
+import net.potatocloud.node.service.local.LocalJvmRuntime;
 import net.potatocloud.node.template.TemplateManager;
 
 import java.nio.file.Files;
@@ -40,16 +36,16 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
 
-public final class ServiceManagerImpl implements ServiceManager {
+public final class NodeServiceManager implements ServiceManager, Closeable {
 
-    private final List<Service> services = new CopyOnWriteArrayList<>();
+    private final Map<String, Service> services = new ConcurrentHashMap<>();
     private final Map<String, ServiceRuntime> runtimes = new ConcurrentHashMap<>();
 
     private final NetworkServer server;
     private final Logger logger;
     private final NodeConfig config;
     private final EventBus eventBus;
-    private final GroupManager groupManager;
+    private final GroupManagerImpl groupManager;
     private final ScreenManager screenManager;
     private final TemplateManager templateManager;
     private final DownloadManager downloadManager;
@@ -60,12 +56,12 @@ public final class ServiceManagerImpl implements ServiceManager {
     private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(Thread.ofVirtual().factory());
 
-    public ServiceManagerImpl(
+    public NodeServiceManager(
             NodeConfig config,
             Logger logger,
             NetworkServer server,
             EventBus eventBus,
-            GroupManager groupManager,
+            GroupManagerImpl groupManager,
             ScreenManager screenManager,
             TemplateManager templateManager,
             DownloadManager downloadManager,
@@ -87,30 +83,43 @@ public final class ServiceManagerImpl implements ServiceManager {
 
         ServiceDefaultFiles.copyDefaultFiles(Path.of(config.folders().data()));
 
-        server.on(RequestServicesPacket.class, ctx -> ctx.reply(new ServicesResponsePacket(services())));
-        server.on(ServiceAddPacket.class, new ServiceAddHandler(this, server, screenManager, clusterManager));
-        server.on(ServiceRemovePacket.class, new ServiceRemoveHandler(this, server, screenManager));
-        server.on(ServiceStartedPacket.class, new ServiceStartedHandler(this, logger, eventBus, clusterManager, server));
-        server.on(ServiceUpdatePacket.class, new ServiceUpdateHandler(this, server, clusterManager));
-        server.on(ServiceStartingPacket.class, new ServiceStartingHandler(logger, this));
-        server.on(StartServicePacket.class, new StartServiceHandler(this, groupManager, clusterManager));
-        server.on(StopServicePacket.class, new StopServiceHandler(this, clusterManager));
-        server.on(ServiceExecuteCommandPacket.class, new ServiceExecuteCommandHandler(this, clusterManager));
-        server.on(ServiceCopyPacket.class, new ServiceCopyHandler(this, clusterManager));
-        server.on(ServiceMemoryUpdatePacket.class, new ServiceMemoryUpdateHandler(this, server));
+        ServicePacketHandlers.register(
+                server,
+                this,
+                groupManager,
+                eventBus,
+                clusterManager,
+                logger,
+                screenManager
+        );
 
-        scheduler.scheduleAtFixedRate(new ServiceProcessMonitor(runtimes, this), 0, 1, TimeUnit.SECONDS);
-        scheduler.scheduleAtFixedRate(new ServiceMemoryMonitor(runtimes, this, server, clusterManager), 0, 2, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(
+                new ServiceAliveChecker(runtimes, this),
+                0,
+                1,
+                TimeUnit.SECONDS
+        );
+
+
+        scheduler.scheduleAtFixedRate(
+                new ServiceMemoryUpdater(runtimes, this, server, clusterManager),
+                0,
+                2,
+                TimeUnit.SECONDS
+        );
     }
 
     @Override
     public Optional<Service> find(String name) {
-        return services.stream().filter(service -> service.name().equalsIgnoreCase(name)).findFirst();
+        if (name == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(services.get(name.toLowerCase()));
     }
 
     @Override
     public List<Service> services() {
-        return Collections.unmodifiableList(services);
+        return services.values().stream().toList();
     }
 
     @Override
@@ -272,7 +281,7 @@ public final class ServiceManagerImpl implements ServiceManager {
             } catch (Exception e) {
                 logger.error("Failed to start service &a" + service.name() + "&8: &c" + e.getMessage());
                 runtimes.remove(service.name());
-                services.remove(service);
+                services.remove(service.name().toLowerCase());
                 screenManager.unregister(service.name());
                 clusterManager.broadcast(new ServiceRemovePacket(service.name(), service.port()));
             }
@@ -298,7 +307,7 @@ public final class ServiceManagerImpl implements ServiceManager {
                 runtime.stop(service);
             }
 
-            services.remove(service);
+            services.remove(service.name().toLowerCase());
 
             if (screenManager.current() != null && screenManager.current().name().equals(service.name())) {
                 screenManager.open(screenManager.get(NodeScreen.NODE_SCREEN_NAME));
@@ -319,11 +328,11 @@ public final class ServiceManagerImpl implements ServiceManager {
     }
 
     public void addService(Service service) {
-        services.add(service);
+        services.put(service.name().toLowerCase(), service);
     }
 
     public void removeService(Service service) {
-        services.remove(service);
+        services.remove(service.name().toLowerCase());
         screenManager.unregister(service.name());
     }
 
@@ -332,7 +341,7 @@ public final class ServiceManagerImpl implements ServiceManager {
             return true;
         }
 
-        final long usedMb = services.stream()
+        final long usedMb = services.values().stream()
                 .mapToLong(service -> service.group().maxMemory())
                 .sum();
 
@@ -340,7 +349,7 @@ public final class ServiceManagerImpl implements ServiceManager {
     }
 
     public void logMemoryWarning(Group group) {
-        final long usedMb = services.stream()
+        final long usedMb = services.values().stream()
                 .mapToLong(service -> service.group().maxMemory())
                 .sum();
 
@@ -352,6 +361,11 @@ public final class ServiceManagerImpl implements ServiceManager {
 
     @Override
     public Optional<Service> current() {
-        throw new UnsupportedOperationException("getCurrentService() is only available when the API is used from within a connector.");
+        throw new UnsupportedOperationException("current() is only available when the API is used from within a connector.");
+    }
+
+    @Override
+    public void close() {
+        scheduler.shutdown();
     }
 }

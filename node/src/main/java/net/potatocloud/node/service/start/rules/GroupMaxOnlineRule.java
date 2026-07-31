@@ -3,7 +3,7 @@ package net.potatocloud.node.service.start.rules;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.service.ServiceState;
 
-public class GroupMaxOnlineRule implements ServiceStartRule {
+public final class GroupMaxOnlineRule implements ServiceStartRule {
 
     @Override
     public boolean allows(Group group) {

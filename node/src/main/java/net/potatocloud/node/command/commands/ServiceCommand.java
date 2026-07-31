@@ -13,7 +13,7 @@ import net.potatocloud.node.command.Command;
 import net.potatocloud.node.command.CommandInfo;
 import net.potatocloud.node.command.SubCommand;
 import net.potatocloud.node.screen.ScreenManager;
-import net.potatocloud.node.service.ServiceManagerImpl;
+import net.potatocloud.node.service.NodeServiceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.Optional;
 @CommandInfo(name = "service", description = "Manage services", aliases = {"ser", "serv", "s"})
 public class ServiceCommand extends Command {
 
-    public ServiceCommand(Logger logger, ServiceManagerImpl serviceManager, ScreenManager screenManager) {
+    public ServiceCommand(Logger logger, NodeServiceManager serviceManager, ScreenManager screenManager) {
         defaultExecutor(_ -> sendHelp());
 
         sub("copy", "Copy files from a service to a template")

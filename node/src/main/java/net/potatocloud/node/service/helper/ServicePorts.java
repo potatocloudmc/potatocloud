@@ -5,7 +5,7 @@ import net.potatocloud.api.service.Service;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.utils.NetworkUtils;
 
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,14 +14,14 @@ public final class ServicePorts {
     private ServicePorts() {
     }
 
-    public static int nextPort(Group group, NodeConfig config, List<Service> services) {
+    public static int nextPort(Group group, NodeConfig config, Map<String, Service> services) {
         int port = group.platform().proxy()
                 ? config.service().proxyStartPort()
                 : config.service().serviceStartPort();
 
         final int maxPort = 65535;
 
-        final Set<Integer> usedPorts = services.stream()
+        final Set<Integer> usedPorts = services.values().stream()
                 .map(Service::port)
                 .collect(Collectors.toSet());
 

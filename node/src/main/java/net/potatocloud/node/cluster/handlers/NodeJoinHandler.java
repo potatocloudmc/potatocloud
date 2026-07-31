@@ -16,7 +16,7 @@ import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.cluster.ClusterNodeImpl;
 import net.potatocloud.node.group.GroupManagerImpl;
 import net.potatocloud.node.player.CloudPlayerManagerImpl;
-import net.potatocloud.node.service.ServiceManagerImpl;
+import net.potatocloud.node.service.NodeServiceManager;
 
 public final class NodeJoinHandler implements PacketHandler<NodeJoinPacket> {
 
@@ -25,11 +25,11 @@ public final class NodeJoinHandler implements PacketHandler<NodeJoinPacket> {
     private final String clusterToken;
     private final Logger logger;
     private final GroupManagerImpl groupManager;
-    private final ServiceManagerImpl serviceManager;
+    private final NodeServiceManager serviceManager;
     private final CloudPlayerManagerImpl playerManager;
     private final PropertyHolder properties;
 
-    public NodeJoinHandler(ClusterNode localNode, ClusterManagerImpl clusterManager, String clusterToken, Logger logger, GroupManagerImpl groupManager, ServiceManagerImpl serviceManager, CloudPlayerManagerImpl playerManager, PropertyHolder properties) {
+    public NodeJoinHandler(ClusterNode localNode, ClusterManagerImpl clusterManager, String clusterToken, Logger logger, GroupManagerImpl groupManager, NodeServiceManager serviceManager, CloudPlayerManagerImpl playerManager, PropertyHolder properties) {
         this.localNode = localNode;
         this.clusterManager = clusterManager;
         this.clusterToken = clusterToken;

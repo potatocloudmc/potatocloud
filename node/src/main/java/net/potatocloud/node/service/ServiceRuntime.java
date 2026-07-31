@@ -1,4 +1,4 @@
-package net.potatocloud.node.service.runtime;
+package net.potatocloud.node.service;
 
 import net.potatocloud.api.service.Service;
 

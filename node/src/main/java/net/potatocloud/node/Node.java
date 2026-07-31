@@ -41,7 +41,7 @@ import net.potatocloud.node.properties.NodePropertiesHolder;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.screen.impl.NodeScreen;
-import net.potatocloud.node.service.ServiceManagerImpl;
+import net.potatocloud.node.service.NodeServiceManager;
 import net.potatocloud.node.service.start.ServiceStartScheduler;
 import net.potatocloud.node.setup.SetupManager;
 import net.potatocloud.node.template.TemplateManager;
@@ -85,7 +85,7 @@ public final class Node extends CloudAPI {
     private final ModuleManager moduleManager;
     private final ModuleLoader moduleLoader;
 
-    private final ServiceManagerImpl serviceManager;
+    private final NodeServiceManager serviceManager;
     private final ServiceStartScheduler serviceStartScheduler;
 
     private boolean ready;
@@ -129,7 +129,7 @@ public final class Node extends CloudAPI {
         this.moduleManager = new ModuleManager();
         this.moduleLoader = new ModuleLoader(moduleManager);
 
-        this.serviceManager = new ServiceManagerImpl(
+        this.serviceManager = new NodeServiceManager(
                 config, logger, server, eventBus, groupManager, screenManager, templateManager, downloadManager, cacheManager, this.clusterManager, console
         );
 
@@ -251,6 +251,8 @@ public final class Node extends CloudAPI {
         }
 
         stopServices();
+
+        serviceManager.close();
 
         logger.info("Stopping network server&8...");
         server.close();

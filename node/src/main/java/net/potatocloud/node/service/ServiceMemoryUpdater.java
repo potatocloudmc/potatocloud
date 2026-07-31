@@ -1,4 +1,4 @@
-package net.potatocloud.node.service.runtime;
+package net.potatocloud.node.service;
 
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.impl.ServiceImpl;
@@ -8,14 +8,14 @@ import net.potatocloud.node.cluster.ClusterManagerImpl;
 
 import java.util.Map;
 
-public final class ServiceMemoryMonitor implements Runnable {
+public final class ServiceMemoryUpdater implements Runnable {
 
     private final Map<String, ServiceRuntime> runtimes;
     private final ServiceManager serviceManager;
     private final NetworkServer server;
     private final ClusterManagerImpl clusterManager;
 
-    public ServiceMemoryMonitor(Map<String, ServiceRuntime> runtimes, ServiceManager serviceManager, NetworkServer server, ClusterManagerImpl clusterManager) {
+    public ServiceMemoryUpdater(Map<String, ServiceRuntime> runtimes, ServiceManager serviceManager, NetworkServer server, ClusterManagerImpl clusterManager) {
         this.runtimes = runtimes;
         this.serviceManager = serviceManager;
         this.server = server;

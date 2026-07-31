@@ -1,4 +1,4 @@
-package net.potatocloud.node.service.runtime.local;
+package net.potatocloud.node.service;
 
 import java.util.List;
 

@@ -1,18 +1,18 @@
 package net.potatocloud.node.service.start.rules;
 
 import net.potatocloud.api.group.Group;
-import net.potatocloud.node.service.ServiceManagerImpl;
+import net.potatocloud.node.service.NodeServiceManager;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MaxMemoryRule implements ServiceStartRule {
+public final class MaxMemoryRule implements ServiceStartRule {
 
-    private final ServiceManagerImpl serviceManager;
+    private final NodeServiceManager serviceManager;
 
     private final Set<String> memoryWarnedGroups = ConcurrentHashMap.newKeySet();
 
-    public MaxMemoryRule(ServiceManagerImpl serviceManager) {
+    public MaxMemoryRule(NodeServiceManager serviceManager) {
         this.serviceManager = serviceManager;
     }
 

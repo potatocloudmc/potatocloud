@@ -1,4 +1,4 @@
-package net.potatocloud.node.service.runtime.local;
+package net.potatocloud.node.service.local;
 
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.logging.Logger;
@@ -15,7 +15,8 @@ import net.potatocloud.node.platform.PlatformUtils;
 import net.potatocloud.node.platform.VelocityForwardingSecret;
 import net.potatocloud.node.platform.cache.CacheManager;
 import net.potatocloud.node.screen.Screen;
-import net.potatocloud.node.service.runtime.ServiceRuntime;
+import net.potatocloud.node.service.ServicePerformanceFlags;
+import net.potatocloud.node.service.ServiceRuntime;
 import net.potatocloud.node.template.TemplateManager;
 import net.potatocloud.node.utils.ProxyUtils;
 import oshi.ffm.SystemInfo;
