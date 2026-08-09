@@ -1,5 +1,8 @@
 package net.potatocloud.api.logging;
 
+/**
+ * Writes messages to the log.
+ */
 public interface Logger {
 
     /**
@@ -54,7 +57,7 @@ public interface Logger {
     /**
      * Logs a message with a specific log level.
      *
-     * @param level   the severity level of the log message
+     * @param level the severity level of the log message
      * @param message the message to log
      */
     void log(Level level, String message);
@@ -85,7 +88,7 @@ public interface Logger {
         DEBUG("&e"),
 
         /**
-         * Command input entered by a user in the console
+         * Command input entered by a user in the console.
          */
         COMMAND_INPUT("&7");
 
@@ -98,6 +101,11 @@ public interface Logger {
             this.colorCode = colorCode;
         }
 
+        /**
+         * Returns the color code for this level.
+         *
+         * @return the color code
+         */
         public String colorCode() {
             return colorCode;
         }

@@ -10,6 +10,9 @@ import net.potatocloud.api.property.PropertyHolder;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.version.Version;
 
+/**
+ * Main entry point for the potatocloud API.
+ */
 public abstract class CloudAPI {
 
     /**
@@ -22,6 +25,9 @@ public abstract class CloudAPI {
      */
     public static final Version VERSION = Version.of(2, 0, 0);
 
+    /**
+     * Creates the API instance.
+     */
     public CloudAPI() {
         instance = this;
     }

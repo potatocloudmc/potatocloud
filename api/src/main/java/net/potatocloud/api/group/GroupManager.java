@@ -3,13 +3,16 @@ package net.potatocloud.api.group;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Represents the group manager.
+ */
 public interface GroupManager {
 
     /**
      * Gets a group by its name.
      *
      * @param name the name of the group
-     * @return the group, or empty if not found
+     * @return the group, or an empty optional if not found
      */
     Optional<Group> find(String name);
 
@@ -52,7 +55,7 @@ public interface GroupManager {
     void update(Group group);
 
     /**
-     * Checks if a group with the given name exists.
+     * Checks whether a group with the given name exists.
      *
      * @param name the name of the group
      * @return {@code true} if the group exists, otherwise {@code false}

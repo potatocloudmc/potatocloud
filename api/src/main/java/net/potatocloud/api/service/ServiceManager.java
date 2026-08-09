@@ -6,13 +6,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Represents the service manager.
+ */
 public interface ServiceManager {
 
     /**
      * Gets a service by its name.
      *
      * @param name the name of the service
-     * @return the service
+     * @return the service, or an empty optional if not found
      */
     Optional<Service> find(String name);
 
@@ -34,7 +37,7 @@ public interface ServiceManager {
      * Starts a new service.
      *
      * @param group the target group
-     * @return future containing the started service
+     * @return a future containing the started service
      */
     CompletableFuture<Service> start(Group group);
 
@@ -42,7 +45,7 @@ public interface ServiceManager {
      * Stops a service.
      *
      * @param service the service to stop
-     * @return completion future
+     * @return a future that completes when the service stops
      */
     CompletableFuture<Void> stop(Service service);
 
@@ -57,16 +60,16 @@ public interface ServiceManager {
     /**
      * Copies service files to a template.
      *
-     * @param service  the service to copy files from
+     * @param service the service to copy files from
      * @param template the template to copy to
-     * @param filter   the filter to apply
+     * @param filter the filter to apply
      */
     void copyTo(Service service, String template, String filter);
 
     /**
      * Copies service files to a template.
      *
-     * @param service  the service to copy files from
+     * @param service the service to copy files from
      * @param template the template to copy to
      */
     default void copyTo(Service service, String template) {
@@ -74,12 +77,12 @@ public interface ServiceManager {
     }
 
     /**
-     * Gets the current service the api is running on.
+     * Gets the current service the API is running on.
      * <p>
      * This only works if the API is used from within a plugin.
      * </p>
      *
-     * @return the current service
+     * @return the current service, or an empty optional when not running on a service
      */
     Optional<Service> current();
 }

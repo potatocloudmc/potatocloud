@@ -3,6 +3,9 @@ package net.potatocloud.api.cluster;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Represents the cluster manager.
+ */
 public interface ClusterManager {
 
     /**

@@ -1,5 +1,8 @@
 package net.potatocloud.api.service;
 
+/**
+ * States used during the service lifecycle.
+ */
 public enum ServiceState {
 
     /**

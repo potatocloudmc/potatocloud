@@ -3,6 +3,9 @@ package net.potatocloud.api.platform;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Represents the platform manager.
+ */
 public interface PlatformManager {
 
     /**
@@ -16,12 +19,12 @@ public interface PlatformManager {
      * Gets a platform by its name.
      *
      * @param name the name of the platform
-     * @return the platform or empty if not found
+     * @return the platform, or an empty optional if not found
      */
     Optional<Platform> find(String name);
 
     /**
-     * Checks if a platform with the given name exists.
+     * Checks whether a platform with the given name exists.
      *
      * @param name the name of the platform
      * @return {@code true} if the platform exists, otherwise {@code false}

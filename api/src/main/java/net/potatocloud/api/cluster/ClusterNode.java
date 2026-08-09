@@ -2,6 +2,9 @@ package net.potatocloud.api.cluster;
 
 import java.time.Instant;
 
+/**
+ * Represents one node in the cluster.
+ */
 public interface ClusterNode {
 
     /**

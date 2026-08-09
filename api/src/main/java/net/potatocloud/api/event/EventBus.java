@@ -1,5 +1,8 @@
 package net.potatocloud.api.event;
 
+/**
+ * Represents the event system.
+ */
 public interface EventBus {
 
     /**
@@ -25,7 +28,7 @@ public interface EventBus {
      * Publishes an event using a specific {@link PublishTarget}.
      *
      * @param event the event to publish
-     * @param target defines where the event should be dispatched
+     * @param target the target where the event should be dispatched
      * @param <T> the type of event
      */
     <T extends Event> void publish(T event, PublishTarget target);

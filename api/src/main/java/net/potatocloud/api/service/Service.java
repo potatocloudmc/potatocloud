@@ -12,6 +12,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Represents one service.
+ */
 public interface Service extends PropertyHolder {
 
     /**
@@ -22,14 +25,14 @@ public interface Service extends PropertyHolder {
     String name();
 
     /**
-     * Gets the id of the service.
+     * Gets the ID of the service.
      *
-     * @return the id of the service
+     * @return the ID of the service
      */
     int id();
 
     /**
-     * Gets the cluster node this service's group is assigned to.
+     * Gets the cluster node assigned to the group of this service.
      *
      * @return the cluster node, or an empty optional if not assigned
      */
@@ -64,7 +67,7 @@ public interface Service extends PropertyHolder {
     void state(ServiceState state);
 
     /**
-     * Gets whether the service is online or not.
+     * Gets whether the service is online.
      *
      * @return {@code true} if the service is online, otherwise {@code false}
      */
@@ -87,16 +90,16 @@ public interface Service extends PropertyHolder {
     Duration uptime();
 
     /**
-     * Gets the maximum players of the service.
+     * Gets the maximum player count of the service.
      *
-     * @return the maximum players of the service
+     * @return the maximum player count of the service
      */
     int maxPlayers();
 
     /**
-     * Sets the maximum players of the service.
+     * Sets the maximum player count of the service.
      *
-     * @param maxPlayers the new maximum players of the service
+     * @param maxPlayers the new maximum player count of the service
      */
     void maxPlayers(int maxPlayers);
 
@@ -136,7 +139,7 @@ public interface Service extends PropertyHolder {
     }
 
     /**
-     * Gets whether the service is full or not.
+     * Gets whether the service is full.
      *
      * @return {@code true} if the service is full, otherwise {@code false}
      */

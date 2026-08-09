@@ -3,7 +3,7 @@ package net.potatocloud.api.property;
 import java.util.Set;
 
 /**
- * Common properties with built-in functionality.
+ * Represents common properties with built-in functionality.
  */
 public final class DefaultProperties {
 
@@ -19,8 +19,8 @@ public final class DefaultProperties {
     public static final PropertyKey<String> GAME_STATE = PropertyKey.of("gameState", "LOBBY");
 
     /**
-     * Whether the service uses Velocity modern forwarding or not.
-     * Only works when the service is running on Velocity platform.
+     * Whether the service uses Velocity modern forwarding.
+     * Only works when the service is running on the Velocity platform.
      */
     public static final PropertyKey<Boolean> VELOCITY_MODERN_FORWARDING = PropertyKey.of("velocityModernForwarding", false);
 

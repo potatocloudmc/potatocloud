@@ -4,4 +4,11 @@ import net.potatocloud.api.event.Event;
 
 import java.util.UUID;
 
-public record CloudPlayerDisconnectEvent(UUID playerUniqueId, String playerUsername) implements Event {}
+/**
+ * Event sent when a player disconnects.
+ *
+ * @param playerUniqueId the unique ID of the player
+ * @param playerUsername the username of the player
+ */
+public record CloudPlayerDisconnectEvent(UUID playerUniqueId, String playerUsername) implements Event {
+}

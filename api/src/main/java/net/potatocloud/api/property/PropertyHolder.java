@@ -31,7 +31,7 @@ public interface PropertyHolder {
      *
      * @param key the property key
      * @param <T> the property type
-     * @return the stored value or the property's default value
+     * @return the stored value or the default value of the property
      */
     @SuppressWarnings("unchecked")
     default <T> T get(PropertyKey<T> key) {

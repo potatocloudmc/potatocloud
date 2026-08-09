@@ -13,6 +13,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Represents a service group.
+ */
 public interface Group extends PropertyHolder {
 
     /**
@@ -25,7 +28,7 @@ public interface Group extends PropertyHolder {
     /**
      * Gets the node of the group.
      *
-     * @return the node of the group
+     * @return the node of the group, or an empty optional if not assigned
      */
     Optional<ClusterNode> node();
 
@@ -51,30 +54,30 @@ public interface Group extends PropertyHolder {
     Set<String> templates();
 
     /**
-     * Gets the minimum online count of the group.
+     * Gets the minimum service count of the group.
      *
-     * @return the minimum online count of the group
+     * @return the minimum service count of the group
      */
     int minServices();
 
     /**
-     * Sets the minimum online count of the group.
+     * Sets the minimum service count of the group.
      *
-     * @param minServices the minimum online count of the group
+     * @param minServices the minimum service count of the group
      */
     void minServices(int minServices);
 
     /**
-     * Gets the maximum online count of the group.
+     * Gets the maximum service count of the group.
      *
-     * @return the maximum online count of the group
+     * @return the maximum service count of the group
      */
     int maxServices();
 
     /**
-     * Sets the maximum online count of the group.
+     * Sets the maximum service count of the group.
      *
-     * @param maxServices the maximum online count of the group
+     * @param maxServices the maximum service count of the group
      */
     void maxServices(int maxServices);
 
@@ -90,16 +93,16 @@ public interface Group extends PropertyHolder {
     }
 
     /**
-     * Gets the maximum players of the group.
+     * Gets the maximum player count of each service in the group.
      *
-     * @return the maximum players of the group
+     * @return the maximum player count of each service
      */
     int maxPlayers();
 
     /**
-     * Sets the maximum players of the group.
+     * Sets the maximum player count of each service in the group.
      *
-     * @param maxPlayers the maximum players of the group
+     * @param maxPlayers the maximum player count of each service
      */
     void maxPlayers(int maxPlayers);
 
@@ -174,16 +177,16 @@ public interface Group extends PropertyHolder {
     String javaCommand();
 
     /**
-     * Gets the custom jvm flags of the group.
+     * Gets the custom JVM flags of the group.
      *
-     * @return the custom jvm flags of the group
+     * @return the custom JVM flags of the group
      */
     Set<String> customJvmFlags();
 
     /**
-     * Adds a custom jvm flag to the group.
+     * Adds a custom JVM flag to the group.
      *
-     * @param flag the custom jvm flag to add
+     * @param flag the custom JVM flag to add
      */
     void addCustomJvmFlag(String flag);
 

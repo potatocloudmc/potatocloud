@@ -2,6 +2,9 @@ package net.potatocloud.api.module;
 
 import net.potatocloud.api.version.Version;
 
+/**
+ * Represents a loadable potatocloud module.
+ */
 public interface Module {
 
     /**

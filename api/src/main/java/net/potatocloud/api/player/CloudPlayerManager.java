@@ -6,21 +6,24 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Represents the player manager.
+ */
 public interface CloudPlayerManager {
 
     /**
-     * Gets a player by its unique id.
+     * Gets a player by its unique ID.
      *
-     * @param uniqueId the unique id of the player
-     * @return the player
+     * @param uniqueId the unique ID of the player
+     * @return the player, or an empty optional if not found
      */
     Optional<CloudPlayer> find(UUID uniqueId);
 
     /**
      * Gets a player by its username.
      *
-     * @param username the name of the player
-     * @return the player
+     * @param username the username of the player
+     * @return the player, or an empty optional if not found
      */
     Optional<CloudPlayer> find(String username);
 
@@ -34,7 +37,7 @@ public interface CloudPlayerManager {
     /**
      * Connects the player to the given service.
      *
-     * @param player  the player to connect
+     * @param player the player to connect
      * @param service the service to connect with
      */
     void connectTo(CloudPlayer player, Service service);

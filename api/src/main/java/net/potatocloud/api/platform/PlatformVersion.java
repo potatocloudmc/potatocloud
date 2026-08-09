@@ -1,5 +1,8 @@
 package net.potatocloud.api.platform;
 
+/**
+ * Represents one version of a server platform.
+ */
 public interface PlatformVersion {
 
     /**

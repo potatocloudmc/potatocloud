@@ -1,7 +1,7 @@
 package net.potatocloud.api.property;
 
 /**
- * Represents a property consisting of a unique name and a default value.
+ * Represents a property name, type, and default value.
  *
  * @param name the name of the property
  * @param defaultValue the default value of the property

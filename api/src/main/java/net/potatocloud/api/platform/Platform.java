@@ -3,6 +3,9 @@ package net.potatocloud.api.platform;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Represents a server platform.
+ */
 public interface Platform {
 
     /**
@@ -93,7 +96,7 @@ public interface Platform {
      * Gets a version by its name.
      *
      * @param name the name of the version
-     * @return the version
+     * @return the version, or an empty optional if not found
      */
     default Optional<PlatformVersion> version(String name) {
         return versions().stream()
@@ -112,9 +115,9 @@ public interface Platform {
     }
 
     /**
-     * Checks whether the platform is a bukkit based platform.
+     * Checks whether the platform is a Bukkit-based platform.
      *
-     * @return {@code true} if the platform is a Bukkit-based platform, otherwise {@code false}
+     * @return {@code true} if the platform is Bukkit-based, otherwise {@code false}
      */
     default boolean bukkitBased() {
         return base() == PlatformBase.BUKKIT || base() == PlatformBase.SPIGOT || paperBased();
