@@ -251,10 +251,6 @@ public class ServiceCommand extends Command {
 
                     int started = 0;
                     for (int i = 0; i < amount; i++) {
-                        if (!serviceManager.hasEnoughMemory(group)) {
-                            serviceManager.logMemoryWarning(group);
-                            break;
-                        }
                         serviceManager.start(group);
                         started++;
                     }

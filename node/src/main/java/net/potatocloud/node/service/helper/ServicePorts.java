@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 public final class ServicePorts {
 
+    private static final int MAX_PORT = 65535;
+
     private ServicePorts() {
     }
 
@@ -19,20 +21,17 @@ public final class ServicePorts {
                 ? config.service().proxyStartPort()
                 : config.service().serviceStartPort();
 
-        final int maxPort = 65535;
-
         final Set<Integer> usedPorts = services.values().stream()
                 .map(Service::port)
                 .collect(Collectors.toSet());
 
-        while (port <= maxPort) {
+        while (port <= MAX_PORT) {
             if (!usedPorts.contains(port) && NetworkUtils.isPortFree(port)) {
                 return port;
             }
             port++;
         }
 
-        throw new IllegalStateException("No free port available in range " + port + " - " + maxPort);
+        throw new IllegalStateException("No free port available in range " + port + " - " + MAX_PORT);
     }
-
 }

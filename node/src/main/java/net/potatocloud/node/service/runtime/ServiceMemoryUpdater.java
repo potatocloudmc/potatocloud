@@ -1,4 +1,4 @@
-package net.potatocloud.node.service;
+package net.potatocloud.node.service.runtime;
 
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.impl.ServiceImpl;
@@ -15,7 +15,12 @@ public final class ServiceMemoryUpdater implements Runnable {
     private final NetworkServer server;
     private final ClusterManagerImpl clusterManager;
 
-    public ServiceMemoryUpdater(Map<String, ServiceRuntime> runtimes, ServiceManager serviceManager, NetworkServer server, ClusterManagerImpl clusterManager) {
+    public ServiceMemoryUpdater(
+            Map<String, ServiceRuntime> runtimes,
+            ServiceManager serviceManager,
+            NetworkServer server,
+            ClusterManagerImpl clusterManager
+    ) {
         this.runtimes = runtimes;
         this.serviceManager = serviceManager;
         this.server = server;

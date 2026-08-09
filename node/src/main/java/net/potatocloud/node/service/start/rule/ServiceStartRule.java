@@ -1,4 +1,4 @@
-package net.potatocloud.node.service.start.rules;
+package net.potatocloud.node.service.start.rule;
 
 import net.potatocloud.api.group.Group;
 

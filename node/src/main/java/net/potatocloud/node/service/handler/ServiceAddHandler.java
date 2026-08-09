@@ -1,4 +1,4 @@
-package net.potatocloud.node.service.handlers;
+package net.potatocloud.node.service.handler;
 
 import net.potatocloud.network.ConnectionType;
 import net.potatocloud.network.NetworkServer;
@@ -20,7 +20,12 @@ public final class ServiceAddHandler implements PacketHandler<ServiceAddPacket> 
     private final ScreenManager screenManager;
     private final ClusterManagerImpl clusterManager;
 
-    public ServiceAddHandler(NodeServiceManager serviceManager, NetworkServer server, ScreenManager screenManager, ClusterManagerImpl clusterManager) {
+    public ServiceAddHandler(
+            NodeServiceManager serviceManager,
+            NetworkServer server,
+            ScreenManager screenManager,
+            ClusterManagerImpl clusterManager
+    ) {
         this.serviceManager = serviceManager;
         this.server = server;
         this.screenManager = screenManager;

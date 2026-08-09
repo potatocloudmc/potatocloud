@@ -1,4 +1,4 @@
-package net.potatocloud.node.service.local;
+package net.potatocloud.node.service.runtime;
 
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.logging.Logger;
@@ -15,14 +15,16 @@ import net.potatocloud.node.platform.PlatformUtils;
 import net.potatocloud.node.platform.VelocityForwardingSecret;
 import net.potatocloud.node.platform.cache.CacheManager;
 import net.potatocloud.node.screen.Screen;
-import net.potatocloud.node.service.ServicePerformanceFlags;
-import net.potatocloud.node.service.ServiceRuntime;
 import net.potatocloud.node.template.TemplateManager;
 import net.potatocloud.node.utils.ProxyUtils;
 import oshi.ffm.SystemInfo;
 import oshi.software.os.OSProcess;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -32,7 +34,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public final class LocalJvmRuntime implements ServiceRuntime {
+public final class JvmServiceRuntime implements ServiceRuntime {
 
     private final Group group;
     private final NodeConfig config;
@@ -48,7 +50,7 @@ public final class LocalJvmRuntime implements ServiceRuntime {
     private BufferedWriter processWriter;
     private BufferedReader processReader;
 
-    public LocalJvmRuntime(
+    public JvmServiceRuntime(
             Group group,
             NodeConfig config,
             Logger logger,
@@ -83,7 +85,11 @@ public final class LocalJvmRuntime implements ServiceRuntime {
         final Platform platform = group.platform();
         final Path pluginsFolder = directory.resolve(platform.moddedBased() ? "mods" : "plugins");
 
-        downloadManager.downloadPlatformVersion(platform, platform.version(group.platformVersion().name()).orElseThrow());
+        final PlatformVersion platformVersion = platform
+                .version(group.platformVersion().name())
+                .orElseThrow();
+
+        downloadManager.downloadPlatformVersion(platform, platformVersion);
 
         try {
             Files.createDirectories(pluginsFolder);
@@ -327,7 +333,10 @@ public final class LocalJvmRuntime implements ServiceRuntime {
         processBuilder.environment().put("PROXYFORWARD_FORWARDING_MODE", modernForwarding ? "velocity" : "bungee");
 
         if (modernForwarding) {
-            processBuilder.environment().put("PROXYFORWARD_VELOCITY_SECRET", VelocityForwardingSecret.FORWARDING_SECRET);
+            processBuilder.environment().put(
+                    "PROXYFORWARD_VELOCITY_SECRET",
+                    VelocityForwardingSecret.FORWARDING_SECRET
+            );
         }
     }
 }

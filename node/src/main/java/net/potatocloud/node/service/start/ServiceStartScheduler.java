@@ -8,14 +8,13 @@ import net.potatocloud.api.group.GroupManager;
 import net.potatocloud.api.property.DefaultProperties;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.service.NodeServiceManager;
-import net.potatocloud.node.service.start.conditions.ServiceStartCondition;
-import net.potatocloud.node.service.start.conditions.MinOnlineCondition;
-import net.potatocloud.node.service.start.conditions.PlayerUsageCondition;
-import net.potatocloud.node.service.start.rules.ServiceStartRule;
-import net.potatocloud.node.service.start.rules.GroupMaxOnlineRule;
-import net.potatocloud.node.service.start.rules.MaxMemoryRule;
-import net.potatocloud.node.service.start.rules.MaxServicesRule;
-import net.potatocloud.node.service.start.rules.MaxStartingRule;
+import net.potatocloud.node.service.start.condition.MinOnlineCondition;
+import net.potatocloud.node.service.start.condition.PlayerUsageCondition;
+import net.potatocloud.node.service.start.condition.ServiceStartCondition;
+import net.potatocloud.node.service.start.rule.GroupMaxOnlineRule;
+import net.potatocloud.node.service.start.rule.MaxServicesRule;
+import net.potatocloud.node.service.start.rule.MaxStartingRule;
+import net.potatocloud.node.service.start.rule.ServiceStartRule;
 
 import java.util.Comparator;
 import java.util.List;
@@ -23,7 +22,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class ServiceStartScheduler {
+public final class ServiceStartScheduler {
 
     private final NodeConfig config;
 
@@ -35,7 +34,12 @@ public class ServiceStartScheduler {
 
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(Thread.ofVirtual().factory());
 
-    public ServiceStartScheduler(NodeConfig config, GroupManager groupManager, NodeServiceManager serviceManager, EventBus eventBus) {
+    public ServiceStartScheduler(
+            NodeConfig config,
+            GroupManager groupManager,
+            NodeServiceManager serviceManager,
+            EventBus eventBus
+    ) {
         this.config = config;
         this.groupManager = groupManager;
         this.serviceManager = serviceManager;
@@ -43,8 +47,7 @@ public class ServiceStartScheduler {
         this.rules = List.of(
                 new GroupMaxOnlineRule(),
                 new MaxServicesRule(config, serviceManager),
-                new MaxStartingRule(config, serviceManager),
-                new MaxMemoryRule(serviceManager)
+                new MaxStartingRule(config, serviceManager)
         );
 
         this.conditions = List.of(
@@ -52,7 +55,6 @@ public class ServiceStartScheduler {
                 new PlayerUsageCondition()
         );
 
-        // Handle game state changes
         eventBus.subscribe(PropertyChangedEvent.class, event -> {
             if (!event.propertyName().equals(DefaultProperties.GAME_STATE.name())) {
                 return;
@@ -72,7 +74,6 @@ public class ServiceStartScheduler {
 
                 serviceManager.start(service.group());
             });
-
         });
     }
 

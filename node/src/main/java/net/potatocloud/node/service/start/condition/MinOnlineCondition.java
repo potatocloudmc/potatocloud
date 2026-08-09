@@ -1,9 +1,9 @@
-package net.potatocloud.node.service.start.conditions;
+package net.potatocloud.node.service.start.condition;
 
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.service.ServiceState;
 
-public class MinOnlineCondition implements ServiceStartCondition {
+public final class MinOnlineCondition implements ServiceStartCondition {
 
     @Override
     public boolean shouldStart(Group group) {

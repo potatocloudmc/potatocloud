@@ -11,7 +11,6 @@ import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.ServiceState;
 import net.potatocloud.api.service.impl.ServiceImpl;
-import net.potatocloud.common.Closeable;
 import net.potatocloud.common.FileUtils;
 import net.potatocloud.network.NetworkServer;
 import net.potatocloud.network.packets.service.*;
@@ -27,7 +26,10 @@ import net.potatocloud.node.screen.impl.LocalServiceScreen;
 import net.potatocloud.node.screen.impl.NodeScreen;
 import net.potatocloud.node.service.helper.ServiceIds;
 import net.potatocloud.node.service.helper.ServicePorts;
-import net.potatocloud.node.service.local.LocalJvmRuntime;
+import net.potatocloud.node.service.runtime.JvmServiceRuntime;
+import net.potatocloud.node.service.runtime.ServiceAliveChecker;
+import net.potatocloud.node.service.runtime.ServiceMemoryUpdater;
+import net.potatocloud.node.service.runtime.ServiceRuntime;
 import net.potatocloud.node.template.TemplateManager;
 
 import java.nio.file.Files;
@@ -36,7 +38,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
 
-public final class NodeServiceManager implements ServiceManager, Closeable {
+public final class NodeServiceManager implements ServiceManager {
 
     private final Map<String, Service> services = new ConcurrentHashMap<>();
     private final Map<String, ServiceRuntime> runtimes = new ConcurrentHashMap<>();
@@ -123,18 +125,6 @@ public final class NodeServiceManager implements ServiceManager, Closeable {
     }
 
     @Override
-    public void update(Service service) {
-        final ServiceUpdatePacket packet = new ServiceUpdatePacket(
-                service.name(),
-                service.state().name(),
-                service.maxPlayers(),
-                service.properties()
-        );
-        server.broadcast().connectors().send(packet);
-        clusterManager.broadcast(packet);
-    }
-
-    @Override
     public CompletableFuture<Service> start(Group group) {
         if (group == null) {
             return CompletableFuture.completedFuture(null);
@@ -158,9 +148,10 @@ public final class NodeServiceManager implements ServiceManager, Closeable {
 
     @Override
     public CompletableFuture<Void> stop(Service service) {
-        // todo use optionals correct
-        if (!clusterManager.isLocal(service.node().get().name())) {
-            clusterManager.sendTo(service.node().get().name(), new StopServicePacket(service.name()));
+        final Optional<ClusterNode> node = service.node();
+
+        if (node.isPresent() && !clusterManager.isLocal(node.get().name())) {
+            clusterManager.sendTo(node.get().name(), new StopServicePacket(service.name()));
             return CompletableFuture.completedFuture(null);
         }
 
@@ -169,9 +160,10 @@ public final class NodeServiceManager implements ServiceManager, Closeable {
 
     @Override
     public void copyTo(Service service, String template, String filter) {
-        // todo optionals
-        if (!clusterManager.isLocal(service.node().get().name())) {
-            clusterManager.sendTo(service.node().get().name(), new ServiceCopyPacket(service.name(), template, filter));
+        final Optional<ClusterNode> node = service.node();
+
+        if (node.isPresent() && !clusterManager.isLocal(node.get().name())) {
+            clusterManager.sendTo(node.get().name(), new ServiceCopyPacket(service.name(),  template, filter));
             return;
         }
 
@@ -204,8 +196,10 @@ public final class NodeServiceManager implements ServiceManager, Closeable {
 
     @Override
     public void execute(Service service, String command) {
-        if (!clusterManager.isLocal(service.node().get().name())) {
-            clusterManager.sendTo(service.node().get().name(), new ServiceExecuteCommandPacket(service.name(), command));
+        final Optional<ClusterNode> node = service.node();
+
+        if (node.isPresent() && !clusterManager.isLocal(node.get().name())) {
+            clusterManager.sendTo(node.get().name(), new ServiceExecuteCommandPacket(service.name(), command));
             return;
         }
 
@@ -215,7 +209,19 @@ public final class NodeServiceManager implements ServiceManager, Closeable {
         }
     }
 
-    public Service startService(String groupName) {
+    @Override
+    public void update(Service service) {
+        final ServiceUpdatePacket packet = new ServiceUpdatePacket(
+                service.name(),
+                service.state().name(),
+                service.maxPlayers(),
+                service.properties()
+        );
+        server.broadcast().connectors().send(packet);
+        clusterManager.broadcast(packet);
+    }
+
+    private Service startService(String groupName) {
         final Optional<Group> group = groupManager.find(groupName);
         if (group.isEmpty()) {
             return null;
@@ -241,7 +247,7 @@ public final class NodeServiceManager implements ServiceManager, Closeable {
         final Screen screen = new LocalServiceScreen(service, console);
         screenManager.register(screen);
 
-        final LocalJvmRuntime runtime = new LocalJvmRuntime(
+        final JvmServiceRuntime runtime = new JvmServiceRuntime(
                 group.get(), config, logger, templateManager, downloadManager, cacheManager, screen
         );
 
@@ -283,6 +289,7 @@ public final class NodeServiceManager implements ServiceManager, Closeable {
                 runtimes.remove(service.name());
                 services.remove(service.name().toLowerCase());
                 screenManager.unregister(service.name());
+                server.broadcast().connectors().send(new ServiceRemovePacket(service.name(), service.port()));
                 clusterManager.broadcast(new ServiceRemovePacket(service.name(), service.port()));
             }
         });
@@ -336,36 +343,8 @@ public final class NodeServiceManager implements ServiceManager, Closeable {
         screenManager.unregister(service.name());
     }
 
-    public boolean hasEnoughMemory(Group group) {
-        if (!config.service().memoryCheckEnabled()) {
-            return true;
-        }
-
-        final long usedMb = services.values().stream()
-                .mapToLong(service -> service.group().maxMemory())
-                .sum();
-
-        return (usedMb + group.maxMemory()) <= config.service().maxMemory();
-    }
-
-    public void logMemoryWarning(Group group) {
-        final long usedMb = services.values().stream()
-                .mapToLong(service -> service.group().maxMemory())
-                .sum();
-
-        logger.warn("Service(s) for group &a" + group.name()
-                + " &7could not be started &8[&7Required&8: &a" + group.maxMemory() + " MB"
-                + "&8, &7Used&8: &a" + usedMb + " MB"
-                + "&8, &7Max&8: &a" + config.service().maxMemory() + " MB&8]");
-    }
-
     @Override
     public Optional<Service> current() {
         throw new UnsupportedOperationException("current() is only available when the API is used from within a connector.");
-    }
-
-    @Override
-    public void close() {
-        scheduler.shutdown();
     }
 }

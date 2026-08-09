@@ -10,7 +10,6 @@ public record ServiceConfig(
         @JsonProperty("max-services") int maxServices,
         @JsonProperty("max-starting-services") int maxStartingServices,
         @JsonProperty("kill-timeout") int killTimeout,
-        @JsonProperty("memory-check-enabled") boolean memoryCheckEnabled,
-        @JsonProperty("max-memory") int maxMemory
+        @JsonProperty("memory-check-enabled") boolean memoryCheckEnabled
 ) {}
  

@@ -1,4 +1,4 @@
-package net.potatocloud.node.service.start.conditions;
+package net.potatocloud.node.service.start.condition;
 
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.service.Service;
@@ -6,7 +6,7 @@ import net.potatocloud.api.service.ServiceState;
 
 import java.util.List;
 
-public class PlayerUsageCondition implements ServiceStartCondition {
+public final class PlayerUsageCondition implements ServiceStartCondition {
 
     @Override
     public boolean shouldStart(Group group) {
@@ -14,7 +14,6 @@ public class PlayerUsageCondition implements ServiceStartCondition {
                 .filter(service -> service.running() || service.state() == ServiceState.STARTING)
                 .toList();
 
-        // if start percentage is set to -1 (disabled), do not start a new service
         if (group.startPercentage() == -1) {
             return false;
         }
@@ -23,12 +22,10 @@ public class PlayerUsageCondition implements ServiceStartCondition {
                 .mapToInt(Service::maxPlayers)
                 .sum();
 
-        // if there are no available player slots, do not start a service
         if (maxPlayers <= 0) {
             return false;
         }
 
-        // get the current usage percentage of the group
         final int usagePercent = (int) ((group.players().size() / (double) maxPlayers) * 100);
 
         return usagePercent >= group.startPercentage();

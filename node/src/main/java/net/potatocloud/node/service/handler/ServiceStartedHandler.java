@@ -1,4 +1,4 @@
-package net.potatocloud.node.service.handlers;
+package net.potatocloud.node.service.handler;
 
 import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.api.event.EventBus;
@@ -25,7 +25,13 @@ public final class ServiceStartedHandler implements PacketHandler<ServiceStarted
     private final ClusterManagerImpl clusterManager;
     private final NetworkServer server;
 
-    public ServiceStartedHandler(ServiceManager serviceManager, Logger logger, EventBus eventBus, ClusterManagerImpl clusterManager, NetworkServer server) {
+    public ServiceStartedHandler(
+            ServiceManager serviceManager,
+            Logger logger,
+            EventBus eventBus,
+            ClusterManagerImpl clusterManager,
+            NetworkServer server
+    ) {
         this.serviceManager = serviceManager;
         this.logger = logger;
         this.eventBus = eventBus;
@@ -50,7 +56,8 @@ public final class ServiceStartedHandler implements PacketHandler<ServiceStarted
             final boolean clustered = Node.instance().config().cluster().enabled();
             logger.info("Service &a" + packet.serviceName() + (clustered ? "&7 is now &aonline &7on node &a" + node.get().name() : "&7 is now &aonline"));
 
-            logger.debug("Service &a" + packet.serviceName() + "&7 took &a" + TimeFormatter.formatAsDuration(System.currentTimeMillis() - service.startedAt().toEpochMilli()) + "&7 to start");
+            final long startupTime = System.currentTimeMillis() - service.startedAt().toEpochMilli();
+            logger.debug("Service &a" + packet.serviceName() + "&7 took &a" + TimeFormatter.formatAsDuration(startupTime) + "&7 to start");
 
             service.state(ServiceState.RUNNING);
             serviceManager.update(service);

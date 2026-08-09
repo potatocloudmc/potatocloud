@@ -19,7 +19,7 @@ public final class Console {
     private final LineReader lineReader;
     private final ConsoleReader consoleReader;
 
-    private final String prompt;
+    private String prompt;
 
     public Console(NodeConfig config, CommandManager commandManager) {
         this.config = config;
@@ -68,6 +68,7 @@ public final class Console {
     }
 
     public void prompt(String prompt) {
+        this.prompt = prompt;
         if (lineReader instanceof LineReaderImpl impl) {
             impl.setPrompt(prompt);
         }

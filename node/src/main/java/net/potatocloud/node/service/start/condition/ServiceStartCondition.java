@@ -1,4 +1,4 @@
-package net.potatocloud.node.service.start.conditions;
+package net.potatocloud.node.service.start.condition;
 
 import net.potatocloud.api.group.Group;
 

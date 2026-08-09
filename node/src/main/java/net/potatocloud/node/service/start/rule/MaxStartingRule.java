@@ -1,4 +1,4 @@
-package net.potatocloud.node.service.start.rules;
+package net.potatocloud.node.service.start.rule;
 
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.service.ServiceManager;
@@ -19,13 +19,13 @@ public final class MaxStartingRule implements ServiceStartRule {
     public boolean allows(Group group) {
         final int maxStarting = config.service().maxStartingServices();
 
-        // if max starting services are set to -1 (unlimited), always allow starting new services
         if (maxStarting == -1) {
             return true;
         }
 
         final long startingServices = serviceManager.services().stream()
-                .filter(service -> service.state() == ServiceState.PREPARING || service.state() == ServiceState.STARTING)
+                .filter(service -> service.state() == ServiceState.PREPARING
+                        || service.state() == ServiceState.STARTING)
                 .count();
 
         return startingServices < maxStarting;

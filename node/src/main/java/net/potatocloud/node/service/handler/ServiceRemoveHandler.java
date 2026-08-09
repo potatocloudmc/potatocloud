@@ -1,4 +1,4 @@
-package net.potatocloud.node.service.handlers;
+package net.potatocloud.node.service.handler;
 
 import net.potatocloud.network.ConnectionType;
 import net.potatocloud.network.NetworkServer;
