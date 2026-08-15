@@ -1,8 +1,0 @@
-{
-  "id": "potatocloud-plugin-hub",
-  "name": "potatocloud-plugin-hub",
-  "version": "2.0.0",
-  "main": "net.potatocloud.plugins.addons.hub.HubPlugin",
-  "authors": ["TruaYT"],
-  "depends": ["potatocloud-plugin"]
-}
