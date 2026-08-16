@@ -6,7 +6,6 @@ import net.potatocloud.api.event.EventBus;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.group.GroupManager;
 import net.potatocloud.api.logging.Logger;
-import net.potatocloud.api.module.Module;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformManager;
 import net.potatocloud.api.player.CloudPlayerManager;
@@ -30,8 +29,6 @@ import net.potatocloud.node.console.Console;
 import net.potatocloud.node.group.GroupManagerImpl;
 import net.potatocloud.node.logging.NodeLogger;
 import net.potatocloud.node.migration.MigrationManager;
-import net.potatocloud.node.module.LoadedModule;
-import net.potatocloud.node.module.ModuleLoader;
 import net.potatocloud.node.module.ModuleManager;
 import net.potatocloud.node.platform.DownloadManager;
 import net.potatocloud.node.platform.PlatformManagerImpl;
@@ -83,7 +80,6 @@ public final class Node extends CloudAPI {
     private final CacheManager cacheManager;
 
     private final ModuleManager moduleManager;
-    private final ModuleLoader moduleLoader;
 
     private final NodeServiceManager serviceManager;
     private final ServiceStartScheduler serviceStartScheduler;
@@ -126,8 +122,7 @@ public final class Node extends CloudAPI {
         this.downloadManager = new DownloadManager(Path.of(config.folders().platforms()), logger);
         this.cacheManager = new CacheManager(logger);
 
-        this.moduleManager = new ModuleManager();
-        this.moduleLoader = new ModuleLoader(moduleManager);
+        this.moduleManager = new ModuleManager(logger);
 
         this.serviceManager = new NodeServiceManager(
                 config, logger, server, eventBus, groupManager, screenManager, templateManager, downloadManager, cacheManager, this.clusterManager, console
@@ -193,22 +188,7 @@ public final class Node extends CloudAPI {
             platforms.forEach(platform -> logger.info("&8» &a" + platform.name()));
         }
 
-        moduleLoader.load(Path.of(config.folders().modules()));
-
-        final List<Module> modules = moduleManager.modules()
-                .values()
-                .stream()
-                .map(LoadedModule::module)
-                .toList();
-
-        if (!modules.isEmpty()) {
-            final int count = modules.size();
-            final String moduleText = count == 1 ? "module" : "modules";
-
-            logger.info("Loaded &a" + count + "&7 " + moduleText + "&8:");
-            modules.forEach(module -> logger.info("&8» &a" + module.name() + " &7v" + module.version()));
-        }
-
+        moduleManager.load(Path.of(config.folders().modules()));
         moduleManager.enableAll();
 
         registerCommands();

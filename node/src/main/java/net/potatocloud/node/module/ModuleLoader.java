@@ -12,7 +12,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class ModuleLoader {
+public final class ModuleLoader {
 
     private final ModuleManager moduleManager;
 
