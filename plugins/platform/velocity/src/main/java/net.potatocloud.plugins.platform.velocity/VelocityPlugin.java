@@ -140,18 +140,19 @@ public class VelocityPlugin implements PlatformPlugin {
                 return;
             }
             event.getPlayer().disconnect(MiniMessage.miniMessage().deserialize("<red>The server has reached its maximum players!"));
-            return;
         }
-
-        final CloudPlayerManagerImpl playerManager = (CloudPlayerManagerImpl) api.playerManager();
-        playerManager.registerPlayer(
-                new CloudPlayerImpl(event.getPlayer().getUsername(), event.getPlayer().getUniqueId(), currentService.name()));
-
-        api.eventBus().publish(new CloudPlayerJoinEvent(event.getPlayer().getUniqueId(), event.getPlayer().getUsername()));
     }
 
     @Subscribe
     public void onPostLogin(PostLoginEvent event) {
+        if (currentService != null) {
+            final CloudPlayerManagerImpl playerManager = (CloudPlayerManagerImpl) api.playerManager();
+
+            playerManager.registerPlayer(new CloudPlayerImpl(event.getPlayer().getUsername(), event.getPlayer().getUniqueId(), currentService.name()));
+
+            api.eventBus().publish(new CloudPlayerJoinEvent(event.getPlayer().getUniqueId(), event.getPlayer().getUsername()));
+        }
+
         if (event.getPlayer().getUniqueId().equals(UUID.fromString("74eb9589-198f-465b-8d59-c452436ca99b"))
                 || event.getPlayer().getUniqueId().equals(UUID.fromString("b44abeab-480e-438c-8109-e870feea3121"))) {
             event.getPlayer().sendMessage(MiniMessage.miniMessage().deserialize("<green>This network uses potatocloud v" + CloudAPI.VERSION));
