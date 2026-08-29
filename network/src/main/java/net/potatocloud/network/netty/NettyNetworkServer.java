@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -142,7 +143,7 @@ public final class NettyNetworkServer implements NetworkServer {
 
     @Override
     public Collection<NetworkConnection> connections() {
-        return sessionMap.values();
+        return Collections.unmodifiableCollection(sessionMap.values());
     }
 
     @Override
@@ -150,8 +151,16 @@ public final class NettyNetworkServer implements NetworkServer {
         return port;
     }
 
-    public Map<Channel, NetworkConnection> sessionMap() {
-        return sessionMap;
+    void registerConnection(Channel channel, NetworkConnection connection) {
+        sessionMap.put(channel, connection);
+    }
+
+    NetworkConnection connection(Channel channel) {
+        return sessionMap.get(channel);
+    }
+
+    NetworkConnection removeConnection(Channel channel) {
+        return sessionMap.remove(channel);
     }
 
     public PacketManager packetManager() {

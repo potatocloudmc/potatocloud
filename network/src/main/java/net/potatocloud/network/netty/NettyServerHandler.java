@@ -29,12 +29,12 @@ public final class NettyServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         final NettyNetworkConnection connection = new NettyNetworkConnection(ctx.channel());
-        server.sessionMap().put(ctx.channel(), connection);
+        server.registerConnection(ctx.channel(), connection);
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        final NetworkConnection connection = server.sessionMap().remove(ctx.channel());
+        final NetworkConnection connection = server.removeConnection(ctx.channel());
         if (connection != null) {
             server.handleDisconnect(connection);
         }
@@ -45,7 +45,7 @@ public final class NettyServerHandler extends ChannelInboundHandlerAdapter {
         if (!(msg instanceof Packet packet)) {
             return;
         }
-        final NetworkConnection connection = server.sessionMap().get(ctx.channel());
+        final NetworkConnection connection = server.connection(ctx.channel());
         if (connection != null) {
             packetManager.dispatch(connection, packet);
         }
