@@ -22,6 +22,10 @@ public final class PropertyUtil {
         } catch (NumberFormatException ignored) {}
 
         try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException ignored) {}
+
+        try {
             return Float.parseFloat(value);
         } catch (NumberFormatException ignored) {}
 
@@ -38,7 +42,7 @@ public final class PropertyUtil {
     }
 
     public static void setString(PropertyHolder holder, String name, String value) {
-        Object parsed = parseValue(value);
+        final Object parsed = parseValue(value);
         holder.set(PropertyKey.of(name, parsed), parsed, false);
     }
 }

@@ -35,7 +35,11 @@ public interface PropertyHolder {
      */
     @SuppressWarnings("unchecked")
     default <T> T get(PropertyKey<T> key) {
-        return (T) properties().getOrDefault(key, key.defaultValue());
+        return (T) properties().entrySet().stream()
+                .filter(entry -> entry.getKey().name().equals(key.name()))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(key.defaultValue());
     }
 
     /**
@@ -59,12 +63,20 @@ public interface PropertyHolder {
      * @param <T>       the type of the property value
      */
     default <T> void set(PropertyKey<T> key, T value, boolean fireEvent) {
-        final Object oldValue = properties().get(key);
+        final PropertyKey<?> existingKey = properties().keySet().stream()
+                .filter(candidate -> candidate.name().equals(key.name()))
+                .findFirst()
+                .orElse(null);
+
+        final Object oldValue = existingKey == null ? null : properties().get(existingKey);
 
         if (Objects.equals(oldValue, value)) {
             return;
         }
 
+        if (existingKey != null && !existingKey.equals(key)) {
+            properties().remove(existingKey);
+        }
         properties().put(key, value);
 
         if (fireEvent) {
@@ -100,7 +112,7 @@ public interface PropertyHolder {
      * @return {@code true} if the property exists
      */
     default boolean hasProperty(PropertyKey<?> key) {
-        return properties().containsKey(key);
+        return properties().keySet().stream().anyMatch(existing -> existing.name().equals(key.name()));
     }
 
     /**
@@ -109,6 +121,6 @@ public interface PropertyHolder {
      * @param key the property key
      */
     default void removeProperty(PropertyKey<?> key) {
-        properties().remove(key);
+        properties().keySet().removeIf(existing -> existing.name().equals(key.name()));
     }
 }

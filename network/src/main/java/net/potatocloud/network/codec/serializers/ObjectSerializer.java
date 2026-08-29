@@ -3,6 +3,9 @@ package net.potatocloud.network.codec.serializers;
 import net.potatocloud.network.codec.PacketBuffer;
 import net.potatocloud.network.codec.TypeSerializer;
 
+import java.time.Instant;
+import java.util.UUID;
+
 public final class ObjectSerializer implements TypeSerializer<Object> {
 
     private static final int NULL = 0;
@@ -14,6 +17,9 @@ public final class ObjectSerializer implements TypeSerializer<Object> {
     private static final int DOUBLE = 6;
     private static final int BYTE = 7;
     private static final int SHORT = 8;
+    private static final int CHARACTER = 9;
+    private static final int UUID_VALUE = 10;
+    private static final int INSTANT = 11;
 
     @Override
     public void write(PacketBuffer buffer, Object value) {
@@ -55,6 +61,18 @@ public final class ObjectSerializer implements TypeSerializer<Object> {
                 buffer.writeVarInt(SHORT);
                 buffer.writeInt(s);
             }
+            case Character c -> {
+                buffer.writeVarInt(CHARACTER);
+                buffer.writeInt(c);
+            }
+            case UUID uuid -> {
+                buffer.writeVarInt(UUID_VALUE);
+                buffer.write(uuid, UUID.class);
+            }
+            case Instant instant -> {
+                buffer.writeVarInt(INSTANT);
+                buffer.write(instant, Instant.class);
+            }
             default -> throw new IllegalArgumentException("Unsupported type: " + value.getClass().getName());
         }
     }
@@ -72,6 +90,9 @@ public final class ObjectSerializer implements TypeSerializer<Object> {
             case DOUBLE -> buffer.readDouble();
             case BYTE -> buffer.readByte();
             case SHORT -> (short) buffer.readInt();
+            case CHARACTER -> (char) buffer.readInt();
+            case UUID_VALUE -> buffer.read(UUID.class);
+            case INSTANT -> buffer.read(Instant.class);
             default -> throw new IllegalArgumentException("Unknown object type: " + type);
         };
     }

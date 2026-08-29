@@ -6,6 +6,7 @@ import net.potatocloud.network.ConnectionType;
 import net.potatocloud.network.NetworkServer;
 import net.potatocloud.network.packets.property.PropertyAddPacket;
 import net.potatocloud.network.packets.property.PropertyUpdatePacket;
+import net.potatocloud.network.packets.property.PropertyRemovePacket;
 import net.potatocloud.network.packets.property.RequestPropertiesPacket;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 
@@ -50,11 +51,19 @@ public final class NodePropertiesHolder implements PropertyHolder {
                 clusterManager.broadcast(ctx.packet());
             }
         });
+
+        server.on(PropertyRemovePacket.class, ctx -> {
+            propertyMap.keySet().removeIf(key -> key.name().equals(ctx.packet().propertyName()));
+            server.broadcast().connectors().exclude(ctx.connection()).send(ctx.packet());
+            if (ctx.connection().type() == ConnectionType.CONNECTOR) {
+                clusterManager.broadcast(ctx.packet());
+            }
+        });
     }
 
     @Override
     public <T> void set(PropertyKey<T> key, T value, boolean fireEvent) {
-        final boolean existing = properties().containsKey(key);
+        final boolean existing = hasProperty(key);
         PropertyHolder.super.set(key, value, fireEvent);
 
         if (!existing) {
@@ -78,5 +87,18 @@ public final class NodePropertiesHolder implements PropertyHolder {
     @Override
     public String name() {
         return "Global";
+    }
+
+    @Override
+    public void removeProperty(PropertyKey<?> key) {
+        if (!hasProperty(key)) {
+            return;
+        }
+
+        PropertyHolder.super.removeProperty(key);
+
+        final PropertyRemovePacket packet = new PropertyRemovePacket(key.name());
+        server.broadcast().connectors().send(packet);
+        clusterManager.broadcast(packet);
     }
 }
