@@ -72,10 +72,10 @@ cluster:
 
 security:
   # Enable TLS/SSL encryption
-  ssl-enabled: false
+  ssl-enabled: true
 
   # Directory where the certificates are saved
-  security-directory: security
+  security-directory: securitys
 
   # Require client authentication
   require-client-auth: true
