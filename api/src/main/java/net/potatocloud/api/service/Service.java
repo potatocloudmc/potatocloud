@@ -114,7 +114,7 @@ public interface Service extends PropertyHolder {
     /**
      * Gets the group of the service.
      *
-     * @return the group of the service
+     * @return the group of the service, or {@code null} if it cannot be resolved
      */
     Group group();
 

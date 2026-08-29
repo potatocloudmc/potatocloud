@@ -33,16 +33,18 @@ public interface Group extends PropertyHolder {
     Optional<ClusterNode> node();
 
     /**
-     * Gets the platform of the group as an object.
+     * Gets the platform of the group.
      *
      * @return the platform of the group
+     * @throws IllegalStateException if the configured platform cannot be resolved
      */
     Platform platform();
 
     /**
-     * Gets the platform version of the group as an object.
+     * Gets the platform version of the group.
      *
      * @return the platform version of the group
+     * @throws IllegalStateException if the configured platform or version cannot be resolved
      */
     PlatformVersion platformVersion();
 

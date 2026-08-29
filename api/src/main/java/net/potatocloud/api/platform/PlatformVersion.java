@@ -65,6 +65,7 @@ public interface PlatformVersion {
      * Gets the platform of the platform version.
      *
      * @return the platform of the platform version
+     * @throws IllegalStateException if the owning platform cannot be resolved
      */
     Platform platform();
 }

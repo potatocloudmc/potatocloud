@@ -23,7 +23,7 @@ public interface Platform {
     String downloadUrl();
 
     /**
-     * Gets whether the group is custom.
+     * Gets whether the platform is custom.
      *
      * @return {@code true} if the platform is custom, otherwise {@code false}
      */

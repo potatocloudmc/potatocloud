@@ -29,6 +29,7 @@ public interface CloudPlayer extends PropertyHolder {
      * Gets the connected proxy of the player.
      *
      * @return the connected proxy of the player
+     * @throws IllegalStateException if the assigned proxy cannot be resolved
      */
     Service proxy();
 
