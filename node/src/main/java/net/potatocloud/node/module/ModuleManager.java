@@ -38,7 +38,12 @@ public final class ModuleManager {
     }
 
     public void register(LoadedModule module) {
-        modules.put(module.module().name(), module);
+        final String name = module.module().name();
+        final LoadedModule previous = modules.putIfAbsent(name, module);
+
+        if (previous != null) {
+            throw new IllegalStateException("Module already registered: " + name);
+        }
     }
 
     public void enableAll() {
