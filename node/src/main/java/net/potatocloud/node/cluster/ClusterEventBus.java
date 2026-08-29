@@ -29,6 +29,11 @@ public class ClusterEventBus implements EventBus {
     }
 
     @Override
+    public <T extends Event> boolean unsubscribe(Class<T> eventType, EventHandler<T> handler) {
+        return bus.unsubscribe(eventType, handler);
+    }
+
+    @Override
     public <T extends Event> void publish(T event) {
         publish(event, PublishTarget.BOTH);
     }

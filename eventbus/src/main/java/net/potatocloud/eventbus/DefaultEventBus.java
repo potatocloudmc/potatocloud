@@ -20,6 +20,20 @@ public class DefaultEventBus implements EventBus {
     }
 
     @Override
+    public <T extends Event> boolean unsubscribe(Class<T> eventType, EventHandler<T> handler) {
+        final CopyOnWriteArrayList<EventHandler<?>> handlerList = handlers.get(eventType);
+        if (handlerList == null) {
+            return false;
+        }
+
+        final boolean removed = handlerList.remove(handler);
+        if (handlerList.isEmpty()) {
+            handlers.remove(eventType, handlerList);
+        }
+        return removed;
+    }
+
+    @Override
     public <T extends Event> void publish(T event) {
         dispatch(event);
     }

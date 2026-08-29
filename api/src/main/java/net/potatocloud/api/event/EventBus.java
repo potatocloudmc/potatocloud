@@ -15,6 +15,16 @@ public interface EventBus {
     <T extends Event> void subscribe(Class<T> eventType, EventHandler<T> handler);
 
     /**
+     * Removes an event handler from a specific event type.
+     *
+     * @param eventType the event type from which to unsubscribe
+     * @param handler the handler to remove
+     * @param <T> the event type
+     * @return {@code true} if the handler was subscribed and removed
+     */
+    <T extends Event> boolean unsubscribe(Class<T> eventType, EventHandler<T> handler);
+
+    /**
      * Publishes an event to all subscribed handlers.
      * <p>
      * The default publish target is {@link PublishTarget#BOTH}.
