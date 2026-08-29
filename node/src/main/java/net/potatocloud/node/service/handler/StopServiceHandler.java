@@ -4,6 +4,7 @@ import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.network.protocol.PacketContext;
 import net.potatocloud.network.protocol.PacketHandler;
 import net.potatocloud.network.packets.service.StopServicePacket;
+import net.potatocloud.network.packets.service.StopServiceResponsePacket;
 
 public final class StopServiceHandler implements PacketHandler<StopServicePacket> {
 
@@ -15,6 +16,6 @@ public final class StopServiceHandler implements PacketHandler<StopServicePacket
 
     @Override
     public void handle(PacketContext<StopServicePacket> ctx) {
-        serviceManager.find(ctx.packet().serviceName()).ifPresent(serviceManager::stop);
+        serviceManager.find(ctx.packet().serviceName()).ifPresent(service -> serviceManager.stop(service).thenAccept(response -> ctx.reply(new StopServiceResponsePacket())));
     }
 }

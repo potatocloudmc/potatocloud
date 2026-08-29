@@ -68,9 +68,7 @@ public class ServiceManagerImpl implements ServiceManager {
 
     @Override
     public CompletableFuture<Void> stop(Service service) {
-        // TODO: Use response packets for shutdown instead of fire-and-forget.
-        client.send(new StopServicePacket(service.name()));
-        return CompletableFuture.completedFuture(null);
+        return client.request(new StopServicePacket(service.name()), StopServiceResponsePacket.class).thenApply(response -> null);
     }
 
     @Override
