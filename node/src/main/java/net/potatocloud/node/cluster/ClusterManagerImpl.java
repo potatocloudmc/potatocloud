@@ -177,7 +177,7 @@ public class ClusterManagerImpl implements ClusterManager {
                 .toList()
                 .forEach(service -> {
                     serviceManager.removeService(service);
-                    server.broadcast().connectors().send(new ServiceRemovePacket(service.name(), service.port()));
+                    server.broadcast().connectors().send(new ServiceRemovePacket(service.name(), service.host(), service.port()));
                 });
 
         groupManager.groups().stream()

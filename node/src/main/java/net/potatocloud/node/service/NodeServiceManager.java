@@ -289,8 +289,8 @@ public final class NodeServiceManager implements ServiceManager {
                 runtimes.remove(service.name());
                 services.remove(service.name().toLowerCase());
                 screenManager.unregister(service.name());
-                server.broadcast().connectors().send(new ServiceRemovePacket(service.name(), service.port()));
-                clusterManager.broadcast(new ServiceRemovePacket(service.name(), service.port()));
+                server.broadcast().connectors().send(new ServiceRemovePacket(service.name(), service.host(), service.port()));
+                clusterManager.broadcast(new ServiceRemovePacket(service.name(), service.host(), service.port()));
             }
         });
 
@@ -322,8 +322,8 @@ public final class NodeServiceManager implements ServiceManager {
 
             screenManager.unregister(service.name());
 
-            server.broadcast().connectors().send(new ServiceRemovePacket(service.name(), service.port()));
-            clusterManager.broadcast(new ServiceRemovePacket(service.name(), service.port()));
+        server.broadcast().connectors().send(new ServiceRemovePacket(service.name(), service.host(), service.port()));
+        clusterManager.broadcast(new ServiceRemovePacket(service.name(), service.host(), service.port()));
             eventBus.publish(new ServiceStoppedEvent(service.name()));
 
             synchronized (service) {

@@ -70,7 +70,7 @@ public class VelocityPlugin implements PlatformPlugin {
                 connectPlayer(ctx.packet().playerUsername(), ctx.packet().serviceName()));
 
         api.client().on(ServiceRemovePacket.class, ctx ->
-                server.unregisterServer(new ServerInfo(ctx.packet().serviceName(), new InetSocketAddress(service.host(), ctx.packet().servicePort()))));
+                server.unregisterServer(new ServerInfo(ctx.packet().serviceName(), new InetSocketAddress(ctx.packet().serviceHost(), ctx.packet().servicePort()))));
     }
 
     private void connectPlayer(String username, String serviceName) {
