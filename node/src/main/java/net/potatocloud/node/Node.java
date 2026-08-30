@@ -42,8 +42,8 @@ import net.potatocloud.node.service.NodeServiceManager;
 import net.potatocloud.node.service.start.ServiceStartScheduler;
 import net.potatocloud.node.setup.SetupManager;
 import net.potatocloud.node.template.TemplateManager;
-import net.potatocloud.node.utils.HardwareUtils;
 import net.potatocloud.node.utils.NetworkUtils;
+import net.potatocloud.node.utils.SystemUtils;
 import net.potatocloud.node.version.UpdateChecker;
 import net.potatocloud.node.version.VersionFile;
 
@@ -144,7 +144,7 @@ public final class Node extends CloudAPI {
 
         console.start();
 
-        if (HardwareUtils.isLowHardware()) {
+        if (SystemUtils.lowHardware()) {
             logger.warn("Your hardware is low, you may experience performance issues. Recommended: 4 cores, 4GB RAM");
         }
 

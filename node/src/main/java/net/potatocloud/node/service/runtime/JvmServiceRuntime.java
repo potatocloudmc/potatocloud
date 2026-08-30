@@ -17,7 +17,7 @@ import net.potatocloud.node.platform.cache.CacheManager;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.template.TemplateManager;
 import net.potatocloud.node.utils.ProxyUtils;
-import oshi.ffm.SystemInfo;
+import net.potatocloud.node.utils.SystemUtils;
 import oshi.software.os.OSProcess;
 
 import java.io.BufferedReader;
@@ -147,7 +147,7 @@ public final class JvmServiceRuntime implements ServiceRuntime {
             throw new RuntimeException("Failed to start server process for service " + service.name(), e);
         }
 
-        osProcess = new SystemInfo().getOperatingSystem().getProcess((int) process.pid());
+        osProcess = SystemUtils.SYSTEM_INFO.getOperatingSystem().getProcess((int) process.pid());
 
         processWriter = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
         processReader = new BufferedReader(new InputStreamReader(process.getInputStream()));

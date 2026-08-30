@@ -5,7 +5,7 @@ import net.potatocloud.api.utils.TimeFormatter;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.command.Command;
 import net.potatocloud.node.command.CommandInfo;
-import oshi.ffm.SystemInfo;
+import net.potatocloud.node.utils.SystemUtils;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.GlobalMemory;
 
@@ -14,9 +14,8 @@ public class InfoCommand extends Command {
 
     public InfoCommand(Logger logger) {
         defaultExecutor(ctx -> {
-            final oshi.ffm.SystemInfo info = new SystemInfo();
-            final GlobalMemory memory = info.getHardware().getMemory();
-            final CentralProcessor processor = info.getHardware().getProcessor();
+            final GlobalMemory memory = SystemUtils.SYSTEM_INFO.getHardware().getMemory();
+            final CentralProcessor processor = SystemUtils.SYSTEM_INFO.getHardware().getProcessor();
 
             logger.info("OS&8: &a" + System.getProperty("os.name") + " &8(&a" + System.getProperty("os.version") + "&8, &a" + System.getProperty("os.arch") + "&8)");
             logger.info("User&8: &a" + System.getProperty("user.name"));
@@ -24,15 +23,15 @@ public class InfoCommand extends Command {
             logger.info("Uptime&8: &a" + TimeFormatter.formatAsDuration(Node.instance().uptime()));
             logger.info("Started At&8: &a" + TimeFormatter.formatAsDateAndTime(Node.instance().startupTime()));
 
-            final double totalMemory = memory.getTotal() / (1024.0 * 1024 * 1024);
+            final int totalMemory = SystemUtils.ram();
             final double availableMemory = memory.getAvailable() / (1024.0 * 1024 * 1024);
             final double usedMemory = totalMemory - availableMemory;
 
             logger.info("System Memory&8: &a" + String.format("%.2f", usedMemory) +
-                    " GB &8/ &a" + String.format("%.2f", totalMemory) + " GB");
+                    " GB &8/ &a" + totalMemory + " GB");
 
             final String cpuName = processor.getProcessorIdentifier().getName();
-            final int cores = processor.getPhysicalProcessorCount();
+            final int cores = SystemUtils.cpuCores();
             final int threads = processor.getLogicalProcessorCount();
 
             logger.info("CPU&8: &a" + cpuName +
