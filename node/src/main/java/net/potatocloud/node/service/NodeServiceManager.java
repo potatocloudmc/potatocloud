@@ -343,6 +343,11 @@ public final class NodeServiceManager implements ServiceManager {
         screenManager.unregister(service.name());
     }
 
+    public void close() {
+        scheduler.shutdownNow();
+        executor.shutdownNow();
+    }
+
     @Override
     public Optional<Service> current() {
         throw new UnsupportedOperationException("current() is only available when the API is used from within a connector.");

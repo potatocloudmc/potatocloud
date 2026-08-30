@@ -25,4 +25,8 @@ public final class CacheRegistry {
 
         return builder;
     }
+
+    public void close() {
+        builders.values().forEach(CacheBuilder::close);
+    }
 }

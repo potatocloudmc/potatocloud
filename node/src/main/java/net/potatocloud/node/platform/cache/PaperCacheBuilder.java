@@ -77,4 +77,9 @@ public final class PaperCacheBuilder implements CacheBuilder {
     public boolean supports(PlatformVersion version) {
         return !version.legacy();
     }
+
+    @Override
+    public void close() {
+        executor.shutdownNow();
+    }
 }

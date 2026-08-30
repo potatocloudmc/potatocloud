@@ -76,4 +76,9 @@ public final class FabricCacheBuilder implements CacheBuilder {
     public boolean supports(PlatformVersion version) {
         return true;
     }
+
+    @Override
+    public void close() {
+        executor.shutdownNow();
+    }
 }

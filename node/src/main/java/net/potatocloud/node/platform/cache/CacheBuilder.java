@@ -7,12 +7,16 @@ import net.potatocloud.api.platform.PlatformVersion;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 
-public interface CacheBuilder {
+public interface CacheBuilder extends AutoCloseable {
 
     boolean supports(PlatformVersion version);
 
     CompletableFuture<Void> build(Group group, Platform platform, PlatformVersion version, Path cacheFolder);
 
     void copyToService(Path cacheFolder, Path serviceDir);
+
+    @Override
+    default void close() {
+    }
 
 }

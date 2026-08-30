@@ -232,6 +232,9 @@ public final class Node extends CloudAPI {
 
         stopServices();
 
+        serviceManager.close();
+        cacheManager.close();
+
         logger.info("Stopping network server&8...");
         server.close();
 

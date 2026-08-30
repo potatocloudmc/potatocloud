@@ -108,4 +108,8 @@ public final class CacheManager {
 
         registry.get(builderName).copyToService(cacheDirectory, serviceDirectory);
     }
+
+    public void close() {
+        registry.close();
+    }
 }
