@@ -21,11 +21,13 @@ public class GroupConfigurationSetup extends Setup {
 
     private final GroupManager groupManager;
     private final PlatformManager platformManager;
+    private final String nodeName;
 
-    public GroupConfigurationSetup(Console console, ScreenManager screenManager, GroupManager groupManager, PlatformManager platformManager) {
+    public GroupConfigurationSetup(Console console, ScreenManager screenManager, GroupManager groupManager, PlatformManager platformManager, String nodeName) {
         super(console, screenManager);
         this.groupManager = groupManager;
         this.platformManager = platformManager;
+        this.nodeName = nodeName;
     }
 
     @Override
@@ -107,7 +109,7 @@ public class GroupConfigurationSetup extends Setup {
 
         final String name = answers.get("name");
         final Group group = groupManager.builder(name)
-                .node(Node.instance().config().cluster().name()) // todo ugly
+                .node(nodeName)
                 .platform(answers.get("platform"))
                 .platformVersion(answers.get("platform_version"))
                 .minServices(Integer.parseInt(answers.get("min_online_count")))

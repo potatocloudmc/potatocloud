@@ -34,7 +34,8 @@ public class GroupCommand extends Command {
                         node.console(),
                         node.screenManager(),
                         groupManager,
-                        node.platformManager())
+                        node.platformManager(),
+                        node.config().cluster().name())
                 ));
 
         sub("delete", "Delete a group")
