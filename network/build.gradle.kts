@@ -6,4 +6,5 @@ dependencies {
 
     implementation(libs.netty.handler)
     implementation(libs.netty.epoll)
+    runtimeOnly(libs.netty.pkitesting)
 }

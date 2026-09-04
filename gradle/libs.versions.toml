@@ -22,6 +22,7 @@ jackson-databind = { module = "tools.jackson.core:jackson-databind", version.ref
 jackson-yaml = { module = "tools.jackson.dataformat:jackson-dataformat-yaml", version.ref = "jackson" }
 jline = { module = "org.jline:jline", version.ref = "jline" }
 netty-handler = { module = "io.netty:netty-handler", version.ref = "netty" }
+netty-pkitesting = { module = "io.netty:netty-pkitesting", version.ref = "netty" }
 netty-epoll = { module = "io.netty:netty-transport-native-epoll", version.ref = "netty" }
 oshi = { module = "com.github.oshi:oshi-core-ffm", version.ref = "oshi" }
 slf4j-nop = { module = "org.slf4j:slf4j-nop", version.ref = "slf4j-nop" }
