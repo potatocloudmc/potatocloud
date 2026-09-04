@@ -1,98 +1,37 @@
 package net.potatocloud.node.screen;
 
-import net.potatocloud.network.NetworkConnection;
 import net.potatocloud.network.NetworkServer;
-import net.potatocloud.network.packets.service.ServiceScreenLogPacket;
-import net.potatocloud.network.packets.service.ServiceScreenSubscribePacket;
-import net.potatocloud.network.packets.service.ServiceScreenUnsubscribePacket;
+import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.console.Console;
-import net.potatocloud.node.screen.impl.NodeScreen;
 
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-public class ScreenManager {
+public final class ScreenManager {
+
+    private static final int MAX_LOGS = 1000;
 
     private final Console console;
+    private final Map<String, Screen> screens = new ConcurrentHashMap<>();
+    private final Map<String, CopyOnWriteArrayList<String>> logs = new ConcurrentHashMap<>();
 
-    private Screen current;
-    private final Map<String, Screen> screens = new HashMap<>();
-    private final Map<NetworkConnection, Map<String, ScreenSubscriber>> networkSubscriptions = new ConcurrentHashMap<>();
+    private volatile Screen current;
+    private ScreenNetworkHandler networkHandler;
 
     public ScreenManager(Console console) {
         this.console = console;
     }
 
-    public void init(NetworkServer server) {
-        server.on(ServiceScreenSubscribePacket.class, ctx -> {
-            final String serviceName = ctx.packet().serviceName();
-            final Screen screen = screens.get(serviceName);
-
-            if (screen == null) {
-                return;
-            }
-
-            final NetworkConnection connection = ctx.connection();
-            final ScreenSubscriber subscriber = line -> connection.send(new ServiceScreenLogPacket(serviceName, line));
-            final Map<String, ScreenSubscriber> subscribers = networkSubscriptions.computeIfAbsent(connection, _ -> new ConcurrentHashMap<>());
-
-            subscribers.put(serviceName, subscriber);
-
-            screen.subscribe(subscriber);
-
-            for (String log : screen.logs()) {
-                connection.send(new ServiceScreenLogPacket(serviceName, log));
-            }
-        });
-
-        server.on(ServiceScreenUnsubscribePacket.class, ctx -> {
-            final String serviceName = ctx.packet().serviceName();
-            final NetworkConnection connection = ctx.connection();
-
-            Map<String, ScreenSubscriber> subscribers = networkSubscriptions.get(connection);
-            if (subscribers == null) {
-                return;
-            }
-
-            final ScreenSubscriber subscriber = subscribers.remove(serviceName);
-            if (subscriber == null) {
-                return;
-            }
-
-            if (subscribers.isEmpty()) {
-                networkSubscriptions.remove(connection);
-            }
-
-            final Screen screen = screens.get(serviceName);
-
-            if (screen != null) {
-                screen.unsubscribe(subscriber);
-            }
-        });
-
-        server.on(ServiceScreenLogPacket.class, ctx -> {
-            final Screen screen = screens.get(ctx.packet().serviceName());
-
-            if (screen == null) {
-                return;
-            }
-
-            screen.append(ctx.packet().line());
-        });
+    public void init(NetworkServer server, ClusterManagerImpl clusterManager) {
+        networkHandler = new ScreenNetworkHandler(this, server, clusterManager);
     }
 
-
     public void register(Screen screen) {
+        logs.putIfAbsent(screen.name(), new CopyOnWriteArrayList<>());
         screens.put(screen.name(), screen);
-
-        if (!screen.name().equals(NodeScreen.NODE_SCREEN_NAME)) {
-            screen.subscribe(line -> {
-                if (screen == current) {
-                    console.println(line);
-                }
-            });
-        }
     }
 
     public void unregister(String name) {
@@ -101,24 +40,19 @@ public class ScreenManager {
             return;
         }
 
-        if (current != null && current.name().equals(name)) {
-            current = null;
+        if (screen.equals(current)) {
+            open(Screen.NODE_SCREEN_NAME);
         }
+
+        logs.remove(name);
     }
 
     public void open(Screen screen) {
-        if (screen == null) {
+        if (screen == null || screen == current) {
             return;
         }
 
-        if (current != null) {
-            current.close();
-        }
-
-        console.clearScreen();
-
-        current = screen;
-        screen.open();
+        changeScreen(screen);
     }
 
     public void open(String name) {
@@ -126,15 +60,74 @@ public class ScreenManager {
     }
 
     public void close() {
-        if (current != null) {
-            current.close();
-            current = null;
+        changeScreen(null);
+    }
+
+    private synchronized void changeScreen(Screen screen) {
+        if (screen == current) {
+            return;
+        }
+
+        if (networkHandler != null && current != null) {
+            networkHandler.screenClosed(current);
+        }
+
+        current = screen;
+        if (screen == null) {
+            return;
+        }
+
+        console.clearScreen();
+
+        if (networkHandler != null) {
+            networkHandler.screenOpened(screen);
+        }
+
+        if (!screen.isRemote()) {
+            for (String line : logs(screen.name())) {
+                if (screen.type() != ScreenType.NODE || !line.toLowerCase().contains("service screen")) {
+                    console.println(line);
+                }
+            }
+        }
+
+        console.prompt(screen.prompt());
+    }
+
+    public void append(String screenName, String line) {
+        final List<String> screenLogs = logs.get(screenName);
+        if (screenLogs == null) {
+            return;
+        }
+
+        screenLogs.add(line);
+        if (screenLogs.size() > MAX_LOGS) {
+            screenLogs.removeFirst();
+        }
+
+        final Screen activeScreen = current;
+        if (activeScreen != null
+                && activeScreen.type() != ScreenType.NODE
+                && activeScreen.name().equals(screenName)) {
+            console.println(line);
+        }
+
+        if (networkHandler != null) {
+            networkHandler.sendLog(screenName, line);
         }
     }
 
-    @SuppressWarnings("unused")
+    public List<String> logs(String screenName) {
+        final List<String> screenLogs = logs.get(screenName);
+        if (screenLogs == null) {
+            return List.of();
+        }
+
+        return Collections.unmodifiableList(screenLogs);
+    }
+
     public Map<String, Screen> screens() {
-        return screens;
+        return Collections.unmodifiableMap(screens);
     }
 
     public Screen get(String name) {

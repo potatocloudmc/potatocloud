@@ -1,21 +1,26 @@
 package net.potatocloud.node.screen;
 
-import java.util.List;
+public record Screen(String name, ScreenType type, String prompt, String remoteNode) {
 
-public interface Screen {
+    public static final String NODE_SCREEN_NAME = "Node";
 
-    String name();
+    public static Screen node(String prompt) {
+        return new Screen(NODE_SCREEN_NAME, ScreenType.NODE, prompt, null);
+    }
 
-    void open();
+    public static Screen service(String name) {
+        return new Screen(name, ScreenType.SERVICE, "[" + name + " | leave] ", null);
+    }
 
-    void close();
+    public static Screen remoteService(String name, String nodeName) {
+        return new Screen(name, ScreenType.SERVICE, "[" + name + " | leave] ", nodeName);
+    }
 
-    List<String> logs();
+    public static Screen setup(String name) {
+        return new Screen(name, ScreenType.SETUP, "> ", null);
+    }
 
-    void append(String line);
-
-    void subscribe(ScreenSubscriber subscriber);
-
-    void unsubscribe(ScreenSubscriber subscriber);
-
+    public boolean isRemote() {
+        return remoteNode != null;
+    }
 }

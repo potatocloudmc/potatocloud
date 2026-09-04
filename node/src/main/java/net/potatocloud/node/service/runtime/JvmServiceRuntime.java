@@ -14,7 +14,7 @@ import net.potatocloud.node.platform.PlatformPrepareSteps;
 import net.potatocloud.node.platform.PlatformUtils;
 import net.potatocloud.node.platform.VelocityForwardingSecret;
 import net.potatocloud.node.platform.cache.CacheManager;
-import net.potatocloud.node.screen.Screen;
+import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.template.TemplateManager;
 import net.potatocloud.node.utils.ProxyUtils;
 import net.potatocloud.node.utils.SystemUtils;
@@ -42,7 +42,8 @@ public final class JvmServiceRuntime implements ServiceRuntime {
     private final TemplateManager templateManager;
     private final DownloadManager downloadManager;
     private final CacheManager cacheManager;
-    private final Screen screen;
+    private final ScreenManager screenManager;
+    private final String screenName;
 
     private Path directory;
     private Process process;
@@ -57,7 +58,8 @@ public final class JvmServiceRuntime implements ServiceRuntime {
             TemplateManager templateManager,
             DownloadManager downloadManager,
             CacheManager cacheManager,
-            Screen screen
+            ScreenManager screenManager,
+            String screenName
     ) {
         this.group = group;
         this.config = config;
@@ -65,7 +67,8 @@ public final class JvmServiceRuntime implements ServiceRuntime {
         this.templateManager = templateManager;
         this.downloadManager = downloadManager;
         this.cacheManager = cacheManager;
-        this.screen = screen;
+        this.screenManager = screenManager;
+        this.screenName = screenName;
     }
 
     @Override
@@ -158,7 +161,7 @@ public final class JvmServiceRuntime implements ServiceRuntime {
                     try {
                         String line;
                         while ((line = processReader.readLine()) != null) {
-                            screen.append(line);
+                            screenManager.append(screenName, line);
                         }
                     } catch (IOException ignored) {
                     }
