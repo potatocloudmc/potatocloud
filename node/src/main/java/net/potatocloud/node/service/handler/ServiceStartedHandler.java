@@ -44,6 +44,11 @@ public final class ServiceStartedHandler implements PacketHandler<ServiceStarted
         final ServiceStartedPacket packet = ctx.packet();
 
         serviceManager.find(packet.serviceName()).ifPresent(service -> {
+            if (ctx.connection().type() == ConnectionType.NODE && service.state() == ServiceState.RUNNING) {
+                server.broadcast().connectors().send(packet);
+                return;
+            }
+
             if (service.state() != ServiceState.STARTING) {
                 return;
             }
