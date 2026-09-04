@@ -16,14 +16,11 @@ import net.potatocloud.network.NetworkServer;
 import net.potatocloud.network.packets.service.*;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.config.NodeConfig;
-import net.potatocloud.node.console.Console;
 import net.potatocloud.node.group.GroupManagerImpl;
 import net.potatocloud.node.platform.DownloadManager;
 import net.potatocloud.node.platform.cache.CacheManager;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.screen.ScreenManager;
-import net.potatocloud.node.screen.impl.LocalServiceScreen;
-import net.potatocloud.node.screen.impl.NodeScreen;
 import net.potatocloud.node.service.helper.ServiceIds;
 import net.potatocloud.node.service.helper.ServicePorts;
 import net.potatocloud.node.service.runtime.JvmServiceRuntime;
@@ -53,7 +50,6 @@ public final class NodeServiceManager implements ServiceManager {
     private final DownloadManager downloadManager;
     private final CacheManager cacheManager;
     private final ClusterManagerImpl clusterManager;
-    private final Console console;
 
     private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(Thread.ofVirtual().factory());
@@ -68,8 +64,7 @@ public final class NodeServiceManager implements ServiceManager {
             TemplateManager templateManager,
             DownloadManager downloadManager,
             CacheManager cacheManager,
-            ClusterManagerImpl clusterManager,
-            Console console
+            ClusterManagerImpl clusterManager
     ) {
         this.config = config;
         this.logger = logger;
@@ -81,7 +76,6 @@ public final class NodeServiceManager implements ServiceManager {
         this.downloadManager = downloadManager;
         this.cacheManager = cacheManager;
         this.clusterManager = clusterManager;
-        this.console = console;
 
         ServiceDefaultFiles.copyDefaultFiles(Path.of(config.folders().data()));
 
@@ -244,11 +238,11 @@ public final class NodeServiceManager implements ServiceManager {
                 0
         );
 
-        final Screen screen = new LocalServiceScreen(service, console);
+        final Screen screen = Screen.service(service.name());
         screenManager.register(screen);
 
         final JvmServiceRuntime runtime = new JvmServiceRuntime(
-                group.get(), config, logger, templateManager, downloadManager, cacheManager, screen
+                group.get(), config, logger, templateManager, downloadManager, cacheManager, screenManager, screen.name()
         );
 
         addService(service);
@@ -317,7 +311,7 @@ public final class NodeServiceManager implements ServiceManager {
             services.remove(service.name().toLowerCase());
 
             if (screenManager.current() != null && screenManager.current().name().equals(service.name())) {
-                screenManager.open(screenManager.get(NodeScreen.NODE_SCREEN_NAME));
+                screenManager.open(Screen.NODE_SCREEN_NAME);
             }
 
             screenManager.unregister(service.name());

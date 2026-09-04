@@ -37,7 +37,6 @@ import net.potatocloud.node.player.CloudPlayerManagerImpl;
 import net.potatocloud.node.properties.NodePropertiesHolder;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.screen.ScreenManager;
-import net.potatocloud.node.screen.impl.NodeScreen;
 import net.potatocloud.node.service.NodeServiceManager;
 import net.potatocloud.node.service.start.ServiceStartScheduler;
 import net.potatocloud.node.setup.SetupManager;
@@ -99,9 +98,9 @@ public final class Node extends CloudAPI {
 
         this.commandManager = new CommandManager();
         this.console = new Console(config, commandManager);
-        this.logger = new NodeLogger(config, console, Path.of(config.folders().logs()));
-        this.commandManager.setLogger(logger);
         this.screenManager = new ScreenManager(console);
+        this.logger = new NodeLogger(config, console, screenManager, Path.of(config.folders().logs()));
+        this.commandManager.setLogger(logger);
         this.setupManager = new SetupManager();
         this.updateChecker = new UpdateChecker(logger);
 
@@ -125,7 +124,7 @@ public final class Node extends CloudAPI {
         this.moduleManager = new ModuleManager(logger);
 
         this.serviceManager = new NodeServiceManager(
-                config, logger, server, eventBus, groupManager, screenManager, templateManager, downloadManager, cacheManager, this.clusterManager, console
+                config, logger, server, eventBus, groupManager, screenManager, templateManager, downloadManager, cacheManager, this.clusterManager
         );
 
         this.serviceStartScheduler = new ServiceStartScheduler(config, groupManager, serviceManager, eventBus);
@@ -137,10 +136,10 @@ public final class Node extends CloudAPI {
             System.exit(0);
         }
 
-        final Screen nodeScreen = new NodeScreen(console);
+        final Screen nodeScreen = Screen.node(console.defaultPrompt());
         screenManager.register(nodeScreen);
         screenManager.current(nodeScreen);
-        screenManager.init(server);
+        screenManager.init(server, clusterManager);
 
         console.start();
 

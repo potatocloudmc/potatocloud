@@ -1,11 +1,11 @@
 package net.potatocloud.node.logging;
 
 import net.potatocloud.api.logging.Logger;
-import net.potatocloud.node.Node;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.console.Console;
 import net.potatocloud.node.screen.Screen;
-import net.potatocloud.node.screen.impl.NodeScreen;
+import net.potatocloud.node.screen.ScreenManager;
+import net.potatocloud.node.screen.ScreenType;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -26,11 +26,13 @@ public final class NodeLogger implements Logger {
 
     private final NodeConfig config;
     private final Console console;
+    private final ScreenManager screenManager;
     private final Path logsDirectory;
 
-    public NodeLogger(NodeConfig config, Console console, Path logsDirectory) {
+    public NodeLogger(NodeConfig config, Console console, ScreenManager screenManager, Path logsDirectory) {
         this.config = config;
         this.console = console;
+        this.screenManager = screenManager;
         this.logsDirectory = logsDirectory;
 
         try {
@@ -71,12 +73,8 @@ public final class NodeLogger implements Logger {
         appendLine(dayLogPath, raw);
         appendLine(latestLogPath, raw);
 
-        if (Node.instance().screenManager().current() != null) {
-            final boolean nodeScreen = Node.instance()
-                    .screenManager()
-                    .current()
-                    .name()
-                    .equals(NodeScreen.NODE_SCREEN_NAME);
+        if (screenManager.current() != null) {
+            final boolean nodeScreen = screenManager.current().type() == ScreenType.NODE;
 
             if (!level.equals(Level.COMMAND_INPUT) && nodeScreen) {
                 console.println(colored);
@@ -85,10 +83,7 @@ public final class NodeLogger implements Logger {
             console.println(colored);
         }
 
-        final Screen nodeScreen = Node.instance().screenManager().get(NodeScreen.NODE_SCREEN_NAME);
-        if (nodeScreen != null) {
-            nodeScreen.append(colored);
-        }
+        screenManager.append(Screen.NODE_SCREEN_NAME, colored);
     }
 
     private String formatRaw(Level level, String time, String message) {

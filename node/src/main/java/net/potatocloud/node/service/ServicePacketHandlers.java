@@ -24,7 +24,7 @@ public final class ServicePacketHandlers {
             ScreenManager screenManager
     ) {
         server.on(RequestServicesPacket.class, ctx -> ctx.reply(new ServicesResponsePacket(serviceManager.services())));
-        server.on(ServiceAddPacket.class, new ServiceAddHandler(serviceManager, server, screenManager, clusterManager));
+        server.on(ServiceAddPacket.class, new ServiceAddHandler(serviceManager, server, screenManager));
         server.on(ServiceRemovePacket.class, new ServiceRemoveHandler(serviceManager, server, screenManager));
         server.on(ServiceStartedPacket.class, new ServiceStartedHandler(serviceManager, logger, eventBus, clusterManager, server));
         server.on(ServiceUpdatePacket.class, new ServiceUpdateHandler(serviceManager, server, clusterManager));

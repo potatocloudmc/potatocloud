@@ -7,8 +7,6 @@ import net.potatocloud.node.Node;
 import net.potatocloud.node.console.Console;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.screen.ScreenManager;
-import net.potatocloud.node.screen.impl.NodeScreen;
-import net.potatocloud.node.screen.impl.SimpleScreen;
 import net.potatocloud.node.setup.answer.AnswerResult;
 import net.potatocloud.node.setup.question.Question;
 import net.potatocloud.node.setup.question.QuestionBuilder;
@@ -161,7 +159,7 @@ public abstract class Setup {
         final Question question = questions.get(currentIndex);
         final String screenName = "setup_" + getName().toLowerCase();
 
-        questionScreen = new SimpleScreen(screenName);
+        questionScreen = Screen.setup(screenName);
         screenManager.register(questionScreen);
         screenManager.open(questionScreen);
 
@@ -204,7 +202,7 @@ public abstract class Setup {
         inSummary = true;
         final String screenName = "setup_" + getName().toLowerCase() + "_summary";
 
-        summaryScreen = new SimpleScreen(screenName);
+        summaryScreen = Screen.setup(screenName);
         screenManager.register(summaryScreen);
         screenManager.open(summaryScreen);
 
@@ -237,7 +235,7 @@ public abstract class Setup {
     }
 
     private void cleanup() {
-        screenManager.open(screenManager.get(NodeScreen.NODE_SCREEN_NAME));
+        screenManager.open(Screen.NODE_SCREEN_NAME);
 
         if (questionScreen != null) {
             screenManager.unregister(questionScreen.name());

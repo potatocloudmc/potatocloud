@@ -4,7 +4,7 @@ import net.potatocloud.node.Node;
 import net.potatocloud.node.command.CommandManager;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.screen.ScreenManager;
-import net.potatocloud.node.screen.impl.NodeScreen;
+import net.potatocloud.node.screen.ScreenType;
 import net.potatocloud.node.setup.Setup;
 import org.jline.jansi.Ansi;
 import org.jline.reader.EndOfFileException;
@@ -34,21 +34,24 @@ public final class ConsoleReader extends Thread {
 
                 final ScreenManager screenManager = node.screenManager();
                 final Screen currentScreen = screenManager.current();
-                final boolean isNodeScreen = currentScreen.name().equals(NodeScreen.NODE_SCREEN_NAME);
+                if (currentScreen == null) {
+                    screenManager.open(Screen.NODE_SCREEN_NAME);
+                    continue;
+                }
 
-                if (isNodeScreen && input.isBlank()) {
+                if (currentScreen.type() == ScreenType.NODE && input.isBlank()) {
                     console.println(Ansi.ansi().cursorUpLine().eraseLine().cursorUp(1).toString());
                     continue;
                 }
 
-                if (isNodeScreen) {
+                if (currentScreen.type() == ScreenType.NODE) {
                     node.logger().logCommand(input);
 
                     commandManager.executeCommand(input);
                     continue;
                 }
 
-                if (currentScreen.name().contains("setup")) {
+                if (currentScreen.type() == ScreenType.SETUP) {
                     final Setup currentSetup = node.setupManager().getCurrentSetup();
                     if (currentSetup != null) {
                         currentSetup.handleInput(input);
@@ -57,7 +60,7 @@ public final class ConsoleReader extends Thread {
                 }
 
                 if (input.strip().equalsIgnoreCase("leave") || input.strip().equalsIgnoreCase("exit")) {
-                    screenManager.open(screenManager.get(NodeScreen.NODE_SCREEN_NAME));
+                    screenManager.open(Screen.NODE_SCREEN_NAME);
                     continue;
                 }
 

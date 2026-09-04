@@ -4,7 +4,7 @@ import net.potatocloud.node.Node;
 import net.potatocloud.node.command.*;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.screen.ScreenManager;
-import net.potatocloud.node.screen.impl.NodeScreen;
+import net.potatocloud.node.screen.ScreenType;
 import net.potatocloud.node.setup.Setup;
 import org.jline.reader.Candidate;
 import org.jline.reader.Completer;
@@ -26,7 +26,7 @@ public class ConsoleCompleter implements Completer {
         final ScreenManager screenManager = Node.instance().screenManager();
         final Screen currentScreen = screenManager.current();
 
-        if (currentScreen != null && !currentScreen.name().equals(NodeScreen.NODE_SCREEN_NAME) && !currentScreen.name().startsWith("setup_")) {
+        if (currentScreen != null && currentScreen.type() == ScreenType.SERVICE) {
             candidates.add(new Candidate("leave"));
             candidates.add(new Candidate("exit"));
             return;
