@@ -75,7 +75,7 @@ security:
   ssl-enabled: true
 
   # Directory where the certificates are saved
-  security-directory: securitys
+  security-directory: security
 
   # Require client authentication
   require-client-auth: true
