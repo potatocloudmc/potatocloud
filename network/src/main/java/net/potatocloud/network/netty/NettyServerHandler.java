@@ -2,6 +2,8 @@ package net.potatocloud.network.netty;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.codec.DecoderException;
+import io.netty.handler.ssl.NotSslRecordException;
 import net.potatocloud.network.NetworkConnection;
 import net.potatocloud.network.protocol.Packet;
 import net.potatocloud.network.protocol.PacketManager;
@@ -21,6 +23,11 @@ public final class NettyServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         if (cause instanceof SocketException) {
+            return;
+        }
+
+        if (cause instanceof DecoderException && cause.getCause() instanceof NotSslRecordException) {
+            ctx.close();
             return;
         }
         super.exceptionCaught(ctx, cause);
