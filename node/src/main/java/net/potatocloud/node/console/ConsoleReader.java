@@ -16,6 +16,7 @@ public final class ConsoleReader extends Thread {
     private final CommandManager commandManager;
 
     public ConsoleReader(Console console, CommandManager commandManager) {
+        setName("console-reader");
         this.console = console;
         this.commandManager = commandManager;
     }
