@@ -21,4 +21,9 @@ public final class NettyClientHandler extends ChannelInboundHandlerAdapter {
             packetManager.dispatch(client.connection(), packet);
         }
     }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) {
+        client.disconnected(new IllegalStateException("Client disconnected"));
+    }
 }

@@ -92,14 +92,17 @@ public final class NettyNetworkClient implements NetworkClient {
 
     @Override
     public void close() {
-        if (!running) {
+        if (channel == null) {
             return;
         }
 
-        running = false;
-
+        disconnected(new IllegalStateException("Client closed"));
         channel.close().syncUninterruptibly();
         group.shutdownGracefully().syncUninterruptibly();
+
+        channel = null;
+        group = null;
+        connection = null;
     }
 
     @Override
@@ -117,5 +120,14 @@ public final class NettyNetworkClient implements NetworkClient {
 
     public NetworkConnection connection() {
         return connection;
+    }
+
+    void disconnected(Throwable cause) {
+        if (!running) {
+            return;
+        }
+
+        running = false;
+        requestManager.cancelAllPending(cause);
     }
 }

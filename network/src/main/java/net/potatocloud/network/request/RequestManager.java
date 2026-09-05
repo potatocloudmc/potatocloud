@@ -25,7 +25,7 @@ public final class RequestManager {
 
         final CompletableFuture<T> future = new CompletableFuture<T>()
                 .orTimeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        pending.put(id, new PendingRequest<>(type, future));
+        pending.put(id, new PendingRequest<>(connection, type, future));
 
         future.whenComplete((_, _) -> {
             pending.remove(id);
@@ -77,5 +77,17 @@ public final class RequestManager {
 
     public void removeRequest(Packet packet) {
         requestIds.remove(packet);
+    }
+
+    public void cancelPending(NetworkConnection connection, Throwable cause) {
+        pending.forEach((_, pendingRequest) -> {
+            if (pendingRequest.connection().equals(connection)) {
+                pendingRequest.future().completeExceptionally(cause);
+            }
+        });
+    }
+
+    public void cancelAllPending(Throwable cause) {
+        pending.values().forEach(pendingRequest -> pendingRequest.future().completeExceptionally(cause));
     }
 }

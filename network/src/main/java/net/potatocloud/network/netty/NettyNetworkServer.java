@@ -102,6 +102,7 @@ public final class NettyNetworkServer implements NetworkServer {
         }
 
         running = false;
+        requestManager.cancelAllPending(new IllegalStateException("Server closed"));
 
         for (NetworkConnection session : connections()) {
             session.close();
@@ -132,7 +133,10 @@ public final class NettyNetworkServer implements NetworkServer {
         disconnectHandlers.add(handler);
     }
 
-    public void handleDisconnect(NetworkConnection connection) {
+    void disconnected(NetworkConnection connection, Throwable cause) {
+        if (running) {
+            requestManager.cancelPending(connection, cause);
+        }
         disconnectHandlers.forEach(handler -> handler.accept(connection));
     }
 

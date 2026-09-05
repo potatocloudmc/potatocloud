@@ -43,7 +43,7 @@ public final class NettyServerHandler extends ChannelInboundHandlerAdapter {
     public void channelInactive(ChannelHandlerContext ctx) {
         final NetworkConnection connection = server.removeConnection(ctx.channel());
         if (connection != null) {
-            server.handleDisconnect(connection);
+            server.disconnected(connection, new IllegalStateException("Connection closed"));
         }
     }
 
