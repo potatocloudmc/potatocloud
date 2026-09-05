@@ -23,16 +23,20 @@ public final class RequestManager {
         final int id = requestCounter.getAndIncrement();
         requestIds.put(packet, id);
 
-        final CompletableFuture<T> future = new CompletableFuture<T>();
-        future.orTimeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        final CompletableFuture<T> future = new CompletableFuture<T>()
+                .orTimeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         pending.put(id, new PendingRequest<>(type, future));
-
-        connection.send(packet);
 
         future.whenComplete((_, _) -> {
             pending.remove(id);
             requestIds.remove(packet);
         });
+
+        try {
+            connection.send(packet);
+        } catch (RuntimeException exception) {
+            future.completeExceptionally(exception);
+        }
 
         return future;
     }
