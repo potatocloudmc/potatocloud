@@ -128,12 +128,10 @@ public final class JvmServiceRuntime implements ServiceRuntime {
 
         for (String stepName : group.platform().prepareSteps()) {
             final PrepareStep step = PlatformPrepareSteps.getStep(stepName);
-            if (step != null) {
-                step.data().put("group", group);
-                step.data().put("port", service.port());
+            step.data().put("group", group);
+            step.data().put("port", service.port());
 
-                step.execute(service.name(), group.platform(), directory);
-            }
+            step.execute(service.name(), group.platform(), directory);
         }
     }
 
