@@ -67,8 +67,9 @@ public final class ServiceStartScheduler {
             serviceManager.find(event.holderName()).ifPresent(service -> {
                 final Group group = service.group();
                 final int onlineServices = group.services().size();
+                final int maxServices = group.maxServices();
 
-                if (onlineServices >= group.maxServices()) {
+                if (maxServices != -1 && onlineServices >= maxServices) {
                     return;
                 }
 
