@@ -21,7 +21,6 @@ import net.potatocloud.api.event.events.player.CloudPlayerDisconnectEvent;
 import net.potatocloud.api.event.events.player.CloudPlayerJoinEvent;
 import net.potatocloud.api.player.impl.CloudPlayerImpl;
 import net.potatocloud.api.service.Service;
-import net.potatocloud.api.service.ServiceState;
 import net.potatocloud.connector.ConnectorAPI;
 import net.potatocloud.connector.event.ConnectPlayerWithServiceEvent;
 import net.potatocloud.connector.player.CloudPlayerManagerImpl;
@@ -105,17 +104,12 @@ public class VelocityPlugin implements PlatformPlugin {
 
     @Subscribe
     public void onPlayerChooseInitialServer(PlayerChooseInitialServerEvent event) {
-        final Service bestFallback = getBestFallback();
-        if (bestFallback == null) {
-            return;
-        }
-
-        final Optional<RegisteredServer> fallback = server.getServer(bestFallback.name());
+        final Optional<Service> fallback = api.serviceManager().findBestFallback();
         if (fallback.isEmpty()) {
             return;
         }
 
-        event.setInitialServer(fallback.get());
+        server.getServer(fallback.get().name()).ifPresent(event::setInitialServer);
     }
 
     @Subscribe
@@ -181,30 +175,19 @@ public class VelocityPlugin implements PlatformPlugin {
 
     @Subscribe
     public void onKicked(KickedFromServerEvent event) {
-        final RegisteredServer kickedFrom = event.getServer();
-        final Service bestFallback = getBestFallback();
-        if (bestFallback == null) {
-            return;
-        }
+        final String kickedServiceName = event.getServer().getServerInfo().getName();
+        final Optional<Service> fallback = api.serviceManager().fallbackServices().stream()
+                .filter(service -> !service.name().equalsIgnoreCase(kickedServiceName))
+                .filter(Service::running)
+                .filter(service -> !service.full())
+                .min(Comparator.comparingInt(Service::playerCount));
 
-        final Optional<RegisteredServer> fallback = server.getServer(bestFallback.name());
         if (fallback.isEmpty()) {
             return;
         }
 
-        if (kickedFrom.getServerInfo().getName().equalsIgnoreCase(fallback.get().getServerInfo().getName())) {
-            return;
-        }
-
-        event.setResult(KickedFromServerEvent.RedirectPlayer.create(fallback.get()));
-    }
-
-    private Service getBestFallback() {
-        return CloudAPI.instance().serviceManager().services().stream()
-                .filter(service -> service.group() != null && service.group().fallback())
-                .filter(service -> service.state() == ServiceState.RUNNING)
-                .min(Comparator.comparingInt(Service::playerCount))
-                .orElse(null);
+        server.getServer(fallback.get().name())
+                .ifPresent(fallbackServer -> event.setResult(KickedFromServerEvent.RedirectPlayer.create(fallbackServer)));
     }
 
     @Override

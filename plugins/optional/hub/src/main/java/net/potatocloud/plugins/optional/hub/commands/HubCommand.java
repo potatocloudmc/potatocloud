@@ -9,10 +9,8 @@ import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.service.Service;
-import net.potatocloud.api.service.ServiceState;
 import net.potatocloud.plugins.shared.MessagesConfig;
 
-import java.util.Comparator;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -38,7 +36,7 @@ public class HubCommand implements SimpleCommand {
                         return;
                     }
 
-                    getBestFallbackServer().ifPresentOrElse(server -> {
+                    bestFallbackServer().ifPresentOrElse(server -> {
                         player.createConnectionRequest(server).fireAndForget();
 
                         player.sendMessage(messagesConfig.get("connect").replaceText(text -> text.match("%service%").replacement(server.getServerInfo().getName())));
@@ -49,14 +47,12 @@ public class HubCommand implements SimpleCommand {
                 });
     }
 
-    private Optional<RegisteredServer> getBestFallbackServer() {
-        return CloudAPI.instance().serviceManager().services().stream()
-                .filter(service -> service.group().fallback())
-                .filter(service -> service.state() == ServiceState.RUNNING)
-                .sorted(Comparator.comparingInt(Service::playerCount))
-                .map(service -> server.getServer(service.name()))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .findFirst();
+    private Optional<RegisteredServer> bestFallbackServer() {
+        final Optional<Service> fallback = CloudAPI.instance().serviceManager().findBestFallback();
+        if (fallback.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return server.getServer(fallback.get().name());
     }
 }

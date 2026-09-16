@@ -2,6 +2,7 @@ package net.potatocloud.api.service;
 
 import net.potatocloud.api.group.Group;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -25,6 +26,32 @@ public interface ServiceManager {
      * @return a list of all services
      */
     List<Service> services();
+
+    /**
+     * Gets all services assigned to a fallback group.
+     *
+     * @return the fallback services
+     */
+    default List<Service> fallbackServices() {
+        return services().stream()
+                .filter(service -> {
+                    final Group group = service.group();
+                    return group != null && group.fallback();
+                })
+                .toList();
+    }
+
+    /**
+     * Gets the best available fallback service.
+     *
+     * @return the fallback service, or an empty optional if none is available
+     */
+    default Optional<Service> findBestFallback() {
+        return fallbackServices().stream()
+                .filter(Service::running)
+                .filter(service -> !service.full())
+                .min(Comparator.comparingInt(Service::playerCount));
+    }
 
     /**
      * Updates an existing service.
