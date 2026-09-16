@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 
 public final class NettySecurityProvider implements SecurityProvider<SslContext> {
@@ -87,6 +88,8 @@ public final class NettySecurityProvider implements SecurityProvider<SslContext>
                             "If you use Multi Node, all nodes must have the same certificates. Copy the security folder from this node " +
                             "or from another node with valid certificates to all nodes."
             );
+        } catch (CertificateNotYetValidException e) {
+            throw new RuntimeException("The " + name + " certificate is not valid yet!");
         } catch (Exception e) {
             throw new RuntimeException("Failed to verify " + name + " certificate", e);
         }
