@@ -5,7 +5,6 @@ import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.group.GroupManager;
 import net.potatocloud.api.logging.Logger;
-import net.potatocloud.api.service.Service;
 import net.potatocloud.common.FileUtils;
 import net.potatocloud.network.NetworkServer;
 import net.potatocloud.network.packets.group.GroupAddPacket;
@@ -111,23 +110,22 @@ public class GroupManagerImpl implements GroupManager {
     }
 
     public boolean deleteLocal(String name) {
-        final Optional<Group> group = find(name);
+        return find(name)
+                .filter(groups::contains)
+                .map(this::deleteLocal)
+                .orElse(false);
+    }
 
-        if (group.isEmpty() || !groups.contains(group.get())) {
-            return false;
-        }
+    private boolean deleteLocal(Group group) {
+        CloudAPI.instance().serviceManager().stop(group).join();
 
-        for (Service service : group.get().services()) {
-            CloudAPI.instance().serviceManager().stop(service); // todo
-        }
+        groups.remove(group);
 
-        groups.remove(group.get());
-
-        final Path filePath = groupsPath.resolve(name + ".yml");
+        final Path filePath = groupsPath.resolve(group.name() + ".yml");
         try {
             Files.deleteIfExists(filePath);
         } catch (IOException e) {
-            logger.error("Failed to delete group file for: " + name);
+            logger.error("Failed to delete group file for: " + group.name());
         }
         return true;
     }

@@ -50,6 +50,20 @@ public interface ServiceManager {
     CompletableFuture<Void> stop(Service service);
 
     /**
+     * Stops all services in a group.
+     *
+     * @param group the group whose services should be stopped
+     * @return a future that completes when all services have stopped
+     */
+    default CompletableFuture<Void> stop(Group group) {
+        return CompletableFuture.allOf(
+                group.services().stream()
+                        .map(this::stop)
+                        .toArray(CompletableFuture[]::new)
+        );
+    }
+
+    /**
      * Executes a command on a service.
      *
      * @param service the service to execute the command on

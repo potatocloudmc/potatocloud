@@ -1,13 +1,12 @@
 package net.potatocloud.node.command.commands;
 
-import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.group.GroupManager;
 import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.property.DefaultProperties;
 import net.potatocloud.api.property.PropertyKey;
-import net.potatocloud.api.service.Service;
+import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.common.PropertyUtil;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.command.ArgumentType;
@@ -24,7 +23,7 @@ import java.util.Optional;
 @CommandInfo(name = "group", description = "Manage groups", aliases = {"groups", "g"})
 public class GroupCommand extends Command {
 
-    public GroupCommand(Logger logger, GroupManager groupManager) {
+    public GroupCommand(Logger logger, GroupManager groupManager, ServiceManager serviceManager) {
         final Node node = Node.instance();
 
         defaultExecutor(_ -> sendHelp());
@@ -88,9 +87,7 @@ public class GroupCommand extends Command {
                 .executes(ctx -> {
                     final Group group = ctx.get("group");
 
-                    for (Service service : group.services()) {
-                        CloudAPI.instance().serviceManager().stop(service); // todo
-                    }
+                    serviceManager.stop(group).join();
                 });
 
         final SubCommand propertySub = sub("property", "Manage properties of a group");
