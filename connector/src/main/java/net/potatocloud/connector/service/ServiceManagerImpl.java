@@ -4,6 +4,8 @@ import net.potatocloud.api.group.Group;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.impl.ServiceImpl;
+import net.potatocloud.api.template.Template;
+import net.potatocloud.api.template.TemplateCopyOptions;
 import net.potatocloud.connector.service.handlers.ServiceAddHandler;
 import net.potatocloud.connector.service.handlers.ServiceUpdateHandler;
 import net.potatocloud.network.packets.service.*;
@@ -77,8 +79,8 @@ public class ServiceManagerImpl implements ServiceManager {
     }
 
     @Override
-    public void copyTo(Service service, String template, String filter) {
-        client.send(new ServiceCopyPacket(service.name(), template, filter));
+    public void copyTo(Service service, Template template, TemplateCopyOptions options) {
+        client.send(new ServiceCopyPacket(service.name(), template, options));
     }
 
     @Override

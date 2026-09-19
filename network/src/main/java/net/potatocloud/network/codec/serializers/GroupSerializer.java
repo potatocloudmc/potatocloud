@@ -3,6 +3,7 @@ package net.potatocloud.network.codec.serializers;
 import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.group.impl.GroupImpl;
+import net.potatocloud.api.template.Template;
 import net.potatocloud.network.codec.CollectionSerializers;
 import net.potatocloud.network.codec.PacketBuffer;
 import net.potatocloud.network.codec.TypeSerializer;
@@ -25,7 +26,7 @@ public final class GroupSerializer implements TypeSerializer<Group> {
         buffer.writeBoolean(group.fallback());
         buffer.writeInt(group.startPriority());
         buffer.writeVarInt(group.startPercentage());
-        buffer.write(group.templates(), CollectionSerializers.set(String.class));
+        buffer.write(group.templates(), CollectionSerializers.list(Template.class));
         buffer.write(group.properties(), CollectionSerializers.propertyMap());
     }
 
@@ -46,7 +47,7 @@ public final class GroupSerializer implements TypeSerializer<Group> {
                 buffer.readBoolean(),
                 buffer.readInt(),
                 buffer.readVarInt(),
-                buffer.read(CollectionSerializers.set(String.class)),
+                buffer.read(CollectionSerializers.list(Template.class)),
                 buffer.read(CollectionSerializers.propertyMap())
         );
     }

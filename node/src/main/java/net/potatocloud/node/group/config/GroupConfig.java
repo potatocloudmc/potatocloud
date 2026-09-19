@@ -6,6 +6,7 @@ import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.group.impl.GroupImpl;
 import net.potatocloud.api.property.PropertyKey;
+import net.potatocloud.api.template.Template;
 
 import java.util.*;
 
@@ -25,7 +26,7 @@ public record GroupConfig(
         boolean fallback,
         @JsonProperty("start-priority") int startPriority,
         @JsonProperty("start-percentage") int startPercentage,
-        Set<String> templates,
+        List<String> templates,
         List<PropertyConfig> properties
 ) {
 
@@ -45,7 +46,7 @@ public record GroupConfig(
                 group.fallback(),
                 group.startPriority(),
                 group.startPercentage(),
-                group.templates(),
+                group.templates().stream().map(Template::name).toList(),
                 group.properties().entrySet().stream().map(PropertyConfig::from).toList()
         );
     }
@@ -81,7 +82,7 @@ public record GroupConfig(
                 fallback,
                 startPriority,
                 startPercentage,
-                templates != null ? templates : new HashSet<>(),
+                templates != null ? templates.stream().map(Template::of).toList() : new ArrayList<>(),
                 propertyMap
         );
     }

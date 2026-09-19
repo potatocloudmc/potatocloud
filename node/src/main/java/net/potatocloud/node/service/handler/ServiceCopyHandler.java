@@ -18,6 +18,6 @@ public final class ServiceCopyHandler implements PacketHandler<ServiceCopyPacket
         final ServiceCopyPacket packet = ctx.packet();
 
         serviceManager.find(packet.serviceName()).ifPresent(service ->
-                serviceManager.copyTo(service, packet.templateName(), packet.filter()));
+                serviceManager.copyTo(service, packet.template(), packet.options()));
     }
 }

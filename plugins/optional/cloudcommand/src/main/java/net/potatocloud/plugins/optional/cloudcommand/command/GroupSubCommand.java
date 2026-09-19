@@ -9,6 +9,7 @@ import net.potatocloud.api.group.GroupManager;
 import net.potatocloud.api.property.DefaultProperties;
 import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.api.service.Service;
+import net.potatocloud.api.template.Template;
 import net.potatocloud.common.PropertyUtil;
 import net.potatocloud.plugins.shared.MessagesConfig;
 
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class GroupSubCommand {
@@ -42,7 +44,7 @@ public class GroupSubCommand {
         CloudAPI.instance().groupManager().find(name).ifPresentOrElse(group -> {
             player.sendMessage(messages.get("group.info.name").replaceText(text -> text.match("%name%").replacement(name)));
             player.sendMessage(messages.get("group.info.platform").replaceText(text -> text.match("%platform%").replacement(group.platform().name())));
-            player.sendMessage(messages.get("group.info.templates").replaceText(text -> text.match("%templates%").replacement(String.join(", ", group.templates()))));
+            player.sendMessage(messages.get("group.info.templates").replaceText(text -> text.match("%templates%").replacement(group.templates().stream().map(Template::name).collect(Collectors.joining(", ")))));
             player.sendMessage(messages.get("group.info.min-online").replaceText(text -> text.match("%minOnline%").replacement(String.valueOf(group.minServices()))));
             player.sendMessage(messages.get("group.info.max-online").replaceText(text -> text.match("%maxOnline%").replacement(String.valueOf(group.maxServices()))));
             player.sendMessage(messages.get("group.info.online-players").replaceText(text -> text.match("%onlinePlayers%").replacement(String.valueOf(group.services().size()))));
@@ -153,13 +155,13 @@ public class GroupSubCommand {
             try {
                 switch (key) {
                     case "addtemplate" -> {
-                        group.addTemplate(value);
+                        group.addTemplate(Template.of(value));
                         groupManager.update(group);
                         player.sendMessage(messages.get("group.edit.template.add").replaceText(text -> text.match("%template%").replacement(value)));
                         return;
                     }
                     case "removetemplate" -> {
-                        if (group.templates().removeIf(template -> template.equalsIgnoreCase(value))) {
+                        if (group.templates().removeIf(template -> template.name().equalsIgnoreCase(value))) {
                             groupManager.update(group);
                             player.sendMessage(messages.get("group.edit.template.remove").replaceText(text -> text.match("%template%").replacement(value)));
                         } else {

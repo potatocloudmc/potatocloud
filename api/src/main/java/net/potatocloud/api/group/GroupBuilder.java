@@ -2,9 +2,12 @@ package net.potatocloud.api.group;
 
 import net.potatocloud.api.group.impl.GroupImpl;
 import net.potatocloud.api.property.PropertyKey;
+import net.potatocloud.api.template.Template;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,6 +31,7 @@ public final class GroupBuilder {
     private int startPriority = 1;
     private int startPercentage = 80;
     private String javaCommand = "java";
+    private final List<Template> templates = new ArrayList<>();
 
     /**
      * Creates a builder for a group.
@@ -217,12 +221,35 @@ public final class GroupBuilder {
     }
 
     /**
+     * Adds a template to the group.
+     *
+     * @param template the template
+     * @return this builder
+     */
+    public GroupBuilder template(Template template) {
+        if (!templates.contains(template)) {
+            templates.add(template);
+        }
+        return this;
+    }
+
+    /**
+     * Adds a template to the group.
+     *
+     * @param name the template name
+     * @return this builder
+     */
+    public GroupBuilder template(String name) {
+        return template(Template.of(name));
+    }
+
+    /**
      * Builds the configured group.
      *
      * @return the created group
      */
     public Group build() {
-        return new GroupImpl(
+        final Group group = new GroupImpl(
                 name,
                 nodeName,
                 platformName,
@@ -239,5 +266,8 @@ public final class GroupBuilder {
                 startPercentage,
                 properties
         );
+
+        templates.forEach(group::addTemplate);
+        return group;
     }
 }

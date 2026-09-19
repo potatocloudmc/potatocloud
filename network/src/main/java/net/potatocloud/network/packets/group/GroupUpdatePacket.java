@@ -1,10 +1,12 @@
 package net.potatocloud.network.packets.group;
 
 import net.potatocloud.api.property.PropertyKey;
+import net.potatocloud.api.template.Template;
 import net.potatocloud.network.codec.CollectionSerializers;
 import net.potatocloud.network.codec.PacketBuffer;
 import net.potatocloud.network.protocol.Packet;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,7 +20,7 @@ public record GroupUpdatePacket(
         boolean fallback,
         int startPriority,
         int startPercentage,
-        Set<String> templates,
+        List<Template> templates,
         Map<PropertyKey<?>, Object> propertyMap
 ) implements Packet {
 
@@ -35,7 +37,7 @@ public record GroupUpdatePacket(
             buf.writeBoolean(packet.fallback());
             buf.writeInt(packet.startPriority());
             buf.writeVarInt(packet.startPercentage());
-            buf.write(packet.templates(), CollectionSerializers.set(String.class));
+            buf.write(packet.templates(), CollectionSerializers.list(Template.class));
             buf.write(packet.propertyMap(), CollectionSerializers.propertyMap());
         }
 
@@ -51,7 +53,7 @@ public record GroupUpdatePacket(
                     buf.readBoolean(),
                     buf.readInt(),
                     buf.readVarInt(),
-                    buf.read(CollectionSerializers.set(String.class)),
+                    buf.read(CollectionSerializers.list(Template.class)),
                     buf.read(CollectionSerializers.propertyMap())
             );
         }

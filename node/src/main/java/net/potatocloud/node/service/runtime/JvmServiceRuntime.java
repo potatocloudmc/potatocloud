@@ -6,6 +6,7 @@ import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformVersion;
 import net.potatocloud.api.platform.PrepareStep;
 import net.potatocloud.api.service.Service;
+import net.potatocloud.api.template.Template;
 import net.potatocloud.common.FileUtils;
 import net.potatocloud.network.security.SecurityConfig;
 import net.potatocloud.node.config.NodeConfig;
@@ -81,7 +82,7 @@ public final class JvmServiceRuntime implements ServiceRuntime {
             throw new RuntimeException("Failed to create service directory: " + directory, e);
         }
 
-        for (String template : group.templates()) {
+        for (Template template : group.templates()) {
             templateManager.copyTemplate(template, directory);
         }
 

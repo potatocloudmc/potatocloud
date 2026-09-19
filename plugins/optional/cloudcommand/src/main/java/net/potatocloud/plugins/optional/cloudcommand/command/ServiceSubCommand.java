@@ -8,6 +8,8 @@ import net.potatocloud.api.property.DefaultProperties;
 import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
+import net.potatocloud.api.template.Template;
+import net.potatocloud.api.template.TemplateCopyOptions;
 import net.potatocloud.api.utils.TimeFormatter;
 import net.potatocloud.common.PropertyUtil;
 import net.potatocloud.plugins.shared.MessagesConfig;
@@ -232,7 +234,7 @@ public class ServiceSubCommand {
 
         final String name = args[2];
         serviceManager.find(name).ifPresentOrElse(service -> {
-            final String template = args[3];
+            final Template template = Template.of(args[3]);
 
             String filter;
             if (args.length >= 5) {
@@ -244,12 +246,12 @@ public class ServiceSubCommand {
             if (filter.isEmpty()) {
                 serviceManager.copyTo(service, template);
             } else {
-                serviceManager.copyTo(service, template, filter);
+                serviceManager.copyTo(service, template, TemplateCopyOptions.path(filter));
             }
 
             player.sendMessage(messages.get("service.copy.success")
                     .replaceText(text -> text.match("%files%").replacement(filter.isEmpty() ? "all service files" : filter))
-                    .replaceText(text -> text.match("%template%").replacement(template)));
+                    .replaceText(text -> text.match("%template%").replacement(template.name())));
         }, () -> player.sendMessage(messages.get("no-service")));
     }
 
@@ -279,6 +281,7 @@ public class ServiceSubCommand {
                     .map(service -> service.group()
                             .templates()
                             .stream()
+                            .map(Template::name)
                             .toList())
                     .orElse(List.of());
         }

@@ -6,6 +6,8 @@ import net.potatocloud.api.property.DefaultProperties;
 import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceState;
+import net.potatocloud.api.template.Template;
+import net.potatocloud.api.template.TemplateCopyOptions;
 import net.potatocloud.api.utils.TimeFormatter;
 import net.potatocloud.common.PropertyUtil;
 import net.potatocloud.node.command.ArgumentType;
@@ -43,22 +45,23 @@ public class ServiceCommand extends Command {
                     return service.group()
                             .templates()
                             .stream()
+                            .map(Template::name)
                             .filter(name -> name.startsWith(input))
                             .toList();
 
                 })
                 .executes(ctx -> {
                     final Service service = ctx.get("service");
-                    final String template = ctx.get("template");
+                    final Template template = Template.of(ctx.get("template"));
                     final String filter = ctx.has("filter") ? ctx.get("filter") : "";
 
                     if (filter.isEmpty()) {
                         serviceManager.copyTo(service, template);
                     } else {
-                        serviceManager.copyTo(service, template, filter);
+                        serviceManager.copyTo(service, template, TemplateCopyOptions.path(filter));
                     }
 
-                    logger.info("Copied &a" + (filter.isEmpty() ? "all service files" : filter) + " &7to template: &a" + template);
+                    logger.info("Copied &a" + (filter.isEmpty() ? "all service files" : filter) + " &7to template: &a" + template.name());
                 });
 
         sub("edit", "Edit a service")

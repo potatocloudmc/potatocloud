@@ -43,6 +43,10 @@ public final class FileUtils {
     }
 
     public static void copyDirectory(Path source, Path target) {
+        copyDirectory(source, target, true);
+    }
+
+    public static void copyDirectory(Path source, Path target, boolean replaceExisting) {
         if (Files.notExists(source)) {
             throw new RuntimeException("Source directory does not exist: " + source);
         }
@@ -55,7 +59,11 @@ public final class FileUtils {
                     Files.createDirectories(targetPath);
                 } else {
                     Files.createDirectories(targetPath.getParent());
-                    Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+                    if (replaceExisting) {
+                        Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+                    } else if (Files.notExists(targetPath)) {
+                        Files.copy(sourcePath, targetPath);
+                    }
                 }
             } catch (IOException e) {
                 throw new RuntimeException("Failed to copy " + sourcePath + " to " + target, e);

@@ -8,6 +8,7 @@ import net.potatocloud.network.protocol.PacketContext;
 import net.potatocloud.network.protocol.PacketHandler;
 import net.potatocloud.network.packets.group.GroupUpdatePacket;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
+import net.potatocloud.node.Node;
 import net.potatocloud.node.group.GroupManagerImpl;
 import net.potatocloud.node.group.config.GroupStorage;
 
@@ -38,6 +39,7 @@ public final class GroupUpdateHandler implements PacketHandler<GroupUpdatePacket
 
             group.templates().clear();
             packet.templates().forEach(group::addTemplate);
+            group.templates().forEach(Node.instance().templateManager()::createTemplate);
 
             group.customJvmFlags().clear();
             packet.customJvmFlags().forEach(group::addCustomJvmFlag);

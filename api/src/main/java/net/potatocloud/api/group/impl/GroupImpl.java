@@ -7,6 +7,7 @@ import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformVersion;
 import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.api.service.Service;
+import net.potatocloud.api.template.Template;
 
 import java.util.*;
 
@@ -26,7 +27,7 @@ public class GroupImpl implements Group {
     private boolean fallback;
     private int startPriority;
     private int startPercentage;
-    private final Set<String> templates;
+    private final List<Template> templates;
     private final Map<PropertyKey<?>, Object> properties;
 
     public GroupImpl(
@@ -47,15 +48,16 @@ public class GroupImpl implements Group {
             Map<PropertyKey<?>, Object> properties
     ) {
         this(name, nodeName, platformName, platformVersionName, javaCommand, customJvmFlags, maxPlayers, maxMemory,
-                minServices, maxServices, staticServices, fallback, startPriority, startPercentage, new HashSet<>(), properties);
+                minServices, maxServices, staticServices, fallback, startPriority, startPercentage, new ArrayList<>(), properties);
 
-        addTemplate("every");
-        addTemplate(name);
+        addTemplate(Template.of("every"));
 
         final Platform platform = platform();
         if (platform != null) {
-            addTemplate(platform.proxy() ? "every_proxy" : "every_service");
+            addTemplate(Template.of(platform.proxy() ? "every_proxy" : "every_service"));
         }
+
+        addTemplate(Template.of(name));
     }
 
     public GroupImpl(
@@ -73,7 +75,7 @@ public class GroupImpl implements Group {
             boolean fallback,
             int startPriority,
             int startPercentage,
-            Set<String> templates,
+            List<Template> templates,
             Map<PropertyKey<?>, Object> properties
     ) {
         this.name = name;
@@ -90,7 +92,7 @@ public class GroupImpl implements Group {
         this.fallback = fallback;
         this.startPriority = startPriority;
         this.startPercentage = startPercentage;
-        this.templates = templates;
+        this.templates = new ArrayList<>(templates);
         this.properties = properties;
     }
 
@@ -116,7 +118,7 @@ public class GroupImpl implements Group {
     }
 
     @Override
-    public Set<String> templates() {
+    public List<Template> templates() {
         return templates;
     }
 
@@ -211,12 +213,14 @@ public class GroupImpl implements Group {
     }
 
     @Override
-    public void addTemplate(String template) {
-        templates.add(template);
+    public void addTemplate(Template template) {
+        if (!templates.contains(template)) {
+            templates.add(template);
+        }
     }
 
     @Override
-    public void removeTemplate(String template) {
+    public void removeTemplate(Template template) {
         templates.remove(template);
     }
 

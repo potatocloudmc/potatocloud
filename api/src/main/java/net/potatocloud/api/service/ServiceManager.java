@@ -1,6 +1,8 @@
 package net.potatocloud.api.service;
 
 import net.potatocloud.api.group.Group;
+import net.potatocloud.api.template.Template;
+import net.potatocloud.api.template.TemplateCopyOptions;
 
 import java.util.Comparator;
 import java.util.List;
@@ -103,9 +105,9 @@ public interface ServiceManager {
      *
      * @param service the service to copy files from
      * @param template the template to copy to
-     * @param filter the filter to apply
+     * @param options the copy options
      */
-    void copyTo(Service service, String template, String filter);
+    void copyTo(Service service, Template template, TemplateCopyOptions options);
 
     /**
      * Copies service files to a template.
@@ -113,8 +115,8 @@ public interface ServiceManager {
      * @param service the service to copy files from
      * @param template the template to copy to
      */
-    default void copyTo(Service service, String template) {
-        copyTo(service, template, "");
+    default void copyTo(Service service, Template template) {
+        copyTo(service, template, TemplateCopyOptions.all());
     }
 
     /**

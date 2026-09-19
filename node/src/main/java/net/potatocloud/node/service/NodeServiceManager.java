@@ -10,6 +10,8 @@ import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.ServiceState;
+import net.potatocloud.api.template.Template;
+import net.potatocloud.api.template.TemplateCopyOptions;
 import net.potatocloud.api.service.impl.ServiceImpl;
 import net.potatocloud.common.FileUtils;
 import net.potatocloud.network.NetworkServer;
@@ -153,11 +155,11 @@ public final class NodeServiceManager implements ServiceManager {
     }
 
     @Override
-    public void copyTo(Service service, String template, String filter) {
+    public void copyTo(Service service, Template template, TemplateCopyOptions options) {
         final Optional<ClusterNode> node = service.node();
 
         if (node.isPresent() && !clusterManager.isLocal(node.get().name())) {
-            clusterManager.sendTo(node.get().name(), new ServiceCopyPacket(service.name(),  template, filter));
+            clusterManager.sendTo(node.get().name(), new ServiceCopyPacket(service.name(), template, options));
             return;
         }
 
@@ -169,22 +171,25 @@ public final class NodeServiceManager implements ServiceManager {
         runtime.directory().ifPresent(serviceDir -> {
             final Path templatesDirectory = Path.of(config.folders().templates());
             Path sourcePath = serviceDir;
-            Path targetPath = templatesDirectory.resolve(template);
+            Path targetPath = templatesDirectory.resolve(template.name());
 
-            if (filter != null && filter.startsWith("/")) {
-                sourcePath = serviceDir.resolve(filter.substring(1));
-                targetPath = targetPath.resolve(filter.substring(1));
+            if (!options.copiesAll()) {
+                sourcePath = serviceDir.resolve(options.path()).normalize();
+                targetPath = targetPath.resolve(options.path()).normalize();
+
+                if (!sourcePath.startsWith(serviceDir.normalize())
+                        || !targetPath.startsWith(templatesDirectory.resolve(template.name()).normalize())) {
+                    throw new IllegalArgumentException("Template copy path must stay inside its source and target directories");
+                }
             }
 
             if (!Files.exists(sourcePath)) {
                 return;
             }
 
-            if (!Files.exists(targetPath)) {
-                templateManager.createTemplate(targetPath.getFileName().toString());
-            }
+            templateManager.createTemplate(template);
 
-            FileUtils.copyDirectory(sourcePath, targetPath);
+            FileUtils.copyDirectory(sourcePath, targetPath, options.replaceExisting());
         });
     }
 

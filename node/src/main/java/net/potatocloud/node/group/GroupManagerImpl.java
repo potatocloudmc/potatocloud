@@ -5,6 +5,7 @@ import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.group.GroupManager;
 import net.potatocloud.api.logging.Logger;
+import net.potatocloud.api.template.Template;
 import net.potatocloud.common.FileUtils;
 import net.potatocloud.network.NetworkServer;
 import net.potatocloud.network.packets.group.GroupAddPacket;
@@ -80,8 +81,8 @@ public class GroupManagerImpl implements GroupManager {
             return;
         }
 
-        for (String templateName : group.templates()) {
-            Node.instance().templateManager().createTemplate(templateName);
+        for (Template template : group.templates()) {
+            Node.instance().templateManager().createTemplate(template);
         }
 
         GroupStorage.save(group, groupsPath);

@@ -7,6 +7,7 @@ import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.property.DefaultProperties;
 import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.api.service.ServiceManager;
+import net.potatocloud.api.template.Template;
 import net.potatocloud.common.PropertyUtil;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.command.ArgumentType;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @CommandInfo(name = "group", description = "Manage groups", aliases = {"groups", "g"})
 public class GroupCommand extends Command {
@@ -72,7 +74,9 @@ public class GroupCommand extends Command {
                     }
                     logger.info("&8» &7Platform: &a" + group.platform().name());
                     logger.info("&8» &7Version: &a" + group.platformVersion().name());
-                    logger.info("&8» &7Templates: &a" + String.join(", ", group.templates()));
+                    logger.info("&8» &7Templates: &a" + group.templates().stream()
+                            .map(Template::name)
+                            .collect(Collectors.joining(", ")));
                     logger.info("&8» &7Min Online Count: &a" + group.minServices());
                     logger.info("&8» &7Max Online Count: &a" + group.maxServices());
                     logger.info("&8» &7Online Players: &a" + group.players().size());
@@ -215,14 +219,15 @@ public class GroupCommand extends Command {
                     try {
                         switch (key) {
                             case "addtemplate" -> {
-                                group.addTemplate(value);
-                                Node.instance().templateManager().createTemplate(value);
+                                final Template template = Template.of(value);
+                                group.addTemplate(template);
+                                Node.instance().templateManager().createTemplate(template);
                                 groupManager.update(group);
                                 logger.info("Template &a" + value + " &7was added to group &a" + groupName);
                                 return;
                             }
                             case "removetemplate" -> {
-                                if (group.templates().removeIf(s -> s.equalsIgnoreCase(value))) {
+                                if (group.templates().removeIf(template -> template.name().equalsIgnoreCase(value))) {
                                     groupManager.update(group);
                                     logger.info("Template &a" + value + " &7was removed from group &a" + groupName);
                                 } else {

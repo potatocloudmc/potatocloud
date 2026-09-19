@@ -7,6 +7,7 @@ import net.potatocloud.api.platform.PlatformVersion;
 import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.api.service.Service;
+import net.potatocloud.api.template.Template;
 import net.potatocloud.network.codec.serializers.ObjectSerializer;
 import net.potatocloud.network.codec.serializers.*;
 
@@ -24,6 +25,7 @@ public final class StandardSerializers {
         SerializerRegistry.register(Instant.class, new InstantSerializer());
         SerializerRegistry.register(Group.class, new GroupSerializer());
         SerializerRegistry.register(Service.class, new ServiceSerializer());
+        SerializerRegistry.register(Template.class, new TemplateSerializer());
         SerializerRegistry.register(CloudPlayer.class, new CloudPlayerSerializer());
         SerializerRegistry.register(ClusterNode.class, new ClusterNodeSerializer());
         SerializerRegistry.register(Platform.class, new PlatformSerializer());

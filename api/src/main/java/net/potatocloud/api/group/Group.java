@@ -7,6 +7,7 @@ import net.potatocloud.api.platform.PlatformVersion;
 import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.property.PropertyHolder;
 import net.potatocloud.api.service.Service;
+import net.potatocloud.api.template.Template;
 
 import java.util.List;
 import java.util.Optional;
@@ -51,9 +52,9 @@ public interface Group extends PropertyHolder {
     /**
      * Gets the service templates of the group.
      *
-     * @return the set of service templates of the group
+     * @return the list of service templates of the group
      */
-    Set<String> templates();
+    List<Template> templates();
 
     /**
      * Gets the minimum service count of the group.
@@ -197,14 +198,14 @@ public interface Group extends PropertyHolder {
      *
      * @param template the service template to add
      */
-    void addTemplate(String template);
+    void addTemplate(Template template);
 
     /**
      * Removes a template from the group.
      *
      * @param template the service template to remove
      */
-    void removeTemplate(String template);
+    void removeTemplate(Template template);
 
     /**
      * Gets all services of the group.
