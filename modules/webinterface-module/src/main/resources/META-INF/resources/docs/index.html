@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+    <title>PotatoCloud API Documentation</title>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <style>
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="scalar-ui"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+<script>
+    Scalar.createApiReference('#scalar-ui', {
+        url: '/openapi',
+        theme: 'deepSpace',
+        layout: 'modern',
+        showDeveloperTools: "never"
+    })
+</script>
+</body>
+</html>

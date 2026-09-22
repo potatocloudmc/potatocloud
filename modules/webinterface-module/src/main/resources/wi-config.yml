@@ -1,0 +1,14 @@
+# PotatoCloud WebInterface Module
+
+# Port to run the web interface on
+port: 8080
+
+# Use 127.0.0.1 to expose only locally, 0.0.0.0 for network access (not recommended for production without proper security measures!)
+bind-address: "127.0.0.1"
+
+# The JWT secret is used for the websocket validation
+jwt-secret: "a-very-long-secret-key-with-a-minimum-of-32-characters"
+
+# These api keys are used for the REST api (They are not used for the websocket authentication, which relies solely on the JWT token)
+# use a comma-separated list of api keys, e.g. "key1,key2,key3"
+api-keys: "change-me-7f4c8b2a1e9d3c0b,change-me-2a1b3c4d5e6f7g8h"
