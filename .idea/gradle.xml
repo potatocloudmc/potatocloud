@@ -22,6 +22,7 @@
             <option value="$PROJECT_DIR$/plugins/optional/hub" />
             <option value="$PROJECT_DIR$/plugins/optional/labymod" />
             <option value="$PROJECT_DIR$/plugins/optional/notify" />
+            <option value="$PROJECT_DIR$/plugins/optional/npc" />
             <option value="$PROJECT_DIR$/plugins/optional/proxy" />
             <option value="$PROJECT_DIR$/plugins/platform" />
             <option value="$PROJECT_DIR$/plugins/platform/fabric" />

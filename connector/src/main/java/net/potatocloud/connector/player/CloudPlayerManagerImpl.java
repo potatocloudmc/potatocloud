@@ -9,6 +9,7 @@ import net.potatocloud.connector.event.ConnectPlayerWithServiceEvent;
 import net.potatocloud.connector.player.handlers.CloudPlayerUpdateHandler;
 import net.potatocloud.network.NetworkClient;
 import net.potatocloud.network.packets.player.CloudPlayerAddPacket;
+import net.potatocloud.network.packets.player.CloudPlayerConnectPacket;
 import net.potatocloud.network.packets.player.CloudPlayerRemovePacket;
 import net.potatocloud.network.packets.player.CloudPlayerUpdatePacket;
 import net.potatocloud.network.packets.player.CloudPlayersResponsePacket;
@@ -83,7 +84,20 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
 
     @Override
     public void connectTo(CloudPlayer player, Service service) {
-        CloudAPI.instance().eventBus().publish(new ConnectPlayerWithServiceEvent(player.username(), service.name()), PublishTarget.LOCAL);
+        final Optional<Service> current = CloudAPI.instance().serviceManager().current();
+
+        boolean onThisProxy = false;
+
+        if (current.isPresent()) {
+            onThisProxy = current.get().name().equals(player.proxy().name());
+        }
+
+        if (onThisProxy) {
+            CloudAPI.instance().eventBus().publish(new ConnectPlayerWithServiceEvent(player.username(), service.name()), PublishTarget.LOCAL);
+            return;
+        }
+
+        client.send(new CloudPlayerConnectPacket(player.username(), service.name()));
     }
 
     @Override

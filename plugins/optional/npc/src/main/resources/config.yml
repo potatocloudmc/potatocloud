@@ -1,0 +1,152 @@
+permission: "potatocloud.npc"
+
+look-at-range: 8
+
+default-hologram:
+  - "&a&l%group%"
+  - "&7%online_players% players online"
+
+selector:
+  title: "§8» §a§l%group%"
+  rows: 5
+
+  service-slots: [11, 12, 13, 14, 15, 16, 17, 20, 21, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 34, 35]
+
+  online-item:
+    material: LIME_DYE
+    display-name: "§a%name%"
+    lore:
+      - "§7Players: §a%online_players%/%max_players%"
+      - "§7State: §a%state%"
+      - " "
+      - "§aClick to join"
+
+  empty-item:
+    material: LIGHT_GRAY_DYE
+    display-name: "§a%name%"
+    lore:
+      - "§7Players: §a%online_players%/%max_players%"
+      - "§7State: §a%state%"
+      - " "
+      - "§aClick to join"
+
+  full-item:
+    material: REDSTONE
+    display-name: "§c%name%"
+    lore:
+      - "§7Players: §a%online_players%/%max_players%"
+      - "§7State: §a%state%"
+      - " "
+      - "§cService is full"
+
+  previous-page:
+    slot: 39
+    material: ARROW
+    display-name: "§7« §fPrevious page"
+    lore:
+      - "§8Page %page%/%pages%"
+
+  next-page:
+    slot: 43
+    material: ARROW
+    display-name: "§fNext page §7»"
+    lore:
+      - "§8Page %page%/%pages%"
+
+  fixed-items:
+    '1':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '2':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '3':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '4':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '5':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '6':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '7':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '8':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '9':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '10':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '18':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '19':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '27':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '28':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '36':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '37':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '38':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '39':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '40':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '41':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '42':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '43':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '44':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []
+    '45':
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      lore: []

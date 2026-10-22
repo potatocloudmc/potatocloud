@@ -12,4 +12,6 @@ public interface Config {
 
     void set(String path, Object value);
 
+    void remove(String path);
+
 }
