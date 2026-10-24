@@ -1,6 +1,7 @@
 package net.potatocloud.connector.group.handlers;
 
 import net.potatocloud.api.group.GroupManager;
+import net.potatocloud.api.group.impl.GroupImpl;
 import net.potatocloud.common.PropertyUtil;
 import net.potatocloud.network.protocol.PacketContext;
 import net.potatocloud.network.protocol.PacketHandler;
@@ -19,6 +20,11 @@ public final class GroupUpdateHandler implements PacketHandler<GroupUpdatePacket
         final GroupUpdatePacket packet = ctx.packet();
 
         groupManager.find(packet.groupName()).ifPresent(group -> {
+            if (group instanceof GroupImpl groupImpl) {
+                groupImpl.nodeName(packet.nodeName());
+                groupImpl.platform(packet.platformName(), packet.platformVersionName());
+            }
+            group.javaCommand(packet.javaCommand());
             group.minServices(packet.minOnlineCount());
             group.maxServices(packet.maxOnlineCount());
             group.maxPlayers(packet.maxPlayers());

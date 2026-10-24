@@ -34,6 +34,13 @@ public interface Group extends PropertyHolder {
     Optional<ClusterNode> node();
 
     /**
+     * Sets the node of the group.
+     *
+     * @param node the node, or null to remove the assignment
+     */
+    void node(ClusterNode node);
+
+    /**
      * Gets the platform of the group.
      *
      * @return the platform of the group
@@ -48,6 +55,16 @@ public interface Group extends PropertyHolder {
      * @throws IllegalStateException if the configured platform or version cannot be resolved
      */
     PlatformVersion platformVersion();
+
+    /**
+     * Sets the platform and platform version of the group.
+     *
+     * @param platform        the platform
+     * @param platformVersion the platform version, must belong to the platform
+     * @throws IllegalArgumentException if the version does not belong to the platform
+     *                                  or the platform would switch between proxy and server
+     */
+    void platform(Platform platform, PlatformVersion platformVersion);
 
     /**
      * Gets the service templates of the group.
@@ -180,6 +197,13 @@ public interface Group extends PropertyHolder {
     String javaCommand();
 
     /**
+     * Sets the Java command used to start services of the group.
+     *
+     * @param javaCommand the Java command
+     */
+    void javaCommand(String javaCommand);
+
+    /**
      * Gets the custom JVM flags of the group.
      *
      * @return the custom JVM flags of the group
@@ -192,6 +216,13 @@ public interface Group extends PropertyHolder {
      * @param flag the custom JVM flag to add
      */
     void addCustomJvmFlag(String flag);
+
+    /**
+     * Removes a custom JVM flag from the group.
+     *
+     * @param flag the custom JVM flag to remove
+     */
+    void removeCustomJvmFlag(String flag);
 
     /**
      * Adds a template to the group.

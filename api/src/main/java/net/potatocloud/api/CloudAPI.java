@@ -8,6 +8,7 @@ import net.potatocloud.api.platform.PlatformManager;
 import net.potatocloud.api.player.CloudPlayerManager;
 import net.potatocloud.api.property.PropertyHolder;
 import net.potatocloud.api.service.ServiceManager;
+import net.potatocloud.api.template.TemplateManager;
 import net.potatocloud.api.version.Version;
 
 /**
@@ -96,4 +97,11 @@ public abstract class CloudAPI {
      * @return the cluster manager
      */
     public abstract ClusterManager clusterManager();
+
+    /**
+     * Gets the template manager.
+     *
+     * @return the template manager
+     */
+    public abstract TemplateManager templateManager();
 }

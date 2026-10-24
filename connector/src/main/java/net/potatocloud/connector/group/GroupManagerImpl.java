@@ -73,18 +73,6 @@ public class GroupManagerImpl implements GroupManager {
 
     @Override
     public void update(Group group) {
-        client.send(new GroupUpdatePacket(
-                group.name(),
-                group.customJvmFlags(),
-                group.maxPlayers(),
-                group.maxMemory(),
-                group.minServices(),
-                group.maxServices(),
-                group.fallback(),
-                group.startPriority(),
-                group.startPercentage(),
-                group.templates(),
-                group.properties()
-        ));
+        client.send(GroupUpdatePacket.of(group));
     }
 }

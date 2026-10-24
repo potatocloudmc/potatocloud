@@ -29,7 +29,7 @@ import net.potatocloud.node.service.runtime.JvmServiceRuntime;
 import net.potatocloud.node.service.runtime.ServiceAliveChecker;
 import net.potatocloud.node.service.runtime.ServiceMemoryUpdater;
 import net.potatocloud.node.service.runtime.ServiceRuntime;
-import net.potatocloud.node.template.TemplateManager;
+import net.potatocloud.node.template.TemplateManagerImpl;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -48,7 +48,7 @@ public final class NodeServiceManager implements ServiceManager {
     private final EventBus eventBus;
     private final GroupManagerImpl groupManager;
     private final ScreenManager screenManager;
-    private final TemplateManager templateManager;
+    private final TemplateManagerImpl templateManager;
     private final DownloadManager downloadManager;
     private final CacheManager cacheManager;
     private final ClusterManagerImpl clusterManager;
@@ -63,7 +63,7 @@ public final class NodeServiceManager implements ServiceManager {
             EventBus eventBus,
             GroupManagerImpl groupManager,
             ScreenManager screenManager,
-            TemplateManager templateManager,
+            TemplateManagerImpl templateManager,
             DownloadManager downloadManager,
             CacheManager cacheManager,
             ClusterManagerImpl clusterManager
@@ -187,7 +187,7 @@ public final class NodeServiceManager implements ServiceManager {
                 return;
             }
 
-            templateManager.createTemplate(template);
+            templateManager.create(template);
 
             FileUtils.copyDirectory(sourcePath, targetPath, options.replaceExisting());
         });

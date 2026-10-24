@@ -16,7 +16,7 @@ import net.potatocloud.node.platform.PlatformUtils;
 import net.potatocloud.node.platform.VelocityForwardingSecret;
 import net.potatocloud.node.platform.cache.CacheManager;
 import net.potatocloud.node.screen.ScreenManager;
-import net.potatocloud.node.template.TemplateManager;
+import net.potatocloud.node.template.TemplateManagerImpl;
 import net.potatocloud.node.utils.ProxyUtils;
 import net.potatocloud.node.utils.SystemUtils;
 import oshi.software.os.OSProcess;
@@ -40,7 +40,7 @@ public final class JvmServiceRuntime implements ServiceRuntime {
     private final Group group;
     private final NodeConfig config;
     private final Logger logger;
-    private final TemplateManager templateManager;
+    private final TemplateManagerImpl templateManager;
     private final DownloadManager downloadManager;
     private final CacheManager cacheManager;
     private final ScreenManager screenManager;
@@ -56,7 +56,7 @@ public final class JvmServiceRuntime implements ServiceRuntime {
             Group group,
             NodeConfig config,
             Logger logger,
-            TemplateManager templateManager,
+            TemplateManagerImpl templateManager,
             DownloadManager downloadManager,
             CacheManager cacheManager,
             ScreenManager screenManager,

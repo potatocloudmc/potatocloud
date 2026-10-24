@@ -82,7 +82,7 @@ public class GroupManagerImpl implements GroupManager {
         }
 
         for (Template template : group.templates()) {
-            Node.instance().templateManager().createTemplate(template);
+            Node.instance().templateManager().create(template);
         }
 
         GroupStorage.save(group, groupsPath);
@@ -135,19 +135,7 @@ public class GroupManagerImpl implements GroupManager {
     public void update(Group group) {
         GroupStorage.save(group, groupsPath);
 
-        final GroupUpdatePacket updatePacket = new GroupUpdatePacket(
-                group.name(),
-                group.customJvmFlags(),
-                group.maxPlayers(),
-                group.maxMemory(),
-                group.minServices(),
-                group.maxServices(),
-                group.fallback(),
-                group.startPriority(),
-                group.startPercentage(),
-                group.templates(),
-                group.properties()
-        );
+        final GroupUpdatePacket updatePacket = GroupUpdatePacket.of(group);
         server.broadcast().connectors().send(updatePacket);
         clusterManager.broadcast(updatePacket);
     }

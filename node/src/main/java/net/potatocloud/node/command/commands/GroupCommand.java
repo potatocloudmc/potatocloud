@@ -221,7 +221,7 @@ public class GroupCommand extends Command {
                             case "addtemplate" -> {
                                 final Template template = Template.of(value);
                                 group.addTemplate(template);
-                                Node.instance().templateManager().createTemplate(template);
+                                Node.instance().templateManager().create(template);
                                 groupManager.update(group);
                                 logger.info("Template &a" + value + " &7was added to group &a" + groupName);
                                 return;

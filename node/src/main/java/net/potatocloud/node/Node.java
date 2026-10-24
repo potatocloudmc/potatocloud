@@ -40,7 +40,7 @@ import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.service.NodeServiceManager;
 import net.potatocloud.node.service.start.ServiceStartScheduler;
 import net.potatocloud.node.setup.SetupManager;
-import net.potatocloud.node.template.TemplateManager;
+import net.potatocloud.node.template.TemplateManagerImpl;
 import net.potatocloud.node.utils.NetworkUtils;
 import net.potatocloud.node.utils.SystemUtils;
 import net.potatocloud.node.version.UpdateChecker;
@@ -71,7 +71,7 @@ public final class Node extends CloudAPI {
 
     private final NodePropertiesHolder propertiesHolder;
     private final CloudPlayerManagerImpl playerManager;
-    private final TemplateManager templateManager;
+    private final TemplateManagerImpl templateManager;
     private final GroupManagerImpl groupManager;
 
     private final PlatformManagerImpl platformManager;
@@ -115,7 +115,7 @@ public final class Node extends CloudAPI {
         this.propertiesHolder = new NodePropertiesHolder(server, clusterManager);
         this.playerManager = new CloudPlayerManagerImpl(server, this.clusterManager);
 
-        this.templateManager = new TemplateManager(logger, Path.of(config.folders().templates()));
+        this.templateManager = new TemplateManagerImpl(logger, Path.of(config.folders().templates()), server);
         this.groupManager = new GroupManagerImpl(Path.of(config.folders().groups()), server, logger, this.clusterManager);
         this.platformManager = new PlatformManagerImpl(logger, server);
         this.downloadManager = new DownloadManager(Path.of(config.folders().platforms()), logger);
@@ -327,7 +327,8 @@ public final class Node extends CloudAPI {
         return playerManager;
     }
 
-    public TemplateManager templateManager() {
+    @Override
+    public TemplateManagerImpl templateManager() {
         return templateManager;
     }
 

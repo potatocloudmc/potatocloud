@@ -14,10 +14,10 @@ import java.util.*;
 public class GroupImpl implements Group {
 
     private final String name;
-    private final String nodeName;
-    private final String platformName;
-    private final String platformVersionName;
-    private final String javaCommand;
+    private String nodeName;
+    private String platformName;
+    private String platformVersionName;
+    private String javaCommand;
     private final Set<String> customJvmFlags;
     private int maxPlayers;
     private int maxMemory;
@@ -107,6 +107,15 @@ public class GroupImpl implements Group {
     }
 
     @Override
+    public void node(ClusterNode node) {
+        nodeName(node == null ? null : node.name());
+    }
+
+    public void nodeName(String nodeName) {
+        this.nodeName = nodeName;
+    }
+
+    @Override
     public Platform platform() {
         return CloudAPI.instance().platformManager().find(platformName).orElseThrow(() -> new IllegalStateException("Platform not found: " + platformName));
     }
@@ -115,6 +124,24 @@ public class GroupImpl implements Group {
     public PlatformVersion platformVersion() {
         return platform().version(platformVersionName)
                 .orElseThrow(() -> new IllegalStateException("Platform version not found: " + platformVersionName));
+    }
+
+    @Override
+    public void platform(Platform platform, PlatformVersion platformVersion) {
+        if (!platform.hasVersion(platformVersion.name())) {
+            throw new IllegalArgumentException("Version " + platformVersion.name() + " does not belong to platform " + platform.name());
+        }
+
+        if (platform.proxy() != platform().proxy()) {
+            throw new IllegalArgumentException("Cannot switch group " + name + " between proxy and server platforms");
+        }
+
+        platform(platform.name(), platformVersion.name());
+    }
+
+    public void platform(String platformName, String platformVersionName) {
+        this.platformName = platformName;
+        this.platformVersionName = platformVersionName;
     }
 
     @Override
@@ -203,6 +230,11 @@ public class GroupImpl implements Group {
     }
 
     @Override
+    public void javaCommand(String javaCommand) {
+        this.javaCommand = javaCommand;
+    }
+
+    @Override
     public Set<String> customJvmFlags() {
         return customJvmFlags;
     }
@@ -210,6 +242,11 @@ public class GroupImpl implements Group {
     @Override
     public void addCustomJvmFlag(String flag) {
         customJvmFlags.add(flag);
+    }
+
+    @Override
+    public void removeCustomJvmFlag(String flag) {
+        customJvmFlags.remove(flag);
     }
 
     @Override

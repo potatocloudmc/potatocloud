@@ -9,6 +9,7 @@ import net.potatocloud.api.platform.PlatformManager;
 import net.potatocloud.api.player.CloudPlayerManager;
 import net.potatocloud.api.property.PropertyHolder;
 import net.potatocloud.api.service.ServiceManager;
+import net.potatocloud.api.template.TemplateManager;
 import net.potatocloud.connector.cluster.ClusterManagerImpl;
 import net.potatocloud.connector.group.GroupManagerImpl;
 import net.potatocloud.connector.logging.ConnectorLogger;
@@ -16,6 +17,7 @@ import net.potatocloud.connector.platform.PlatformManagerImpl;
 import net.potatocloud.connector.player.CloudPlayerManagerImpl;
 import net.potatocloud.connector.properties.ConnectorPropertiesHolder;
 import net.potatocloud.connector.service.ServiceManagerImpl;
+import net.potatocloud.connector.template.TemplateManagerImpl;
 import net.potatocloud.eventbus.ClientEventBus;
 import net.potatocloud.network.NetworkClient;
 import net.potatocloud.network.netty.NettyNetworkClient;
@@ -38,6 +40,7 @@ public class ConnectorAPI extends CloudAPI {
     private ServiceManager serviceManager;
     private PlatformManager platformManager;
     private CloudPlayerManager playerManager;
+    private TemplateManager templateManager;
 
     public ConnectorAPI() {
         this.client = new NettyNetworkClient(SecurityConfig.fromProperties());
@@ -51,6 +54,7 @@ public class ConnectorAPI extends CloudAPI {
             this.groupManager = new GroupManagerImpl(client);
             this.serviceManager = new ServiceManagerImpl(client);
             this.playerManager = new CloudPlayerManagerImpl(client);
+            this.templateManager = new TemplateManagerImpl(client);
         });
 
         client.connect(NODE_HOST, NODE_PORT);
@@ -98,6 +102,11 @@ public class ConnectorAPI extends CloudAPI {
     @Override
     public ClusterManager clusterManager() {
         return clusterManager;
+    }
+
+    @Override
+    public TemplateManager templateManager() {
+        return templateManager;
     }
 
     public NetworkClient client() {
