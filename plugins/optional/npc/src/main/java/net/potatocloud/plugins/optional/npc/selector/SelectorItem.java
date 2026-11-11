@@ -1,7 +1,9 @@
 package net.potatocloud.plugins.optional.npc.selector;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.potatocloud.common.config.Config;
-import net.potatocloud.plugins.optional.npc.util.TextUtils;
+import net.potatocloud.plugins.shared.MessageUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -23,11 +25,15 @@ public record SelectorItem(Material material, String displayName, List<String> l
         final ItemStack item = new ItemStack(material);
         final ItemMeta meta = item.getItemMeta();
 
-        meta.displayName(TextUtils.itemComponent(placeholders.apply(displayName)));
-        meta.lore(lore.stream().map(line -> TextUtils.itemComponent(placeholders.apply(line))).toList());
+        meta.displayName(format(placeholders.apply(displayName)));
+        meta.lore(lore.stream().map(line -> format(placeholders.apply(line))).toList());
         meta.addItemFlags(ItemFlag.values());
 
         item.setItemMeta(meta);
         return item;
+    }
+
+    private Component format(String text) {
+        return MessageUtils.format(text).decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE);
     }
 }

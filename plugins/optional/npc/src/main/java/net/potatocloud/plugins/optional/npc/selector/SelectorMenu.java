@@ -5,7 +5,7 @@ import net.potatocloud.api.service.Service;
 import net.potatocloud.common.config.Config;
 import net.potatocloud.plugins.optional.npc.connect.ServiceConnector;
 import net.potatocloud.plugins.optional.npc.util.Placeholders;
-import net.potatocloud.plugins.optional.npc.util.TextUtils;
+import net.potatocloud.plugins.shared.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -31,7 +31,7 @@ public final class SelectorMenu {
     public void open(Player player, Group group) {
         final int rows = Math.clamp(config.get("selector.rows").asInt(), 1, 6);
         final String title = config.get("selector.title").asString().replace("%group%", group.name());
-        final Inventory inventory = Bukkit.createInventory(null, rows * 9, TextUtils.component(title));
+        final Inventory inventory = Bukkit.createInventory(null, rows * 9, MessageUtils.format(title));
 
         final OpenSelector selector = new OpenSelector(group.name(), 0, inventory);
         fill(selector);

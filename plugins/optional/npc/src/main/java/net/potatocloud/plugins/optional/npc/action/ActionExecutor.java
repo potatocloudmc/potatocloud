@@ -5,7 +5,7 @@ import net.potatocloud.api.group.Group;
 import net.potatocloud.plugins.optional.npc.connect.ServiceConnector;
 import net.potatocloud.plugins.optional.npc.npc.Npc;
 import net.potatocloud.plugins.optional.npc.selector.SelectorMenu;
-import net.potatocloud.plugins.optional.npc.util.TextUtils;
+import net.potatocloud.plugins.shared.MessageUtils;
 import net.potatocloud.plugins.shared.MessagesConfig;
 import org.bukkit.entity.Player;
 
@@ -28,7 +28,7 @@ public final class ActionExecutor {
             case NONE -> {
             }
             case COMMAND -> player.performCommand(withPlayer(action.text(), player));
-            case MESSAGE -> player.sendMessage(TextUtils.component(withPlayer(action.text(), player)));
+            case MESSAGE -> player.sendMessage(MessageUtils.format(withPlayer(action.text(), player)));
             case SELECTOR -> group(player, npc).ifPresent(group -> selectorMenu.open(player, group));
             case CONNECT -> group(player, npc).ifPresent(group -> connector.connectToBest(player, group));
         }

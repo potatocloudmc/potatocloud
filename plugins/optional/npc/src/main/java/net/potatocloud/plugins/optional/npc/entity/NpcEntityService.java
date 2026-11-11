@@ -3,7 +3,7 @@ package net.potatocloud.plugins.optional.npc.entity;
 import net.kyori.adventure.text.Component;
 import net.potatocloud.plugins.optional.npc.npc.Npc;
 import net.potatocloud.plugins.optional.npc.util.Placeholders;
-import net.potatocloud.plugins.optional.npc.util.TextUtils;
+import net.potatocloud.plugins.shared.MessageUtils;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -115,7 +115,7 @@ public final class NpcEntityService {
 
     private Component hologramText(Npc npc) {
         final String text = String.join("\n", npc.hologram()).replace("%name%", npc.name());
-        return TextUtils.component(Placeholders.group(text, npc.group()));
+        return MessageUtils.format(Placeholders.group(text, npc.group()));
     }
 
     private String key(Npc npc) {
