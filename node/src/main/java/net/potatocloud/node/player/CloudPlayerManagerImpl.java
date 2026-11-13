@@ -31,6 +31,8 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
         server.on(CloudPlayerUpdatePacket.class, new CloudPlayerUpdateHandler(this, server, clusterManager));
         server.on(RequestCloudPlayersPacket.class, ctx -> ctx.reply(new CloudPlayersResponsePacket(players().stream().toList())));
         server.on(CloudPlayerConnectPacket.class, ctx -> server.broadcast().connectors().send(ctx.packet()));
+        server.on(CloudPlayerKickPacket.class, ctx -> find(ctx.packet().playerUsername())
+                .ifPresent(player -> kick(player, ctx.packet().reason())));
     }
 
     public void registerPlayer(CloudPlayer player) {
@@ -63,6 +65,22 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
     @Override
     public void connectTo(CloudPlayer player, Service service) {
         final CloudPlayerConnectPacket packet = new CloudPlayerConnectPacket(player.username(), service.name());
+
+        if (player.proxy().node().isPresent()) {
+            final String nodeName = player.proxy().node().get().name();
+
+            if (!clusterManager.isLocal(nodeName)) {
+                clusterManager.sendTo(nodeName, packet);
+                return;
+            }
+        }
+
+        server.broadcast().connectors().send(packet);
+    }
+
+    @Override
+    public void kick(CloudPlayer player, String reason) {
+        final CloudPlayerKickPacket packet = new CloudPlayerKickPacket(player.username(), reason);
 
         if (player.proxy().node().isPresent()) {
             final String nodeName = player.proxy().node().get().name();

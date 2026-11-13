@@ -62,6 +62,7 @@ public final class PacketRegistry {
         manager.register(203, CloudPlayerConnectPacket.class, CloudPlayerConnectPacket.CODEC);
         manager.register(204, RequestCloudPlayersPacket.class, RequestCloudPlayersPacket.CODEC);
         manager.register(205, CloudPlayersResponsePacket.class, CloudPlayersResponsePacket.CODEC);
+        manager.register(206, CloudPlayerKickPacket.class, CloudPlayerKickPacket.CODEC);
 
         manager.register(300, EventPacket.class, EventPacket.CODEC);
 
