@@ -55,6 +55,7 @@ public final class ModuleLoader {
                 if (module instanceof AbstractModule abstractModule) {
                     abstractModule.name(config.name());
                     abstractModule.version(Version.fromString(config.version()));
+                    abstractModule.dataFolder(jar.getParent().resolve(config.name()));
                 }
 
                 module.onLoad();

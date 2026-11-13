@@ -1,0 +1,13 @@
+host: 127.0.0.1
+port: 8080
+
+# Websites allowed to use the API from a browser ("*" = all)
+cors-origins: []
+
+openapi: true
+
+# Scopes: "service.read", "group.*" or "*" for everything
+keys:
+  - name: admin
+    key: %key%
+    scopes: ["*"]
