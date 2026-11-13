@@ -101,6 +101,31 @@ public interface ServiceManager {
     void execute(Service service, String command);
 
     /**
+     * Gets the latest console lines of a service.
+     *
+     * @param service the service to get the lines from
+     * @return a future containing the console lines, oldest first
+     */
+    CompletableFuture<List<String>> logs(Service service);
+
+    /**
+     * Adds a listener that is called for every new console line of a service.
+     * The listener is removed when the service stops.
+     *
+     * @param service the service to listen to
+     * @param listener the listener to add
+     */
+    void addLogListener(Service service, LogListener listener);
+
+    /**
+     * Removes a console listener from a service.
+     *
+     * @param service the service the listener was added to
+     * @param listener the listener to remove
+     */
+    void removeLogListener(Service service, LogListener listener);
+
+    /**
      * Copies service files to a template.
      *
      * @param service the service to copy files from

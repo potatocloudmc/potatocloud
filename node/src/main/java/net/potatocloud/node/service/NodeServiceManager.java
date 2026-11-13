@@ -7,6 +7,7 @@ import net.potatocloud.api.event.events.service.ServiceStoppingEvent;
 import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.logging.Logger;
+import net.potatocloud.api.service.LogListener;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.ServiceState;
@@ -206,6 +207,21 @@ public final class NodeServiceManager implements ServiceManager {
         if (runtime != null) {
             runtime.executeCommand(command);
         }
+    }
+
+    @Override
+    public CompletableFuture<List<String>> logs(Service service) {
+        return screenManager.logs(service.name());
+    }
+
+    @Override
+    public void addLogListener(Service service, LogListener listener) {
+        screenManager.addListener(service.name(), listener);
+    }
+
+    @Override
+    public void removeLogListener(Service service, LogListener listener) {
+        screenManager.removeListener(service.name(), listener);
     }
 
     @Override
