@@ -36,7 +36,7 @@ public interface Group extends PropertyHolder {
     /**
      * Sets the node of the group.
      *
-     * @param node the node, or null to remove the assignment
+     * @param node the new node of the group, or null to remove it
      */
     void node(ClusterNode node);
 
@@ -59,10 +59,9 @@ public interface Group extends PropertyHolder {
     /**
      * Sets the platform and platform version of the group.
      *
-     * @param platform        the platform
-     * @param platformVersion the platform version, must belong to the platform
-     * @throws IllegalArgumentException if the version does not belong to the platform
-     *                                  or the platform would switch between proxy and server
+     * @param platform the new platform of the group
+     * @param platformVersion the new platform version of the group
+     * @throws IllegalArgumentException if the version does not belong to the platform or the group would switch between proxy and server
      */
     void platform(Platform platform, PlatformVersion platformVersion);
 
@@ -199,7 +198,7 @@ public interface Group extends PropertyHolder {
     /**
      * Sets the Java command used to start services of the group.
      *
-     * @param javaCommand the Java command
+     * @param javaCommand the new Java command of the group
      */
     void javaCommand(String javaCommand);
 

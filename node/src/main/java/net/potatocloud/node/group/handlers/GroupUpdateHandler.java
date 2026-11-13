@@ -1,5 +1,7 @@
 package net.potatocloud.node.group.handlers;
 
+import net.potatocloud.api.event.EventBus;
+import net.potatocloud.api.event.events.group.GroupUpdatedEvent;
 import net.potatocloud.api.group.GroupManager;
 import net.potatocloud.api.group.impl.GroupImpl;
 import net.potatocloud.common.PropertyUtil;
@@ -18,11 +20,13 @@ public final class GroupUpdateHandler implements PacketHandler<GroupUpdatePacket
     private final GroupManager groupManager;
     private final NetworkServer server;
     private final ClusterManagerImpl clusterManager;
+    private final EventBus eventBus;
 
-    public GroupUpdateHandler(GroupManager groupManager, NetworkServer server, ClusterManagerImpl clusterManager) {
+    public GroupUpdateHandler(GroupManager groupManager, NetworkServer server, ClusterManagerImpl clusterManager, EventBus eventBus) {
         this.groupManager = groupManager;
         this.server = server;
         this.clusterManager = clusterManager;
+        this.eventBus = eventBus;
     }
 
     @Override
@@ -62,5 +66,9 @@ public final class GroupUpdateHandler implements PacketHandler<GroupUpdatePacket
             clusterManager.broadcast(packet);
         }
         server.broadcast().connectors().exclude(ctx.connection()).send(packet);
+
+        if (ctx.connection().type() == ConnectionType.CONNECTOR) {
+            eventBus.publish(new GroupUpdatedEvent(packet.groupName()));
+        }
     }
 }

@@ -116,8 +116,8 @@ public final class Node extends CloudAPI {
         this.playerManager = new CloudPlayerManagerImpl(server, this.clusterManager);
 
         this.templateManager = new TemplateManagerImpl(logger, Path.of(config.folders().templates()), server);
-        this.groupManager = new GroupManagerImpl(Path.of(config.folders().groups()), server, logger, this.clusterManager);
-        this.platformManager = new PlatformManagerImpl(logger, server);
+        this.groupManager = new GroupManagerImpl(Path.of(config.folders().groups()), server, logger, this.clusterManager, eventBus);
+        this.platformManager = new PlatformManagerImpl(logger, server, eventBus);
         this.downloadManager = new DownloadManager(Path.of(config.folders().platforms()), logger);
         this.cacheManager = new CacheManager(logger);
 

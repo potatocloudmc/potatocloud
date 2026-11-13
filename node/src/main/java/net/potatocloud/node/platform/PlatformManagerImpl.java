@@ -1,5 +1,9 @@
 package net.potatocloud.node.platform;
 
+import net.potatocloud.api.event.events.platform.PlatformCreatedEvent;
+import net.potatocloud.api.event.events.platform.PlatformDeletedEvent;
+import net.potatocloud.api.event.events.platform.PlatformUpdatedEvent;
+import net.potatocloud.node.cluster.ClusterEventBus;
 import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformManager;
@@ -20,16 +24,26 @@ public class PlatformManagerImpl implements PlatformManager {
     private final NetworkServer server;
     private final PlatformFileHandler fileHandler;
     private final List<Platform> platforms;
+    private final ClusterEventBus eventBus;
 
-    public PlatformManagerImpl(Logger logger, NetworkServer server) {
+    public PlatformManagerImpl(Logger logger, NetworkServer server, ClusterEventBus eventBus) {
         this.logger = logger;
         this.server = server;
+        this.eventBus = eventBus;
         this.fileHandler = new PlatformFileHandler(logger);
         this.platforms = fileHandler.loadPlatformsFile();
 
         server.on(RequestPlatformsPacket.class, ctx -> ctx.reply(new PlatformsResponsePacket(platforms())));
-        server.on(PlatformUpdatePacket.class, ctx -> find(ctx.packet().platform().name()).ifPresent(platform -> platform.versions(ctx.packet().platform().versions())));
-        server.on(PlatformAddPacket.class, ctx -> addPlatform(ctx.packet().platform()));
+        server.on(PlatformUpdatePacket.class, ctx -> find(ctx.packet().platform().name()).ifPresent(platform -> {
+            platform.versions(ctx.packet().platform().versions());
+            eventBus.publishWithoutCluster(new PlatformUpdatedEvent(platform.name()));
+        }));
+
+        server.on(PlatformAddPacket.class, ctx -> {
+            if (addPlatform(ctx.packet().platform())) {
+                eventBus.publishWithoutCluster(new PlatformCreatedEvent(ctx.packet().platform().name()));
+            }
+        });
     }
 
     @Override
@@ -51,6 +65,7 @@ public class PlatformManagerImpl implements PlatformManager {
         platforms.add(platform);
         fileHandler.savePlatform(platform);
         server.broadcast().connectors().send(new PlatformAddPacket(platform));
+        eventBus.publishWithoutCluster(new PlatformCreatedEvent(platform.name()));
 
         logger.info("Platform &a" + platform.name() + " &7was successfully created");
     }
@@ -64,6 +79,7 @@ public class PlatformManagerImpl implements PlatformManager {
         platforms.remove(platform);
         fileHandler.deletePlatform(platform);
         server.broadcast().connectors().send(new PlatformRemovePacket(platform.name()));
+        eventBus.publishWithoutCluster(new PlatformDeletedEvent(platform.name()));
 
         logger.info("Platform &a" + platform.name() + " &7was successfully deleted");
     }
@@ -72,14 +88,16 @@ public class PlatformManagerImpl implements PlatformManager {
     public void update(Platform platform) {
         server.broadcast().connectors().send(new PlatformUpdatePacket(platform));
         fileHandler.savePlatform(platform);
+        eventBus.publishWithoutCluster(new PlatformUpdatedEvent(platform.name()));
     }
 
-    public void addPlatform(Platform platform) {
+    public boolean addPlatform(Platform platform) {
         if (platform == null || exists(platform.name())) {
-            return;
+            return false;
         }
 
         platforms.add(platform);
         fileHandler.savePlatform(platform);
+        return true;
     }
 }

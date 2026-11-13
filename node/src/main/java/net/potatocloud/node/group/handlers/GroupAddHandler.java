@@ -1,5 +1,7 @@
 package net.potatocloud.node.group.handlers;
 
+import net.potatocloud.api.event.EventBus;
+import net.potatocloud.api.event.events.group.GroupCreatedEvent;
 import net.potatocloud.network.ConnectionType;
 import net.potatocloud.network.NetworkServer;
 import net.potatocloud.network.protocol.PacketContext;
@@ -13,11 +15,13 @@ public final class GroupAddHandler implements PacketHandler<GroupAddPacket> {
     private final GroupManagerImpl groupManager;
     private final NetworkServer server;
     private final ClusterManagerImpl clusterManager;
+    private final EventBus eventBus;
 
-    public GroupAddHandler(GroupManagerImpl groupManager, NetworkServer server, ClusterManagerImpl clusterManager) {
+    public GroupAddHandler(GroupManagerImpl groupManager, NetworkServer server, ClusterManagerImpl clusterManager, EventBus eventBus) {
         this.groupManager = groupManager;
         this.server = server;
         this.clusterManager = clusterManager;
+        this.eventBus = eventBus;
     }
 
     @Override
@@ -35,6 +39,7 @@ public final class GroupAddHandler implements PacketHandler<GroupAddPacket> {
             groupManager.addGroup(packet.group());
             server.broadcast().connectors().exclude(ctx.connection()).send(packet);
             clusterManager.broadcast(packet);
+            eventBus.publish(new GroupCreatedEvent(packet.group().name()));
         }
     }
 }

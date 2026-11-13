@@ -4,22 +4,22 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Manages the templates of the node this instance is connected to.
+ * Represents the template manager.
  */
 public interface TemplateManager {
 
     /**
      * Gets all templates.
      *
-     * @return the templates
+     * @return a list of all templates
      */
     List<Template> templates();
 
     /**
-     * Finds a template by its name.
+     * Gets a template by its name.
      *
-     * @param name the template name
-     * @return the template, if it exists
+     * @param name the name of the template
+     * @return the template, or an empty optional if not found
      */
     default Optional<Template> find(String name) {
         return templates().stream()
@@ -28,26 +28,26 @@ public interface TemplateManager {
     }
 
     /**
-     * Checks whether a template exists.
+     * Checks whether a template with the given name exists.
      *
-     * @param name the template name
-     * @return true if the template exists
+     * @param name the name of the template
+     * @return {@code true} if the template exists, otherwise {@code false}
      */
     default boolean exists(String name) {
         return find(name).isPresent();
     }
 
     /**
-     * Creates a template if it does not exist yet.
+     * Creates a new template.
      *
-     * @param template the template
+     * @param template the template to create
      */
     void create(Template template);
 
     /**
-     * Deletes a template including all of its files.
+     * Deletes a template and all of its files.
      *
-     * @param template the template
+     * @param template the template to delete
      */
     void delete(Template template);
 }
