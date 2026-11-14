@@ -7,7 +7,14 @@ import net.potatocloud.api.CloudAPI;
 import net.potatocloud.module.rest.auth.AuthHandler;
 import net.potatocloud.module.rest.config.RestConfig;
 import net.potatocloud.module.rest.error.ErrorHandler;
-import net.potatocloud.module.rest.route.NodeRoutes;
+import net.potatocloud.module.rest.group.GroupRoutes;
+import net.potatocloud.module.rest.node.NodeRoutes;
+import net.potatocloud.module.rest.platform.PlatformRoutes;
+import net.potatocloud.module.rest.player.PlayerRoutes;
+import net.potatocloud.module.rest.property.PropertyRoutes;
+import net.potatocloud.module.rest.service.ServiceRoutes;
+import net.potatocloud.module.rest.template.TemplateRoutes;
+import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
 public final class RestServer {
@@ -48,7 +55,7 @@ public final class RestServer {
         javalin.startup.showJavalinBanner = false;
         javalin.startup.showOldJavalinVersionWarning = false;
         javalin.concurrency.useVirtualThreads = true;
-        javalin.jsonMapper(new JavalinJackson3(JsonMapper.builder().build(), true));
+        javalin.jsonMapper(new JavalinJackson3(JsonMapper.builder().enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build(), true));
 
         if (!config.corsOrigins().isEmpty()) {
             javalin.bundledPlugins.enableCors(cors -> cors.addRule(rule -> {
@@ -63,6 +70,12 @@ public final class RestServer {
         javalin.routes.beforeMatched(new AuthHandler(config));
         new ErrorHandler(api.logger()).register(javalin.routes);
 
+        new GroupRoutes(api).register(javalin.routes);
+        new ServiceRoutes(api).register(javalin.routes);
+        new PlatformRoutes(api).register(javalin.routes);
+        new PlayerRoutes(api).register(javalin.routes);
         new NodeRoutes(api).register(javalin.routes);
+        new TemplateRoutes(api).register(javalin.routes);
+        new PropertyRoutes(api).register(javalin.routes);
     }
 }

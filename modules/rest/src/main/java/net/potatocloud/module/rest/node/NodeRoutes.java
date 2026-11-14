@@ -1,4 +1,4 @@
-package net.potatocloud.module.rest.route;
+package net.potatocloud.module.rest.node;
 
 import io.javalin.config.RoutesConfig;
 import io.javalin.http.Context;
@@ -7,8 +7,7 @@ import net.potatocloud.api.cluster.ClusterManager;
 import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.module.rest.RestServer;
 import net.potatocloud.module.rest.auth.Scope;
-import net.potatocloud.module.rest.error.ApiException;
-import net.potatocloud.module.rest.model.NodeResponse;
+import net.potatocloud.module.rest.util.FindHelper;
 
 public final class NodeRoutes {
 
@@ -32,9 +31,6 @@ public final class NodeRoutes {
     }
 
     private void get(Context ctx) {
-        final String name = ctx.pathParam("name");
-        final ClusterNode node = clusterManager.find(name).orElseThrow(() -> ApiException.notFound("node", name));
-
-        ctx.json(NodeResponse.from(node, clusterManager.localNode()));
+        ctx.json(NodeResponse.from(FindHelper.node(ctx.pathParam("name")), clusterManager.localNode()));
     }
 }

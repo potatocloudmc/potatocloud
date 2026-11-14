@@ -1,4 +1,4 @@
-package net.potatocloud.module.rest.model;
+package net.potatocloud.module.rest.node;
 
 import net.potatocloud.api.cluster.ClusterNode;
 

@@ -95,7 +95,17 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
     }
 
     @Override
-    public void update(CloudPlayer player) {}
+    public void update(CloudPlayer player) {
+        final CloudPlayerUpdatePacket packet = new CloudPlayerUpdatePacket(
+                player.uniqueId(),
+                player.proxy().name(),
+                player.service().map(Service::name).orElse(null),
+                player.properties()
+        );
+
+        server.broadcast().connectors().send(packet);
+        clusterManager.broadcast(packet);
+    }
 
 }
 

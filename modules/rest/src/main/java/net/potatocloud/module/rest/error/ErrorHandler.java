@@ -4,7 +4,6 @@ import io.javalin.config.RoutesConfig;
 import io.javalin.http.Context;
 import io.javalin.http.HttpResponseException;
 import net.potatocloud.api.logging.Logger;
-import net.potatocloud.module.rest.model.ErrorResponse;
 import tools.jackson.core.JacksonException;
 
 public final class ErrorHandler {
@@ -21,6 +20,8 @@ public final class ErrorHandler {
         routes.exception(HttpResponseException.class, (e, ctx) -> send(ctx, e.getStatus(), name(e.getStatus()), e.getMessage()));
 
         routes.exception(JacksonException.class, (e, ctx) -> send(ctx, 400, "invalid_body", e.getOriginalMessage()));
+
+        routes.exception(IllegalArgumentException.class, (e, ctx) -> send(ctx, 400, "bad_request", e.getMessage()));
 
         routes.exception(Exception.class, (e, ctx) -> {
             logger.error("REST request " + ctx.method() + " " + ctx.path() + " failed");
