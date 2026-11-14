@@ -1,12 +1,13 @@
 host: 127.0.0.1
 port: 8080
 
-# Websites allowed to use the API from a browser ("*" = all)
+# Websites that can use the API (* = all)
 cors-origins: []
 
+# Show the API docs at /openapi.yaml
 openapi: true
 
-# Scopes: "service.read", "group.*" or "*" for everything
+# API keys (scopes: "service.read", "group.*" or "*" for all)
 keys:
   - name: admin
     key: %key%

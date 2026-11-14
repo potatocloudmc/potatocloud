@@ -20,7 +20,7 @@ public final class RequestHelper {
     }
 
     public static void requireName(String name) {
-        require(name != null && name.matches("[A-Za-z0-9_-]+"), "name is required and may only contain letters, numbers, - and _");
+        require(name != null && name.matches("[A-Za-z0-9_-]+"), "name can only contain letters, numbers, - and _");
     }
 
     public static int intParam(Context ctx, String name, int fallback) {

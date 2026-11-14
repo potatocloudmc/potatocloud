@@ -2,6 +2,7 @@ package net.potatocloud.module.rest;
 
 import io.javalin.Javalin;
 import io.javalin.config.JavalinConfig;
+import io.javalin.http.Context;
 import io.javalin.json.JavalinJackson3;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.module.rest.auth.AuthHandler;
@@ -84,5 +85,14 @@ public final class RestServer {
 
         wsServer = new WsServer(api, config);
         wsServer.register(javalin.routes);
+
+        if (config.openapi()) {
+            javalin.routes.get("/openapi.yaml", this::openapi);
+        }
+    }
+
+    private void openapi(Context ctx) {
+        ctx.contentType("application/yaml");
+        ctx.result(getClass().getClassLoader().getResourceAsStream("rest-openapi.yaml"));
     }
 }

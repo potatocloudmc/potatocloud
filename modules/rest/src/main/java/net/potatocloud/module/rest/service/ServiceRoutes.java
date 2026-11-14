@@ -84,7 +84,7 @@ public final class ServiceRoutes {
         final Template template = FindHelper.template(request.template());
         final String path = request.path() == null ? "" : request.path();
 
-        RequestHelper.require(!path.contains(".."), "path must not contain ..");
+        RequestHelper.require(!path.contains(".."), "path cannot contain ..");
 
         final boolean replace = request.replaceExisting() == null || request.replaceExisting();
 

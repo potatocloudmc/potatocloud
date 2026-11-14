@@ -61,7 +61,7 @@ public final class WsServer {
 
         final ApiKey apiKey = config.findKey(token);
         if (apiKey == null) {
-            ctx.closeSession(1008, "Missing or invalid API key");
+            ctx.closeSession(1008, "Invalid API key");
             return;
         }
 

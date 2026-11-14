@@ -188,7 +188,7 @@ public final class GroupRoutes {
             throw ApiException.conflict("Group " + group.name() + " has no node to start on");
         }
         if (group.services().size() + count > group.maxServices()) {
-            throw ApiException.conflict("Group " + group.name() + " would exceed its maximum of " + group.maxServices() + " services");
+            throw ApiException.conflict("Group " + group.name() + " can only have " + group.maxServices() + " services");
         }
 
         for (int i = 0; i < count; i++) {
@@ -208,9 +208,9 @@ public final class GroupRoutes {
     }
 
     private void validate(int minServices, int maxServices, int maxPlayers, int maxMemory, int startPercentage) {
-        RequestHelper.require(minServices >= 0, "minServices must not be negative");
-        RequestHelper.require(maxServices >= minServices, "maxServices must not be lower than minServices");
-        RequestHelper.require(maxPlayers >= 0, "maxPlayers must not be negative");
+        RequestHelper.require(minServices >= 0, "minServices cannot be negative");
+        RequestHelper.require(maxServices >= minServices, "maxServices cannot be lower than minServices");
+        RequestHelper.require(maxPlayers >= 0, "maxPlayers cannot be negative");
         RequestHelper.require(maxMemory > 0, "maxMemory must be greater than 0");
         RequestHelper.require(startPercentage >= 0 && startPercentage <= 100, "startPercentage must be between 0 and 100");
     }
