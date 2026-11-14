@@ -1,0 +1,8 @@
+name: potatocloud-npc
+version: 2.0.0
+main: net.potatocloud.plugins.optional.npc.NpcPlugin
+api-version: '1.21.9'
+author: "potatocloud-contributors"
+
+depend:
+  - potatocloud-plugin

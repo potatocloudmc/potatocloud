@@ -31,4 +31,14 @@ public class MessagesConfig {
         final String message = config.get(path).asString();
         return MessageUtils.format(prefix + message);
     }
+
+    public Component get(String key, String... placeholders) {
+        Component message = get(key);
+        for (int i = 0; i + 1 < placeholders.length; i += 2) {
+            final String placeholder = placeholders[i];
+            final String value = placeholders[i + 1];
+            message = message.replaceText(text -> text.matchLiteral(placeholder).replacement(value));
+        }
+        return message;
+    }
 }

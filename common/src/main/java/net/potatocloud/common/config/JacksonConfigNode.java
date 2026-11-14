@@ -3,7 +3,9 @@ package net.potatocloud.common.config;
 import tools.jackson.databind.JsonNode;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class JacksonConfigNode implements ConfigNode {
 
@@ -24,6 +26,11 @@ public class JacksonConfigNode implements ConfigNode {
     }
 
     @Override
+    public double asDouble() {
+        return node != null ? node.asDouble() : 0;
+    }
+
+    @Override
     public boolean asBoolean() {
         return node != null && node.asBoolean();
     }
@@ -38,6 +45,15 @@ public class JacksonConfigNode implements ConfigNode {
 
         node.forEach(element -> list.add(element.asString()));
         return list;
+    }
+
+    @Override
+    public Set<String> keys() {
+        if (node == null || !node.isObject()) {
+            return Set.of();
+        }
+
+        return new LinkedHashSet<>(node.propertyNames());
     }
 }
 

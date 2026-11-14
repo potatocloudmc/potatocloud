@@ -44,6 +44,16 @@ public class YamlConfig extends AbstractConfig {
         current.putPOJO(lastKey, value);
     }
 
+    @Override
+    public void remove(String path) {
+        final int lastDot = path.lastIndexOf('.');
+        final JsonNode parent = lastDot == -1 ? node : resolve(path.substring(0, lastDot));
+
+        if (parent instanceof ObjectNode objectNode) {
+            objectNode.remove(path.substring(lastDot + 1));
+        }
+    }
+
     private JsonNode resolve(String path) {
         if (this.node == null) {
             return null;

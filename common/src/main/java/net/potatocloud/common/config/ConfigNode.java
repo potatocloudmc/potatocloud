@@ -1,6 +1,7 @@
 package net.potatocloud.common.config;
 
 import java.util.List;
+import java.util.Set;
 
 public interface ConfigNode {
 
@@ -8,8 +9,12 @@ public interface ConfigNode {
 
     int asInt();
 
+    double asDouble();
+
     boolean asBoolean();
 
     List<String> asStringList();
+
+    Set<String> keys();
 
 }
