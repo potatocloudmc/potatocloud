@@ -18,6 +18,10 @@ public record RestConfig(
         List<ApiKey> keys
 ) {
 
+    public ApiKey findKey(String token) {
+        return keys.stream().filter(key -> key.key().equals(token)).findFirst().orElse(null);
+    }
+
     public static RestConfig load(Path path) throws IOException {
         if (!Files.exists(path)) {
             Files.createDirectories(path.getParent());

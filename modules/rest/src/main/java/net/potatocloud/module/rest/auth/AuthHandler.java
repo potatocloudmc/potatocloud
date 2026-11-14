@@ -23,7 +23,7 @@ public final class AuthHandler implements Handler {
             return;
         }
 
-        final ApiKey key = find(ctx.header("X-API-Key"));
+        final ApiKey key = config.findKey(ctx.header("X-API-Key"));
         if (key == null) {
             throw new ApiException(401, "unauthorized", "Missing or invalid API key");
         }
@@ -35,9 +35,5 @@ public final class AuthHandler implements Handler {
         }
 
         ctx.attribute(KEY_ATTRIBUTE, key);
-    }
-
-    private ApiKey find(String token) {
-        return config.keys().stream().filter(key -> key.key().equals(token)).findFirst().orElse(null);
     }
 }

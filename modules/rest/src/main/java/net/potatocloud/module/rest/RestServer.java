@@ -14,6 +14,7 @@ import net.potatocloud.module.rest.player.PlayerRoutes;
 import net.potatocloud.module.rest.property.PropertyRoutes;
 import net.potatocloud.module.rest.service.ServiceRoutes;
 import net.potatocloud.module.rest.template.TemplateRoutes;
+import net.potatocloud.module.rest.ws.WsServer;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -24,6 +25,7 @@ public final class RestServer {
     private final CloudAPI api;
     private final RestConfig config;
     private Javalin app;
+    private WsServer wsServer;
 
     public RestServer(CloudAPI api, RestConfig config) {
         this.api = api;
@@ -39,6 +41,7 @@ public final class RestServer {
         try {
             app = Javalin.create(this::configure);
             app.start(config.host(), config.port());
+            wsServer.start();
         } finally {
             thread.setContextClassLoader(previous);
         }
@@ -46,6 +49,7 @@ public final class RestServer {
 
     public void stop() {
         if (app != null) {
+            wsServer.stop();
             app.stop();
             app = null;
         }
@@ -77,5 +81,8 @@ public final class RestServer {
         new NodeRoutes(api).register(javalin.routes);
         new TemplateRoutes(api).register(javalin.routes);
         new PropertyRoutes(api).register(javalin.routes);
+
+        wsServer = new WsServer(api, config);
+        wsServer.register(javalin.routes);
     }
 }
