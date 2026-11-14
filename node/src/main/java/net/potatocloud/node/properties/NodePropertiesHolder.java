@@ -10,23 +10,22 @@ import net.potatocloud.network.packets.property.PropertyRemovePacket;
 import net.potatocloud.network.packets.property.RequestPropertiesPacket;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class NodePropertiesHolder implements PropertyHolder {
 
     private final NetworkServer server;
     private final ClusterManagerImpl clusterManager;
 
-    private final Map<PropertyKey<?>, Object> propertyMap = new HashMap<>();
+    private final Map<PropertyKey<?>, Object> propertyMap = new ConcurrentHashMap<>();
 
     public NodePropertiesHolder(NetworkServer server, ClusterManagerImpl clusterManager) {
         this.server = server;
         this.clusterManager = clusterManager;
 
-        server.on(RequestPropertiesPacket.class, ctx -> {
-            propertyMap.forEach((key, value) -> ctx.connection().send(new PropertyAddPacket(key.name(), key.defaultValue(), value)));
-        });
+        server.on(RequestPropertiesPacket.class, ctx ->
+                propertyMap.forEach((key, value) -> ctx.connection().send(new PropertyAddPacket(key.name(), key.defaultValue(), value))));
 
         server.on(PropertyAddPacket.class, ctx -> {
             final PropertyAddPacket packet = ctx.packet();

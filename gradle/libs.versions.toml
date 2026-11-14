@@ -15,6 +15,7 @@ velocity = "3.5.0-SNAPSHOT"
 fabric-loader = "0.19.3"
 labymod = "1.0.6"
 minimessage = "4.25.0"
+javalin = "7.2.4"
 
 [libraries]
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
@@ -36,6 +37,7 @@ labymod-common = { module = "net.labymod.serverapi:server-common", version.ref =
 labymod-bukkit = { module = "net.labymod.serverapi:server-bukkit", version.ref = "labymod" }
 labymod-velocity = { module = "net.labymod.serverapi:server-velocity", version.ref = "labymod" }
 minimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "minimessage" }
+javalin = { module = "io.javalin:javalin", version.ref = "javalin" }
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }

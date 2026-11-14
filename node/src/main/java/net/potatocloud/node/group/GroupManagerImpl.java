@@ -2,6 +2,10 @@ package net.potatocloud.node.group;
 
 import lombok.Getter;
 import net.potatocloud.api.CloudAPI;
+import net.potatocloud.api.event.EventBus;
+import net.potatocloud.api.event.events.group.GroupCreatedEvent;
+import net.potatocloud.api.event.events.group.GroupDeletedEvent;
+import net.potatocloud.api.event.events.group.GroupUpdatedEvent;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.group.GroupManager;
 import net.potatocloud.api.logging.Logger;
@@ -35,17 +39,19 @@ public class GroupManagerImpl implements GroupManager {
     private final NetworkServer server;
     private final Logger logger;
     private final ClusterManagerImpl clusterManager;
+    private final EventBus eventBus;
 
-    public GroupManagerImpl(Path groupsPath, NetworkServer server, Logger logger, ClusterManagerImpl clusterManager) {
+    public GroupManagerImpl(Path groupsPath, NetworkServer server, Logger logger, ClusterManagerImpl clusterManager, EventBus eventBus) {
         this.groupsPath = groupsPath;
         this.server = server;
         this.logger = logger;
         this.clusterManager = clusterManager;
+        this.eventBus = eventBus;
 
         server.on(RequestGroupsPacket.class, ctx -> ctx.reply(new GroupsResponsePacket(groups())));
-        server.on(GroupUpdatePacket.class, new GroupUpdateHandler(this, server, clusterManager));
-        server.on(GroupAddPacket.class, new GroupAddHandler(this, server, clusterManager));
-        server.on(GroupDeletePacket.class, new GroupDeleteHandler(this, server, clusterManager));
+        server.on(GroupUpdatePacket.class, new GroupUpdateHandler(this, server, clusterManager, eventBus));
+        server.on(GroupAddPacket.class, new GroupAddHandler(this, server, clusterManager, eventBus));
+        server.on(GroupDeletePacket.class, new GroupDeleteHandler(this, server, clusterManager, eventBus));
 
         loadGroups();
     }
@@ -72,6 +78,7 @@ public class GroupManagerImpl implements GroupManager {
 
         server.broadcast().connectors().send(new GroupAddPacket(group));
         clusterManager.broadcast(new GroupAddPacket(group));
+        eventBus.publish(new GroupCreatedEvent(group.name()));
 
         logger.info("Group &a" + group.name() + " &7was successfully created");
     }
@@ -82,7 +89,7 @@ public class GroupManagerImpl implements GroupManager {
         }
 
         for (Template template : group.templates()) {
-            Node.instance().templateManager().createTemplate(template);
+            Node.instance().templateManager().create(template);
         }
 
         GroupStorage.save(group, groupsPath);
@@ -108,6 +115,7 @@ public class GroupManagerImpl implements GroupManager {
 
         server.broadcast().connectors().send(new GroupDeletePacket(group.name()));
         clusterManager.broadcast(new GroupDeletePacket(group.name()));
+        eventBus.publish(new GroupDeletedEvent(group.name()));
     }
 
     public boolean deleteLocal(String name) {
@@ -135,21 +143,10 @@ public class GroupManagerImpl implements GroupManager {
     public void update(Group group) {
         GroupStorage.save(group, groupsPath);
 
-        final GroupUpdatePacket updatePacket = new GroupUpdatePacket(
-                group.name(),
-                group.customJvmFlags(),
-                group.maxPlayers(),
-                group.maxMemory(),
-                group.minServices(),
-                group.maxServices(),
-                group.fallback(),
-                group.startPriority(),
-                group.startPercentage(),
-                group.templates(),
-                group.properties()
-        );
+        final GroupUpdatePacket updatePacket = GroupUpdatePacket.of(group);
         server.broadcast().connectors().send(updatePacket);
         clusterManager.broadcast(updatePacket);
+        eventBus.publish(new GroupUpdatedEvent(group.name()));
     }
 
     private void loadGroups() {

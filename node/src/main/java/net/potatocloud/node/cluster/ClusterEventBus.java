@@ -23,6 +23,11 @@ public class ClusterEventBus implements EventBus {
         bus.publish(JsonEventCodec.decode(packet));
     }
 
+    // like publish(), but other cluster nodes do not get the event
+    public <T extends Event> void publishWithoutCluster(T event) {
+        bus.publish(event, PublishTarget.BOTH);
+    }
+
     @Override
     public <T extends Event> void subscribe(Class<T> eventType, EventHandler<T> handler) {
         bus.subscribe(eventType, handler);

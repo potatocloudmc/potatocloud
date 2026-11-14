@@ -10,6 +10,7 @@ import net.potatocloud.connector.player.handlers.CloudPlayerUpdateHandler;
 import net.potatocloud.network.NetworkClient;
 import net.potatocloud.network.packets.player.CloudPlayerAddPacket;
 import net.potatocloud.network.packets.player.CloudPlayerConnectPacket;
+import net.potatocloud.network.packets.player.CloudPlayerKickPacket;
 import net.potatocloud.network.packets.player.CloudPlayerRemovePacket;
 import net.potatocloud.network.packets.player.CloudPlayerUpdatePacket;
 import net.potatocloud.network.packets.player.CloudPlayersResponsePacket;
@@ -98,6 +99,11 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
         }
 
         client.send(new CloudPlayerConnectPacket(player.username(), service.name()));
+    }
+
+    @Override
+    public void kick(CloudPlayer player, String reason) {
+        client.send(new CloudPlayerKickPacket(player.username(), reason));
     }
 
     @Override
