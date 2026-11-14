@@ -1,0 +1,3 @@
+name: "rest"
+version: "2.0.0"
+main: "net.potatocloud.module.rest.RestModule"

@@ -34,6 +34,21 @@ public class PlayerCommand extends Command {
                     logger.info("Successfully connected player &a" + player.username() + " &7to service &a" + service.name());
                 });
 
+        sub("kick", "Kick a player from the network")
+                .argument(ArgumentType.Player("player"))
+                .optionalArgument(ArgumentType.MultiString("reason"))
+                .executes(ctx -> {
+                    final CloudPlayer player = ctx.get("player");
+                    final String reason = ctx.get("reason");
+
+                    if (reason == null) {
+                        playerManager.kick(player);
+                    } else {
+                        playerManager.kick(player, reason);
+                    }
+                    logger.info("Kicked player &a" + player.username());
+                });
+
         sub("list", "List online players")
                 .executes(_ -> {
                     final Set<CloudPlayer> players = playerManager.players();

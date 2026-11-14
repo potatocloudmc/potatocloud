@@ -1,5 +1,6 @@
 package net.potatocloud.node.screen;
 
+import net.potatocloud.api.service.LogListener;
 import net.potatocloud.network.NetworkServer;
 import net.potatocloud.node.cluster.ClusterManagerImpl;
 import net.potatocloud.node.console.Console;
@@ -7,8 +8,11 @@ import net.potatocloud.node.console.Console;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public final class ScreenManager {
 
@@ -16,17 +20,18 @@ public final class ScreenManager {
 
     private final Console console;
     private final Map<String, Screen> screens = new ConcurrentHashMap<>();
-    private final Map<String, CopyOnWriteArrayList<String>> logs = new ConcurrentHashMap<>();
+    private final Map<String, List<String>> logs = new ConcurrentHashMap<>();
+    private final Map<String, Set<LogListener>> listeners = new ConcurrentHashMap<>();
 
     private volatile Screen current;
-    private ScreenNetworkHandler networkHandler;
+    private ScreenNetworkHandler network;
 
     public ScreenManager(Console console) {
         this.console = console;
     }
 
     public void init(NetworkServer server, ClusterManagerImpl clusterManager) {
-        networkHandler = new ScreenNetworkHandler(this, server, clusterManager);
+        network = new ScreenNetworkHandler(this, server, clusterManager);
     }
 
     public void register(Screen screen) {
@@ -45,6 +50,7 @@ public final class ScreenManager {
         }
 
         logs.remove(name);
+        listeners.remove(name);
     }
 
     public void open(Screen screen) {
@@ -64,12 +70,13 @@ public final class ScreenManager {
     }
 
     private synchronized void changeScreen(Screen screen) {
-        if (screen == current) {
+        final Screen previous = current;
+        if (screen == previous) {
             return;
         }
 
-        if (networkHandler != null && current != null) {
-            networkHandler.screenClosed(current);
+        if (network != null && previous != null && !hasListeners(previous.name())) {
+            network.screenClosed(previous);
         }
 
         current = screen;
@@ -79,23 +86,28 @@ public final class ScreenManager {
 
         console.clearScreen();
 
-        if (networkHandler != null) {
-            networkHandler.screenOpened(screen);
+        if (network != null) {
+            network.screenOpened(screen);
         }
 
-        if (!screen.isRemote()) {
-            for (String line : logs(screen.name())) {
-                if (screen.type() != ScreenType.NODE || !line.toLowerCase().contains("service screen")) {
-                    console.println(line);
-                }
-            }
-        }
-
+        logs(screen.name()).thenAccept(lines -> print(screen, lines));
         console.prompt(screen.prompt());
     }
 
-    public void append(String screenName, String line) {
-        final List<String> screenLogs = logs.get(screenName);
+    private void print(Screen screen, List<String> lines) {
+        if (!screen.equals(current)) {
+            return;
+        }
+
+        for (String line : lines) {
+            if (screen.type() != ScreenType.NODE || !line.toLowerCase().contains("service screen")) {
+                console.println(line);
+            }
+        }
+    }
+
+    public void append(String name, String line) {
+        final List<String> screenLogs = logs.get(name);
         if (screenLogs == null) {
             return;
         }
@@ -105,25 +117,59 @@ public final class ScreenManager {
             screenLogs.removeFirst();
         }
 
-        final Screen activeScreen = current;
-        if (activeScreen != null
-                && activeScreen.type() != ScreenType.NODE
-                && activeScreen.name().equals(screenName)) {
+        final Screen screen = current;
+        if (screen != null && screen.type() != ScreenType.NODE && screen.name().equals(name)) {
             console.println(line);
         }
 
-        if (networkHandler != null) {
-            networkHandler.sendLog(screenName, line);
+        if (network != null) {
+            network.sendLog(name, line);
+        }
+
+        for (LogListener listener : listeners.getOrDefault(name, Set.of())) {
+            listener.onLog(line);
         }
     }
 
-    public List<String> logs(String screenName) {
-        final List<String> screenLogs = logs.get(screenName);
-        if (screenLogs == null) {
-            return List.of();
+    public CompletableFuture<List<String>> logs(String name) {
+        final Screen screen = screens.get(name);
+        if (screen == null) {
+            return CompletableFuture.completedFuture(List.of());
         }
 
-        return Collections.unmodifiableList(screenLogs);
+        if (screen.isRemote()) {
+            return network.requestLogs(screen);
+        }
+
+        return CompletableFuture.completedFuture(List.copyOf(logs.getOrDefault(name, List.of())));
+    }
+
+    public void addListener(String name, LogListener listener) {
+        final Screen screen = screens.get(name);
+        if (screen == null) {
+            return;
+        }
+
+        listeners.computeIfAbsent(name, key -> new CopyOnWriteArraySet<>()).add(listener);
+        network.screenOpened(screen);
+    }
+
+    public void removeListener(String name, LogListener listener) {
+        final Screen screen = screens.get(name);
+        if (screen == null || !hasListeners(name)) {
+            return;
+        }
+
+        listeners.get(name).remove(listener);
+
+        if (!hasListeners(name) && !screen.equals(current)) {
+            network.screenClosed(screen);
+        }
+    }
+
+    private boolean hasListeners(String name) {
+        final Set<LogListener> screenListeners = listeners.get(name);
+        return screenListeners != null && !screenListeners.isEmpty();
     }
 
     public Map<String, Screen> screens() {

@@ -3,6 +3,8 @@ package net.potatocloud.node.cluster;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.cluster.ClusterManager;
 import net.potatocloud.api.cluster.ClusterNode;
+import net.potatocloud.api.event.events.cluster.ClusterNodeJoinedEvent;
+import net.potatocloud.api.event.events.cluster.ClusterNodeLeftEvent;
 import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.network.NetworkConnection;
@@ -32,7 +34,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CompletableFuture;
 
-public class ClusterManagerImpl implements ClusterManager {
+public final class ClusterManagerImpl implements ClusterManager {
 
     private final ClusterNodeImpl localNode;
 
@@ -51,6 +53,7 @@ public class ClusterManagerImpl implements ClusterManager {
     private GroupManagerImpl groupManager;
     private NodeServiceManager serviceManager;
     private CloudPlayerManagerImpl playerManager;
+    private ClusterEventBus eventBus;
 
     public ClusterManagerImpl(
             String localHost,
@@ -80,6 +83,7 @@ public class ClusterManagerImpl implements ClusterManager {
         this.groupManager = groupManager;
         this.serviceManager = serviceManager;
         this.playerManager = playerManager;
+        this.eventBus = eventBus;
 
         server.on(EventPacket.class, ctx -> {
             if (ctx.connection().type() == ConnectionType.NODE) {
@@ -146,8 +150,12 @@ public class ClusterManagerImpl implements ClusterManager {
     }
 
     public void add(ClusterNodeImpl node) {
-        nodes.put(node.name(), node);
+        final boolean joined = nodes.put(node.name(), node) == null;
         server.broadcast().connectors().send(new ClusterNodeAddPacket(node));
+
+        if (joined && eventBus != null) {
+            eventBus.publishWithoutCluster(new ClusterNodeJoinedEvent(node.name()));
+        }
     }
 
     public void remove(ClusterNodeImpl node) {
@@ -193,11 +201,15 @@ public class ClusterManagerImpl implements ClusterManager {
                     server.broadcast().connectors().send(new GroupDeletePacket(group.name()));
                 });
 
-        nodes.remove(nodeName);
+        final boolean left = nodes.remove(nodeName) != null;
         if (node.connection() != null) {
             outboundConnections.remove(node.connection());
         }
         server.broadcast().connectors().send(new ClusterNodeRemovePacket(nodeName));
+
+        if (left && eventBus != null) {
+            eventBus.publishWithoutCluster(new ClusterNodeLeftEvent(nodeName));
+        }
     }
 
     // returns true if we opened this connection

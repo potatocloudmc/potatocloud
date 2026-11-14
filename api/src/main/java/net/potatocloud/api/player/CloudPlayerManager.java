@@ -43,6 +43,23 @@ public interface CloudPlayerManager {
     void connectTo(CloudPlayer player, Service service);
 
     /**
+     * Kicks the player from the network.
+     *
+     * @param player the player to kick
+     * @param reason the kick message in MiniMessage format
+     */
+    void kick(CloudPlayer player, String reason);
+
+    /**
+     * Kicks the player from the network with a default message.
+     *
+     * @param player the player to kick
+     */
+    default void kick(CloudPlayer player) {
+        kick(player, "<red>You have been kicked from the network");
+    }
+
+    /**
      * Updates an existing player.
      *
      * @param player the player to update

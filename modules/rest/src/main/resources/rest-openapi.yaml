@@ -1,0 +1,559 @@
+openapi: 3.0.3
+
+info:
+  title: potatocloud REST API
+  version: 2.0.0
+  description: Send the API key in the X-API-Key header.
+
+servers:
+  - url: http://127.0.0.1:8080/api/v1
+
+security:
+  - apiKey: []
+
+paths:
+  /groups:
+    get:
+      tags: [Groups]
+      summary: List groups (group.read)
+      responses:
+        "200": { $ref: "#/components/responses/Groups" }
+    post:
+      tags: [Groups]
+      summary: Create group (group.create)
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/GroupCreate" }
+      responses:
+        "201": { $ref: "#/components/responses/Group" }
+
+  /groups/{name}:
+    parameters:
+      - $ref: "#/components/parameters/name"
+    get:
+      tags: [Groups]
+      summary: Get group (group.read)
+      responses:
+        "200": { $ref: "#/components/responses/Group" }
+    patch:
+      tags: [Groups]
+      summary: Update group (group.update)
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/GroupPatch" }
+      responses:
+        "200": { $ref: "#/components/responses/Group" }
+    delete:
+      tags: [Groups]
+      summary: Delete group (group.delete)
+      responses:
+        "204": { description: Deleted }
+
+  /groups/{name}/start:
+    parameters:
+      - $ref: "#/components/parameters/name"
+    post:
+      tags: [Groups]
+      summary: Start services (service.start)
+      parameters:
+        - name: count
+          in: query
+          schema: { type: integer, default: 1 }
+      responses:
+        "202": { description: Starting }
+
+  /groups/{name}/stop:
+    parameters:
+      - $ref: "#/components/parameters/name"
+    post:
+      tags: [Groups]
+      summary: Stop all services (service.stop)
+      responses:
+        "202": { description: Stopping }
+
+  /services:
+    get:
+      tags: [Services]
+      summary: List services (service.read)
+      parameters:
+        - name: group
+          in: query
+          schema: { type: string }
+        - name: state
+          in: query
+          schema: { $ref: "#/components/schemas/ServiceState" }
+      responses:
+        "200": { $ref: "#/components/responses/Services" }
+
+  /services/{name}:
+    parameters:
+      - $ref: "#/components/parameters/name"
+    get:
+      tags: [Services]
+      summary: Get service (service.read)
+      responses:
+        "200": { $ref: "#/components/responses/Service" }
+
+  /services/{name}/stop:
+    parameters:
+      - $ref: "#/components/parameters/name"
+    post:
+      tags: [Services]
+      summary: Stop service (service.stop)
+      responses:
+        "202": { description: Stopping }
+
+  /services/{name}/command:
+    parameters:
+      - $ref: "#/components/parameters/name"
+    post:
+      tags: [Services]
+      summary: Execute command (service.command)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [command]
+              properties:
+                command: { type: string }
+      responses:
+        "204": { description: Sent }
+
+  /services/{name}/logs:
+    parameters:
+      - $ref: "#/components/parameters/name"
+    get:
+      tags: [Services]
+      summary: Get logs (service.logs)
+      parameters:
+        - name: lines
+          in: query
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Logs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  service: { type: string }
+                  lines: { type: array, items: { type: string } }
+
+  /services/{name}/copy:
+    parameters:
+      - $ref: "#/components/parameters/name"
+    post:
+      tags: [Services]
+      summary: Copy service files to a template (template.copy)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [template]
+              properties:
+                template: { type: string }
+                path: { type: string }
+                replaceExisting: { type: boolean, default: true }
+      responses:
+        "202": { description: Copying }
+
+  /platforms:
+    get:
+      tags: [Platforms]
+      summary: List platforms (platform.read)
+      responses:
+        "200": { $ref: "#/components/responses/Platforms" }
+    post:
+      tags: [Platforms]
+      summary: Create platform (platform.create)
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PlatformCreate" }
+      responses:
+        "201": { $ref: "#/components/responses/Platform" }
+
+  /platforms/{name}:
+    parameters:
+      - $ref: "#/components/parameters/name"
+    get:
+      tags: [Platforms]
+      summary: Get platform (platform.read)
+      responses:
+        "200": { $ref: "#/components/responses/Platform" }
+    delete:
+      tags: [Platforms]
+      summary: Delete platform (platform.delete)
+      responses:
+        "204": { description: Deleted }
+
+  /platforms/{name}/versions:
+    parameters:
+      - $ref: "#/components/parameters/name"
+    post:
+      tags: [Platforms]
+      summary: Add version (platform.update)
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PlatformVersion" }
+      responses:
+        "201":
+          description: Version
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PlatformVersion" }
+
+  /platforms/{name}/versions/{version}:
+    parameters:
+      - $ref: "#/components/parameters/name"
+      - name: version
+        in: path
+        required: true
+        schema: { type: string }
+    delete:
+      tags: [Platforms]
+      summary: Remove version (platform.update)
+      responses:
+        "204": { description: Removed }
+
+  /players:
+    get:
+      tags: [Players]
+      summary: List online players (player.read)
+      responses:
+        "200": { $ref: "#/components/responses/Players" }
+
+  /players/{player}:
+    parameters:
+      - $ref: "#/components/parameters/player"
+    get:
+      tags: [Players]
+      summary: Get player (player.read)
+      responses:
+        "200": { $ref: "#/components/responses/Player" }
+
+  /players/{player}/connect:
+    parameters:
+      - $ref: "#/components/parameters/player"
+    post:
+      tags: [Players]
+      summary: Connect player to a service (player.connect)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [service]
+              properties:
+                service: { type: string }
+      responses:
+        "204": { description: Connecting }
+
+  /players/{player}/kick:
+    parameters:
+      - $ref: "#/components/parameters/player"
+    post:
+      tags: [Players]
+      summary: Kick player (player.kick)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason: { type: string }
+      responses:
+        "204": { description: Kicked }
+
+  /nodes:
+    get:
+      tags: [Nodes]
+      summary: List nodes (node.read)
+      responses:
+        "200": { $ref: "#/components/responses/Nodes" }
+
+  /nodes/{name}:
+    parameters:
+      - $ref: "#/components/parameters/name"
+    get:
+      tags: [Nodes]
+      summary: Get node (node.read)
+      responses:
+        "200": { $ref: "#/components/responses/Node" }
+
+  /templates:
+    get:
+      tags: [Templates]
+      summary: List templates (template.read)
+      responses:
+        "200": { $ref: "#/components/responses/Templates" }
+    post:
+      tags: [Templates]
+      summary: Create template (template.create)
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Template" }
+      responses:
+        "201":
+          description: Template
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Template" }
+
+  /templates/{name}:
+    parameters:
+      - $ref: "#/components/parameters/name"
+    delete:
+      tags: [Templates]
+      summary: Delete template (template.delete)
+      responses:
+        "204": { description: Deleted }
+
+  /properties:
+    get:
+      tags: [Properties]
+      summary: List global properties (property.read)
+      description: Also under /groups/{name}, /services/{name} and /players/{player}.
+      responses:
+        "200":
+          description: Properties
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Properties" }
+
+  /properties/{key}:
+    parameters:
+      - name: key
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Properties]
+      summary: Get property (property.read)
+      responses:
+        "200": { $ref: "#/components/responses/Property" }
+    put:
+      tags: [Properties]
+      summary: Set property (property.write)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [value]
+              properties:
+                value: {}
+      responses:
+        "200": { $ref: "#/components/responses/Property" }
+    delete:
+      tags: [Properties]
+      summary: Remove property (property.write)
+      responses:
+        "204": { description: Removed }
+
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  parameters:
+    name:
+      name: name
+      in: path
+      required: true
+      schema: { type: string }
+    player:
+      name: player
+      in: path
+      required: true
+      schema: { type: string }
+
+  responses:
+    Group:
+      description: Group
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Group" }
+    Groups:
+      description: Groups
+      content:
+        application/json:
+          schema: { type: array, items: { $ref: "#/components/schemas/Group" } }
+    Service:
+      description: Service
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Service" }
+    Services:
+      description: Services
+      content:
+        application/json:
+          schema: { type: array, items: { $ref: "#/components/schemas/Service" } }
+    Platform:
+      description: Platform
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Platform" }
+    Platforms:
+      description: Platforms
+      content:
+        application/json:
+          schema: { type: array, items: { $ref: "#/components/schemas/Platform" } }
+    Player:
+      description: Player
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Player" }
+    Players:
+      description: Players
+      content:
+        application/json:
+          schema: { type: array, items: { $ref: "#/components/schemas/Player" } }
+    Node:
+      description: Node
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Node" }
+    Nodes:
+      description: Nodes
+      content:
+        application/json:
+          schema: { type: array, items: { $ref: "#/components/schemas/Node" } }
+    Templates:
+      description: Templates
+      content:
+        application/json:
+          schema: { type: array, items: { $ref: "#/components/schemas/Template" } }
+    Property:
+      description: Property
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name: { type: string }
+              value: {}
+
+  schemas:
+    Properties:
+      type: object
+      additionalProperties: true
+
+    GroupPatch:
+      type: object
+      properties:
+        node: { type: string }
+        platform: { type: string }
+        platformVersion: { type: string }
+        templates: { type: array, items: { type: string } }
+        minServices: { type: integer }
+        maxServices: { type: integer }
+        maxPlayers: { type: integer }
+        maxMemory: { type: integer }
+        fallback: { type: boolean }
+        startPriority: { type: integer }
+        startPercentage: { type: integer }
+        javaCommand: { type: string }
+        customJvmFlags: { type: array, items: { type: string } }
+
+    GroupCreate:
+      allOf:
+        - $ref: "#/components/schemas/GroupPatch"
+        - type: object
+          required: [name, platform, platformVersion]
+          properties:
+            name: { type: string }
+            staticServices: { type: boolean }
+            properties: { $ref: "#/components/schemas/Properties" }
+
+    Group:
+      allOf:
+        - $ref: "#/components/schemas/GroupCreate"
+        - type: object
+          properties:
+            onlineServices: { type: integer }
+            onlinePlayers: { type: integer }
+
+    ServiceState:
+      type: string
+      enum: [PREPARING, STARTING, RUNNING, STOPPING, STOPPED]
+
+    Service:
+      type: object
+      properties:
+        name: { type: string }
+        id: { type: integer }
+        group: { type: string }
+        node: { type: string }
+        host: { type: string }
+        port: { type: integer }
+        state: { $ref: "#/components/schemas/ServiceState" }
+        startedAt: { type: string, format: date-time }
+        maxPlayers: { type: integer }
+        onlinePlayers: { type: integer }
+        usedMemory: { type: integer }
+        properties: { $ref: "#/components/schemas/Properties" }
+
+    PlatformCreate:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string }
+        downloadUrl: { type: string }
+        proxy: { type: boolean }
+        base: { type: string, enum: [bukkit, spigot, paper, velocity, limbo, fabric, neoforge, unknown] }
+        preCacheBuilder: { type: string }
+        parser: { type: string }
+        hashType: { type: string }
+        prepareSteps: { type: array, items: { type: string } }
+
+    Platform:
+      allOf:
+        - $ref: "#/components/schemas/PlatformCreate"
+        - type: object
+          properties:
+            custom: { type: boolean }
+            versions: { type: array, items: { $ref: "#/components/schemas/PlatformVersion" } }
+
+    PlatformVersion:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string }
+        local: { type: boolean }
+        downloadUrl: { type: string }
+        fileHash: { type: string }
+        legacy: { type: boolean }
+
+    Player:
+      type: object
+      properties:
+        uniqueId: { type: string, format: uuid }
+        username: { type: string }
+        proxy: { type: string }
+        service: { type: string }
+        properties: { $ref: "#/components/schemas/Properties" }
+
+    Node:
+      type: object
+      properties:
+        name: { type: string }
+        host: { type: string }
+        port: { type: integer }
+        startedAt: { type: string, format: date-time }
+        local: { type: boolean }
+
+    Template:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string }

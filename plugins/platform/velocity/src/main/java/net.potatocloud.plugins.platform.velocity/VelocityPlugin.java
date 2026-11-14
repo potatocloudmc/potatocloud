@@ -26,6 +26,7 @@ import net.potatocloud.connector.event.ConnectPlayerWithServiceEvent;
 import net.potatocloud.connector.player.CloudPlayerManagerImpl;
 import net.potatocloud.connector.utils.PlatformPlugin;
 import net.potatocloud.network.packets.player.CloudPlayerConnectPacket;
+import net.potatocloud.network.packets.player.CloudPlayerKickPacket;
 import net.potatocloud.network.packets.service.ServiceRemovePacket;
 import net.potatocloud.network.packets.service.ServiceStartedPacket;
 
@@ -67,6 +68,10 @@ public class VelocityPlugin implements PlatformPlugin {
 
         api.client().on(CloudPlayerConnectPacket.class, ctx ->
                 connectPlayer(ctx.packet().playerUsername(), ctx.packet().serviceName()));
+
+        api.client().on(CloudPlayerKickPacket.class, ctx ->
+                server.getPlayer(ctx.packet().playerUsername()).ifPresent(player ->
+                        player.disconnect(MiniMessage.miniMessage().deserialize(ctx.packet().reason()))));
 
         api.client().on(ServiceRemovePacket.class, ctx ->
                 server.unregisterServer(new ServerInfo(ctx.packet().serviceName(), new InetSocketAddress(ctx.packet().serviceHost(), ctx.packet().servicePort()))));

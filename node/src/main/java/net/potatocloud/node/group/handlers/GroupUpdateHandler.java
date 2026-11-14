@@ -1,6 +1,9 @@
 package net.potatocloud.node.group.handlers;
 
+import net.potatocloud.api.event.EventBus;
+import net.potatocloud.api.event.events.group.GroupUpdatedEvent;
 import net.potatocloud.api.group.GroupManager;
+import net.potatocloud.api.group.impl.GroupImpl;
 import net.potatocloud.common.PropertyUtil;
 import net.potatocloud.network.ConnectionType;
 import net.potatocloud.network.NetworkServer;
@@ -17,11 +20,13 @@ public final class GroupUpdateHandler implements PacketHandler<GroupUpdatePacket
     private final GroupManager groupManager;
     private final NetworkServer server;
     private final ClusterManagerImpl clusterManager;
+    private final EventBus eventBus;
 
-    public GroupUpdateHandler(GroupManager groupManager, NetworkServer server, ClusterManagerImpl clusterManager) {
+    public GroupUpdateHandler(GroupManager groupManager, NetworkServer server, ClusterManagerImpl clusterManager, EventBus eventBus) {
         this.groupManager = groupManager;
         this.server = server;
         this.clusterManager = clusterManager;
+        this.eventBus = eventBus;
     }
 
     @Override
@@ -29,6 +34,11 @@ public final class GroupUpdateHandler implements PacketHandler<GroupUpdatePacket
         final GroupUpdatePacket packet = ctx.packet();
 
         groupManager.find(packet.groupName()).ifPresent(group -> {
+            if (group instanceof GroupImpl groupImpl) {
+                groupImpl.nodeName(packet.nodeName());
+                groupImpl.platform(packet.platformName(), packet.platformVersionName());
+            }
+            group.javaCommand(packet.javaCommand());
             group.minServices(packet.minOnlineCount());
             group.maxServices(packet.maxOnlineCount());
             group.maxPlayers(packet.maxPlayers());
@@ -39,7 +49,7 @@ public final class GroupUpdateHandler implements PacketHandler<GroupUpdatePacket
 
             group.templates().clear();
             packet.templates().forEach(group::addTemplate);
-            group.templates().forEach(Node.instance().templateManager()::createTemplate);
+            group.templates().forEach(Node.instance().templateManager()::create);
 
             group.customJvmFlags().clear();
             packet.customJvmFlags().forEach(group::addCustomJvmFlag);
@@ -56,5 +66,9 @@ public final class GroupUpdateHandler implements PacketHandler<GroupUpdatePacket
             clusterManager.broadcast(packet);
         }
         server.broadcast().connectors().exclude(ctx.connection()).send(packet);
+
+        if (ctx.connection().type() == ConnectionType.CONNECTOR) {
+            eventBus.publish(new GroupUpdatedEvent(packet.groupName()));
+        }
     }
 }

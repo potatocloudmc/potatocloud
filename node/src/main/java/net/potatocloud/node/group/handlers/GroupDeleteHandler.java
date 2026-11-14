@@ -1,5 +1,7 @@
 package net.potatocloud.node.group.handlers;
 
+import net.potatocloud.api.event.EventBus;
+import net.potatocloud.api.event.events.group.GroupDeletedEvent;
 import net.potatocloud.network.ConnectionType;
 import net.potatocloud.network.NetworkServer;
 import net.potatocloud.network.protocol.PacketContext;
@@ -13,11 +15,13 @@ public final class GroupDeleteHandler implements PacketHandler<GroupDeletePacket
     private final GroupManagerImpl groupManager;
     private final NetworkServer server;
     private final ClusterManagerImpl clusterManager;
+    private final EventBus eventBus;
 
-    public GroupDeleteHandler(GroupManagerImpl groupManager, NetworkServer server, ClusterManagerImpl clusterManager) {
+    public GroupDeleteHandler(GroupManagerImpl groupManager, NetworkServer server, ClusterManagerImpl clusterManager, EventBus eventBus) {
         this.groupManager = groupManager;
         this.server = server;
         this.clusterManager = clusterManager;
+        this.eventBus = eventBus;
     }
 
     @Override
@@ -28,9 +32,13 @@ public final class GroupDeleteHandler implements PacketHandler<GroupDeletePacket
             groupManager.unregisterGroup(packet.groupName());
             server.broadcast().connectors().send(packet);
         } else {
-            groupManager.deleteLocal(packet.groupName());
+            final boolean deleted = groupManager.deleteLocal(packet.groupName());
             server.broadcast().connectors().exclude(ctx.connection()).send(packet);
             clusterManager.broadcast(packet);
+
+            if (deleted) {
+                eventBus.publish(new GroupDeletedEvent(packet.groupName()));
+            }
         }
     }
 }
