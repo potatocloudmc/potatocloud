@@ -5,6 +5,7 @@ import net.potatocloud.api.service.Service;
 import net.potatocloud.common.config.Config;
 import net.potatocloud.plugins.optional.npc.connect.ServiceConnector;
 import net.potatocloud.plugins.optional.npc.util.Placeholders;
+import net.potatocloud.plugins.optional.npc.util.Services;
 import net.potatocloud.plugins.shared.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -157,7 +158,7 @@ public final class SelectorMenu {
     }
 
     private List<Service> services(String group) {
-        return Placeholders.runningServices(group).stream()
+        return Services.running(group).stream()
                 .sorted(Comparator.comparingInt(Service::id))
                 .toList();
     }

@@ -1,10 +1,9 @@
 package net.potatocloud.plugins.optional.npc.util;
 
-import net.potatocloud.api.CloudAPI;
-import net.potatocloud.api.group.Group;
 import net.potatocloud.api.property.DefaultProperties;
 import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.api.service.Service;
+import net.potatocloud.plugins.optional.npc.npc.Npc;
 
 import java.util.List;
 
@@ -24,20 +23,12 @@ public final class Placeholders {
                 .replace("%motd%", service.get(MOTD));
     }
 
-    public static String group(String text, String groupName) {
-        final List<Service> services = runningServices(groupName);
-        return text.replace("%group%", groupName)
+    public static String npc(String text, Npc npc) {
+        final List<Service> services = Services.running(npc.group());
+        return text.replace("%name%", npc.name())
+                .replace("%group%", npc.group())
                 .replace("%online_players%", String.valueOf(services.stream().mapToInt(Service::playerCount).sum()))
                 .replace("%max_players%", String.valueOf(services.stream().mapToInt(Service::maxPlayers).sum()))
                 .replace("%services%", String.valueOf(services.size()));
-    }
-
-    public static List<Service> runningServices(String groupName) {
-        return CloudAPI.instance().groupManager().find(groupName)
-                .map(Group::services)
-                .orElse(List.of())
-                .stream()
-                .filter(Service::running)
-                .toList();
     }
 }

@@ -114,8 +114,7 @@ public final class NpcEntityService {
     }
 
     private Component hologramText(Npc npc) {
-        final String text = String.join("\n", npc.hologram()).replace("%name%", npc.name());
-        return MessageUtils.format(Placeholders.group(text, npc.group()));
+        return MessageUtils.format(Placeholders.npc(String.join("\n", npc.hologram()), npc));
     }
 
     private String key(Npc npc) {

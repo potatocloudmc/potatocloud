@@ -15,8 +15,6 @@ public final class HologramSubCommand extends NpcSubCommand {
         super(npcService, messages, 1);
     }
 
-
-
     @Override
     protected void execute(Player player, Npc npc, String[] args) {
         final List<String> lines = npc.hologram();
@@ -55,8 +53,6 @@ public final class HologramSubCommand extends NpcSubCommand {
         npcService.update(npc);
         player.sendMessage(messages.get("hologram-edited", "%name%", npc.name()));
     }
-
-
 
     private String text(String[] args, int start) {
         return String.join(" ", Arrays.copyOfRange(args, start, args.length));

@@ -4,7 +4,7 @@ import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.service.Service;
-import net.potatocloud.plugins.optional.npc.util.Placeholders;
+import net.potatocloud.plugins.optional.npc.util.Services;
 import net.potatocloud.plugins.shared.MessagesConfig;
 import org.bukkit.entity.Player;
 
@@ -40,7 +40,7 @@ public final class ServiceConnector {
     }
 
     public void connectToBest(Player player, Group group) {
-        Placeholders.runningServices(group.name()).stream()
+        Services.running(group.name()).stream()
                 .filter(service -> !service.full())
                 .max(Comparator.comparingInt(Service::playerCount))
                 .ifPresentOrElse(service -> connect(player, service),
