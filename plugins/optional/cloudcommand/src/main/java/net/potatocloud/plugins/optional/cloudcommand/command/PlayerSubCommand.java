@@ -1,7 +1,6 @@
 package net.potatocloud.plugins.optional.cloudcommand.command;
 
 import com.velocitypowered.api.proxy.Player;
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.player.CloudPlayerManager;
@@ -11,11 +10,16 @@ import net.potatocloud.plugins.shared.MessagesConfig;
 import java.util.List;
 import java.util.Set;
 
-@RequiredArgsConstructor
 public class PlayerSubCommand {
 
     private final Player player;
     private final MessagesConfig messages;
+
+    public PlayerSubCommand(Player player, MessagesConfig messages) {
+        this.player = player;
+        this.messages = messages;
+    }
+
     private final CloudPlayerManager playerManager = CloudAPI.instance().playerManager();
 
     public void sendHelp() {

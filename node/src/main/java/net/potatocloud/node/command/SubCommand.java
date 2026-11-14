@@ -1,6 +1,5 @@
 package net.potatocloud.node.command;
 
-import lombok.Getter;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.command.arguments.MultiStringArgument;
 
@@ -8,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-@Getter
 public class SubCommand {
 
     private final String name;
@@ -27,7 +25,7 @@ public class SubCommand {
     }
 
     public SubCommand argument(ArgumentType<?> argument) {
-        if (!arguments.isEmpty() && !arguments.getLast().isRequired()) {
+        if (!arguments.isEmpty() && !arguments.getLast().required()) {
             throw new IllegalStateException("Cannot add arguments after a optional argument");
         }
 
@@ -60,7 +58,7 @@ public class SubCommand {
 
     public SubCommand sub(String name, String description) {
         final SubCommand sub = new SubCommand(name, description, parent);
-        sub.getParentSubCommands().add(this);
+        sub.parentSubCommands().add(this);
         subCommands.add(sub);
         return sub;
     }
@@ -68,8 +66,8 @@ public class SubCommand {
     public void execute(String[] args, int index, CommandContext ctx) {
         final CommandContext.ParseResult parsed = buildContext(args, index);
 
-        if (!parsed.isComplete()) {
-            final String errorMessage = parsed.getErrorMessage();
+        if (!parsed.complete()) {
+            final String errorMessage = parsed.errorMessage();
             if (errorMessage == null) {
                 sendHelp();
                 return;
@@ -78,14 +76,14 @@ public class SubCommand {
             return;
         }
 
-        ctx.getValues().putAll(parsed.getContext().getValues());
+        ctx.values().putAll(parsed.context().values());
 
-        final int nextIndex = index + parsed.getParsedArguments();
+        final int nextIndex = index + parsed.parsedArguments();
         if (nextIndex < args.length) {
             final String next = args[nextIndex];
 
             for (SubCommand sub : subCommands) {
-                if (sub.getName().equalsIgnoreCase(next)) {
+                if (sub.name().equalsIgnoreCase(next)) {
                     sub.execute(args, nextIndex + 1, ctx);
                     return;
                 }
@@ -114,14 +112,14 @@ public class SubCommand {
             if (argument instanceof MultiStringArgument multiStringArgument) {
                 final String combined = multiStringArgument.combineArguments(args, idx);
 
-                ctx.set(argument.getName(), combined);
+                ctx.set(argument.name(), combined);
                 parsed += args.length - idx;
                 break;
             }
 
             // Check if the user has passed enough arguments
             if (idx >= args.length) {
-                if (argument.isRequired()) {
+                if (argument.required()) {
                     return new CommandContext.ParseResult(ctx, parsed, false, getUsageMessage());
                 }
                 // Argument is optional, its fine that its missing
@@ -132,10 +130,10 @@ public class SubCommand {
             final ArgumentType.ParseResult<?> result = argument.parse(args[idx]);
 
             if (!result.isSuccess()) {
-                return new CommandContext.ParseResult(ctx, parsed, false, result.getError().getMessage());
+                return new CommandContext.ParseResult(ctx, parsed, false, result.error().message());
             }
 
-            ctx.set(argument.getName(), result.getValue());
+            ctx.set(argument.name(), result.value());
             parsed++;
         }
 
@@ -150,18 +148,18 @@ public class SubCommand {
         final StringBuilder builder = new StringBuilder();
         builder.append("&cUse&8: &7");
 
-        builder.append(parent.getName()).append(" ");
+        builder.append(parent.name()).append(" ");
 
         for (SubCommand parentSub : parentSubCommands) {
-            builder.append(parentSub.getName()).append(" ");
+            builder.append(parentSub.name()).append(" ");
         }
 
         builder.append(name);
 
         for (ArgumentType<?> argument : arguments) {
-            builder.append(" &8[&a").append(argument.getName());
+            builder.append(" &8[&a").append(argument.name());
 
-            if (!argument.isRequired()) {
+            if (!argument.required()) {
                 builder.append("?");
             }
 
@@ -175,7 +173,7 @@ public class SubCommand {
         if (!subCommands.isEmpty()) {
             builder.append(" &8[&a");
             for (int i = 0; i < subCommands.size(); i++) {
-                builder.append(subCommands.get(i).getName());
+                builder.append(subCommands.get(i).name());
                 if (i < subCommands.size() - 1) {
                     builder.append("&8|&a");
                 }
@@ -184,5 +182,25 @@ public class SubCommand {
         }
 
         return builder.toString();
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public String description() {
+        return description;
+    }
+
+    public List<SubCommand> subCommands() {
+        return subCommands;
+    }
+
+    public List<SubCommand> parentSubCommands() {
+        return parentSubCommands;
+    }
+
+    public List<ArgumentType<?>> arguments() {
+        return arguments;
     }
 }

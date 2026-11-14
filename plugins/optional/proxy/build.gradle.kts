@@ -15,8 +15,6 @@ dependencies {
     implementation(project(":common"))
     implementation(libs.labymod.common)
     implementation(libs.labymod.velocity)
-    implementation(libs.lombok)
-    annotationProcessor(libs.lombok)
 
     compileOnly(libs.velocity)
 }

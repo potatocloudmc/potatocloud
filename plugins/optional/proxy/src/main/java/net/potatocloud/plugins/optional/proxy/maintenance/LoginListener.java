@@ -4,17 +4,21 @@ import com.velocitypowered.api.event.ResultedEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.proxy.Player;
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.common.config.Config;
 import net.potatocloud.plugins.optional.proxy.ProxyPlugin;
 import net.potatocloud.plugins.shared.MessagesConfig;
 
-@RequiredArgsConstructor
-public class LoginListener {
+public final class LoginListener {
 
     private final ProxyPlugin plugin;
     private final Config config;
     private final MessagesConfig messages;
+
+    public LoginListener(ProxyPlugin plugin, Config config, MessagesConfig messages) {
+        this.plugin = plugin;
+        this.config = config;
+        this.messages = messages;
+    }
 
     @Subscribe
     public void handle(LoginEvent event) {

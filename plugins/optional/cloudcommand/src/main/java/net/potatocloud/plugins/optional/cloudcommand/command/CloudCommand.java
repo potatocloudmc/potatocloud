@@ -2,17 +2,20 @@ package net.potatocloud.plugins.optional.cloudcommand.command;
 
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.common.config.Config;
 import net.potatocloud.plugins.shared.MessagesConfig;
 
 import java.util.List;
 
-@RequiredArgsConstructor
-public class CloudCommand implements SimpleCommand {
+public final class CloudCommand implements SimpleCommand {
 
     private final Config config;
     private final MessagesConfig messages;
+
+    public CloudCommand(Config config, MessagesConfig messages) {
+        this.config = config;
+        this.messages = messages;
+    }
 
     @Override
     public void execute(Invocation invocation) {

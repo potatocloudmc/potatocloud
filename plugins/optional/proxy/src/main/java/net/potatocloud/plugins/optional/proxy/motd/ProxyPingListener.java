@@ -3,7 +3,6 @@ package net.potatocloud.plugins.optional.proxy.motd;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import com.velocitypowered.api.proxy.server.ServerPing;
-import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.potatocloud.api.CloudAPI;
@@ -14,11 +13,15 @@ import net.potatocloud.plugins.shared.MessageUtils;
 
 import java.util.Optional;
 
-@RequiredArgsConstructor
 public class ProxyPingListener {
 
     private final ProxyPlugin plugin;
     private final Config config;
+
+    public ProxyPingListener(ProxyPlugin plugin, Config config) {
+        this.plugin = plugin;
+        this.config = config;
+    }
 
     @Subscribe
     public void onPing(ProxyPingEvent event) {

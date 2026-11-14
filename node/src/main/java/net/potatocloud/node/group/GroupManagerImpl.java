@@ -1,6 +1,5 @@
 package net.potatocloud.node.group;
 
-import lombok.Getter;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.event.EventBus;
 import net.potatocloud.api.event.events.group.GroupCreatedEvent;
@@ -33,7 +32,6 @@ public class GroupManagerImpl implements GroupManager {
 
     private final List<Group> groups = new ArrayList<>();
 
-    @Getter
     private final Path groupsPath;
 
     private final NetworkServer server;
@@ -164,5 +162,9 @@ public class GroupManagerImpl implements GroupManager {
                         logger.error("Failed to load group file&8: &a" + path.getFileName());
                     }
                 });
+    }
+
+    public Path groupsPath() {
+        return groupsPath;
     }
 }

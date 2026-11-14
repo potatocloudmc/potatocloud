@@ -3,7 +3,6 @@ package net.potatocloud.plugins.optional.proxy.commands;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.common.config.Config;
 import net.potatocloud.plugins.optional.proxy.ProxyPlugin;
 import net.potatocloud.plugins.shared.MessagesConfig;
@@ -11,12 +10,17 @@ import net.potatocloud.plugins.shared.MessagesConfig;
 import java.util.Collections;
 import java.util.List;
 
-@RequiredArgsConstructor
 public class ProxyCommand implements SimpleCommand {
 
     private final ProxyPlugin plugin;
     private final Config config;
     private final MessagesConfig messages;
+
+    public ProxyCommand(ProxyPlugin plugin, Config config, MessagesConfig messages) {
+        this.plugin = plugin;
+        this.config = config;
+        this.messages = messages;
+    }
 
     @Override
     public void execute(Invocation invocation) {

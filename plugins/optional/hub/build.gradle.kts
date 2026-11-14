@@ -12,8 +12,6 @@ dependencies {
     compileOnly(project(":api"))
     implementation(project(":common"))
     implementation(project(":plugins:shared"))
-    implementation(libs.lombok)
-    annotationProcessor(libs.lombok)
 
     compileOnly(libs.velocity)
 }

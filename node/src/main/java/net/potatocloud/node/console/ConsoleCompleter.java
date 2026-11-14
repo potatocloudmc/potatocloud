@@ -32,9 +32,9 @@ public class ConsoleCompleter implements Completer {
             return;
         }
 
-        final Setup currentSetup = Node.instance().setupManager().getCurrentSetup();
+        final Setup currentSetup = Node.instance().setupManager().currentSetup();
         if (currentSetup != null) {
-            if (currentSetup.isInSummary()) {
+            if (currentSetup.inSummary()) {
                 candidates.add(new Candidate("back"));
                 candidates.add(new Candidate("confirm"));
                 candidates.add(new Candidate("cancel"));
@@ -42,7 +42,7 @@ public class ConsoleCompleter implements Completer {
                 candidates.add(new Candidate("back"));
                 candidates.add(new Candidate("cancel"));
 
-                final List<String> possibleChoices = currentSetup.getQuestions().get(currentSetup.getCurrentIndex()).getSuggestions();
+                final List<String> possibleChoices = currentSetup.questions().get(currentSetup.currentIndex()).getSuggestions();
                 if (possibleChoices != null) {
                     for (String possibleChoice : possibleChoices) {
                         candidates.add(new Candidate(possibleChoice));
@@ -70,14 +70,14 @@ public class ConsoleCompleter implements Completer {
         }
 
         SubCommand currentSubCommand = null;
-        List<SubCommand> currentLevel = command.getSubCommands();
+        List<SubCommand> currentLevel = command.subCommands();
         int argumentIndex = 1;
 
         while (argumentIndex < words.size() - 1) {
             final String token = words.get(argumentIndex);
 
             final SubCommand subCommand = currentLevel.stream()
-                    .filter(sub -> sub.getName().equalsIgnoreCase(token))
+                    .filter(sub -> sub.name().equalsIgnoreCase(token))
                     .findFirst()
                     .orElse(null);
 
@@ -86,14 +86,14 @@ public class ConsoleCompleter implements Completer {
             }
 
             currentSubCommand = subCommand;
-            currentLevel = subCommand.getSubCommands();
+            currentLevel = subCommand.subCommands();
             argumentIndex++;
         }
 
         if (currentSubCommand == null) {
             for (SubCommand subCommand : currentLevel) {
-                if (subCommand.getName().startsWith(currentWord)) {
-                    candidates.add(new Candidate(subCommand.getName()));
+                if (subCommand.name().startsWith(currentWord)) {
+                    candidates.add(new Candidate(subCommand.name()));
                 }
             }
             return;
@@ -103,16 +103,16 @@ public class ConsoleCompleter implements Completer {
         final CommandContext.ParseResult parseResult =
                 currentSubCommand.buildContext(argsToParse, argumentIndex);
 
-        final CommandContext context = parseResult.getContext();
+        final CommandContext context = parseResult.context();
 
-        int expectedArgs = currentSubCommand.getArguments().size();
-        int parsedArgs = parseResult.getParsedArguments();
+        int expectedArgs = currentSubCommand.arguments().size();
+        int parsedArgs = parseResult.parsedArguments();
 
-        if (parsedArgs >= expectedArgs && currentSubCommand.getSubCommands().isEmpty()) {
+        if (parsedArgs >= expectedArgs && currentSubCommand.subCommands().isEmpty()) {
             return;
         }
 
-        final int argsLength = parseResult.getParsedArguments();
+        final int argsLength = parseResult.parsedArguments();
         final List<String> customSuggestions = currentSubCommand.suggest(context, currentWord, argsLength);
         if (!customSuggestions.isEmpty()) {
             for (String suggestion : customSuggestions) {
@@ -122,7 +122,7 @@ public class ConsoleCompleter implements Completer {
         }
 
         if (parsedArgs < expectedArgs) {
-            final ArgumentType<?> argumentType = currentSubCommand.getArguments().get(parsedArgs);
+            final ArgumentType<?> argumentType = currentSubCommand.arguments().get(parsedArgs);
             final List<String> argumentSuggestions = argumentType.suggest(currentWord);
             if (!argumentSuggestions.isEmpty()) {
                 for (String suggestion : argumentSuggestions) {
@@ -131,12 +131,12 @@ public class ConsoleCompleter implements Completer {
             }
         }
 
-        if (!currentSubCommand.getSubCommands().isEmpty()
-                && currentSubCommand.getArguments().isEmpty()) {
+        if (!currentSubCommand.subCommands().isEmpty()
+                && currentSubCommand.arguments().isEmpty()) {
 
-            for (SubCommand sub : currentSubCommand.getSubCommands()) {
-                if (sub.getName().startsWith(currentWord)) {
-                    candidates.add(new Candidate(sub.getName()));
+            for (SubCommand sub : currentSubCommand.subCommands()) {
+                if (sub.name().startsWith(currentWord)) {
+                    candidates.add(new Candidate(sub.name()));
                 }
             }
         }

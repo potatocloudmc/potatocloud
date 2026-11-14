@@ -1,6 +1,5 @@
 package net.potatocloud.node.command;
 
-import lombok.Getter;
 import net.potatocloud.api.logging.Logger;
 import net.potatocloud.node.Node;
 
@@ -9,7 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-@Getter
 public class Command {
 
     private final String name;
@@ -56,7 +54,7 @@ public class Command {
 
         final String arg = args[0];
         for (SubCommand sub : subCommands) {
-            if (sub.getName().equalsIgnoreCase(arg)) {
+            if (sub.name().equalsIgnoreCase(arg)) {
                 sub.execute(args, 1, ctx);
                 return;
             }
@@ -70,7 +68,23 @@ public class Command {
     protected void sendHelp() {
         final Logger logger = Node.instance().logger();
         for (SubCommand sub : subCommands) {
-            logger.info("&8» &a" + name + " " + sub.getName() + " &8- &7" + (sub.getDescription() != null ? sub.getDescription() : ""));
+            logger.info("&8» &a" + name + " " + sub.name() + " &8- &7" + (sub.description() != null ? sub.description() : ""));
         }
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public String description() {
+        return description;
+    }
+
+    public List<String> aliases() {
+        return aliases;
+    }
+
+    public List<SubCommand> subCommands() {
+        return subCommands;
     }
 }

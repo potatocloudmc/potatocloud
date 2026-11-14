@@ -1,7 +1,6 @@
 package net.potatocloud.plugins.optional.cloudcommand.command;
 
 import com.velocitypowered.api.proxy.Player;
-import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.Group;
@@ -19,11 +18,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 public class GroupSubCommand {
 
     private final Player player;
     private final MessagesConfig messages;
+
+    public GroupSubCommand(Player player, MessagesConfig messages) {
+        this.player = player;
+        this.messages = messages;
+    }
 
     public void listGroups() {
         final List<Group> groups = CloudAPI.instance().groupManager().groups();

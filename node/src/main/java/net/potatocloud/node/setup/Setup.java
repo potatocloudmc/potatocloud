@@ -1,7 +1,5 @@
 package net.potatocloud.node.setup;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.logging.Logger;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.console.Console;
@@ -14,8 +12,6 @@ import net.potatocloud.node.setup.question.QuestionType;
 
 import java.util.*;
 
-@Getter
-@RequiredArgsConstructor
 public abstract class Setup {
 
     private final Console console;
@@ -29,6 +25,23 @@ public abstract class Setup {
     private String lastErrorMessage;
     private Screen questionScreen;
     private Screen summaryScreen;
+
+    protected Setup(Console console, ScreenManager screenManager) {
+        this.console = console;
+        this.screenManager = screenManager;
+    }
+
+    public List<Question> questions() {
+        return questions;
+    }
+
+    public int currentIndex() {
+        return currentIndex;
+    }
+
+    public boolean inSummary() {
+        return inSummary;
+    }
 
     public abstract String getName();
 
@@ -108,7 +121,7 @@ public abstract class Setup {
         final Question question = questions.get(currentIndex);
         String answer = input;
 
-        if (question.getType() == QuestionType.BOOLEAN) {
+        if (question.type() == QuestionType.BOOLEAN) {
             if (answer.equalsIgnoreCase("yes")) {
                 answer = "true";
             }
@@ -118,7 +131,7 @@ public abstract class Setup {
         }
 
         if (input.isEmpty()) {
-            final String def = question.getDefaultAnswer();
+            final String def = question.defaultAnswer();
             if (def != null && !def.isBlank()) {
                 answer = def;
             } else {
@@ -130,16 +143,16 @@ public abstract class Setup {
 
         final AnswerResult result = question.validate(answer);
         if (!result.isSuccess()) {
-            lastErrorMessage = result.getErrorMessage();
+            lastErrorMessage = result.errorMessage();
             showQuestion();
             return;
         }
 
-        answers.put(question.getName(), answer);
+        answers.put(question.name(), answer);
         lastErrorMessage = null;
 
-        if (question.getAnswerAction() != null) {
-            question.getAnswerAction().execute(answers, answer);
+        if (question.answerAction() != null) {
+            question.answerAction().execute(answers, answer);
         }
 
         currentIndex++;
@@ -166,19 +179,19 @@ public abstract class Setup {
         console.prompt("> ");
         console.println("&7Setup: &a" + getName() + " &8(&7Question &a" + (currentIndex + 1) + "&8/&a" + questions.size() + "&8)");
         console.println(" ");
-        console.println("&8» &7" + question.getPrompt());
+        console.println("&8» &7" + question.prompt());
 
-        if (question.getDefaultAnswer() != null && !question.getDefaultAnswer().isBlank()) {
-            console.println("  &8• &7Default&8: &a" + question.getDefaultAnswer());
+        if (question.defaultAnswer() != null && !question.defaultAnswer().isBlank()) {
+            console.println("  &8• &7Default&8: &a" + question.defaultAnswer());
         }
 
-        final String previousAnswer = answers.get(question.getName());
+        final String previousAnswer = answers.get(question.name());
         if (previousAnswer != null && !previousAnswer.isBlank()) {
             console.println("  &8• &7Previous&8: &a" + previousAnswer);
         }
 
         final List<String> commandsText = new ArrayList<>();
-        if (question.getDefaultAnswer() != null && !question.getDefaultAnswer().isBlank()) {
+        if (question.defaultAnswer() != null && !question.defaultAnswer().isBlank()) {
             commandsText.add("&aEnter&7 = default");
         }
         if (question.getSuggestions() != null && !question.getSuggestions().isEmpty()) {
@@ -215,8 +228,8 @@ public abstract class Setup {
                 continue;
             }
 
-            final String answer = answers.getOrDefault(question.getName(), "<no answer>");
-            console.println("&8» &7" + question.getPrompt());
+            final String answer = answers.getOrDefault(question.name(), "<no answer>");
+            console.println("&8» &7" + question.prompt());
             console.println("  &8• &7Answer: &a" + answer);
             console.println(" ");
         }

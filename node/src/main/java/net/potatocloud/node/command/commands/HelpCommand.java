@@ -10,16 +10,16 @@ public class HelpCommand extends Command {
 
     public HelpCommand(Logger logger, CommandManager commandManager) {
         defaultExecutor(ctx -> {
-            for (Command command : commandManager.getCommands().values()) {
-                logger.info("&8» &a" + command.getName() + getAliases(command) + " &8- " + "&7" + command.getDescription());
+            for (Command command : commandManager.commands().values()) {
+                logger.info("&8» &a" + command.name() + getAliases(command) + " &8- " + "&7" + command.description());
             }
         });
     }
 
     private String getAliases(Command command) {
-        if (command.getAliases().isEmpty()) {
+        if (command.aliases().isEmpty()) {
             return "";
         }
-        return " &8[&7" + String.join(", ", command.getAliases()) + "&8]&7";
+        return " &8[&7" + String.join(", ", command.aliases()) + "&8]&7";
     }
 }

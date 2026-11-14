@@ -5,7 +5,6 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.service.Service;
@@ -13,11 +12,15 @@ import net.potatocloud.plugins.shared.MessagesConfig;
 
 import java.util.Optional;
 
-@RequiredArgsConstructor
 public class HubCommand implements SimpleCommand {
 
     private final MessagesConfig messagesConfig;
     private final ProxyServer server;
+
+    public HubCommand(MessagesConfig messagesConfig, ProxyServer server) {
+        this.messagesConfig = messagesConfig;
+        this.server = server;
+    }
 
     @Override
     public void execute(Invocation invocation) {

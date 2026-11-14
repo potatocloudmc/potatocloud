@@ -6,7 +6,6 @@ import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent;
 import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.player.CloudPlayer;
@@ -16,11 +15,15 @@ import net.potatocloud.plugins.shared.MessageUtils;
 
 import java.util.Optional;
 
-@RequiredArgsConstructor
 public class TablistHandler {
 
     private final Config config;
     private final ProxyServer server;
+
+    public TablistHandler(Config config, ProxyServer server) {
+        this.config = config;
+        this.server = server;
+    }
 
     @Subscribe
     public void onServerPostConnection(ServerPostConnectEvent event) {

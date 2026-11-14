@@ -13,8 +13,6 @@ dependencies {
     implementation(project(":plugins:shared"))
     implementation(project(":common"))
 
-    implementation(libs.lombok)
-    annotationProcessor(libs.lombok)
 
     compileOnly(libs.velocity)
 }

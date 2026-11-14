@@ -15,8 +15,6 @@ dependencies {
     implementation(project(":plugins:shared"))
     implementation(libs.labymod.common)
     implementation(libs.labymod.bukkit)
-    implementation(libs.lombok)
-    annotationProcessor(libs.lombok)
 
     compileOnly(libs.spigot)
 }

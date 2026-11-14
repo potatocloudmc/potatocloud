@@ -20,8 +20,6 @@ dependencies {
     implementation(libs.jline)
     implementation(libs.oshi)
     implementation(libs.slf4j.nop)
-    implementation(libs.lombok)
-    annotationProcessor(libs.lombok)
 
     compileOnly(project(":plugins:platform:spigot"))
     compileOnly(project(":plugins:platform:spigot-legacy"))

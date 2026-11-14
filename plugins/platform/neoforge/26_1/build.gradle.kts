@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     alias(libs.plugins.shadow)
-    id("net.neoforged.moddev") version "2.0.142"
+    id("net.neoforged.moddev") version "2.0.148"
 }
 
 val shaded = configurations.create("shaded")
@@ -17,7 +17,7 @@ repositories {
 
 neoForge {
     enable {
-        version = "26.1.2.84"
+        version = "26.1.2.126"
         isDisableRecompilation = true
     }
 }

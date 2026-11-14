@@ -1,6 +1,5 @@
 package net.potatocloud.node.platform;
 
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformVersion;
@@ -18,11 +17,15 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 
-@RequiredArgsConstructor
 public class DownloadManager {
 
     private final Path platformsDirectory;
     private final Logger logger;
+
+    public DownloadManager(Path platformsDirectory, Logger logger) {
+        this.platformsDirectory = platformsDirectory;
+        this.logger = logger;
+    }
 
     private static final List<BuildParser> PARSERS = List.of(
             new PaperBuildParser("paper"),

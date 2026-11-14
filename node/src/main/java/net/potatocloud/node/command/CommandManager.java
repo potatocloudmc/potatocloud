@@ -1,23 +1,27 @@
 package net.potatocloud.node.command;
 
-import lombok.Getter;
-import lombok.Setter;
 import net.potatocloud.api.logging.Logger;
 
 import java.util.*;
 
-@Getter
 public class CommandManager {
 
     private final Map<String, Command> commands = new HashMap<>();
     private final Map<String, Command> aliases = new HashMap<>();
 
-    @Setter
     private Logger logger;
 
+    public Map<String, Command> commands() {
+        return commands;
+    }
+
+    public void logger(Logger logger) {
+        this.logger = logger;
+    }
+
     public void registerCommand(Command command) {
-        commands.put(command.getName().toLowerCase(), command);
-        command.getAliases().forEach(alias -> aliases.put(alias.toLowerCase(), command));
+        commands.put(command.name().toLowerCase(), command);
+        command.aliases().forEach(alias -> aliases.put(alias.toLowerCase(), command));
     }
 
     public void executeCommand(String line) {

@@ -1,7 +1,6 @@
 package net.potatocloud.plugins.optional.cloudcommand.command;
 
 import com.velocitypowered.api.proxy.Player;
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.property.DefaultProperties;
@@ -19,11 +18,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 public class ServiceSubCommand {
 
     private final Player player;
     private final MessagesConfig messages;
+
+    public ServiceSubCommand(Player player, MessagesConfig messages) {
+        this.player = player;
+        this.messages = messages;
+    }
+
     private final ServiceManager serviceManager = CloudAPI.instance().serviceManager();
 
     public void sendHelp(Player player) {
@@ -275,7 +279,6 @@ public class ServiceSubCommand {
                     .toList();
         }
 
-
         if (sub.equalsIgnoreCase("copy") && args.length == 4) {
             return serviceManager.find(args[2])
                     .map(service -> service.group()
@@ -289,7 +292,6 @@ public class ServiceSubCommand {
         if (sub.equalsIgnoreCase("start") && args.length == 3) {
             return CloudAPI.instance().groupManager().groups().stream().map(Group::name).toList();
         }
-
 
         if (sub.equals("edit") && args.length == 4) {
             return List.of("maxPlayers").stream()

@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     alias(libs.plugins.shadow)
-    id("net.fabricmc.fabric-loom") version "1.16.3"
+    id("net.fabricmc.fabric-loom") version "1.19.4"
 }
 
 val shaded = configurations.create("shaded")

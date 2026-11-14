@@ -1,8 +1,5 @@
 package net.potatocloud.node.command;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.cluster.ClusterNode;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.platform.Platform;
@@ -12,16 +9,27 @@ import net.potatocloud.node.command.arguments.*;
 
 import java.util.List;
 
-@Getter
-@AllArgsConstructor
 public abstract class ArgumentType<T> {
 
     private final String name;
     private final boolean required;
 
+    public ArgumentType(String name, boolean required) {
+        this.name = name;
+        this.required = required;
+    }
+
     public ArgumentType(String name) {
         this.name = name;
         this.required = true;
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public boolean required() {
+        return required;
     }
 
     public abstract ParseResult<T> parse(String input);
@@ -71,7 +79,7 @@ public abstract class ArgumentType<T> {
         private final ArgumentType<T> argument;
 
         public Optional(ArgumentType<T> argument) {
-            super(argument.getName(), false);
+            super(argument.name(), false);
             this.argument = argument;
         }
 
@@ -81,12 +89,7 @@ public abstract class ArgumentType<T> {
         }
     }
 
-    @Getter
-    @RequiredArgsConstructor
-    public static class ParseResult<T> {
-
-        private final T value;
-        private final CommandError error;
+    public record ParseResult<T>(T value, CommandError error) {
 
         public static <T> ParseResult<T> success(T value) {
             return new ParseResult<>(value, null);

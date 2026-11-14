@@ -58,7 +58,7 @@ public final class GroupUpdateHandler implements PacketHandler<GroupUpdatePacket
             packet.propertyMap().forEach((key, value) -> PropertyUtil.setUnchecked(group, key, value));
 
             if (ctx.connection().type() == ConnectionType.CONNECTOR && groupManager instanceof GroupManagerImpl groupManagerImpl) {
-                GroupStorage.save(group, groupManagerImpl.getGroupsPath());
+                GroupStorage.save(group, groupManagerImpl.groupsPath());
             }
         });
 

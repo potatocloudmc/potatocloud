@@ -1,12 +1,10 @@
 package net.potatocloud.node.setup.question;
 
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.node.setup.answer.AnswerAction;
 import net.potatocloud.node.setup.answer.Validator;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 public class QuestionBuilder {
 
     private final List<Question> questions;
@@ -19,6 +17,13 @@ public class QuestionBuilder {
     private SkipCondition skipCondition;
     private Validator customValidator;
     private AnswerAction answerAction;
+
+    public QuestionBuilder(List<Question> questions, String name, String prompt, QuestionType type) {
+        this.questions = questions;
+        this.name = name;
+        this.prompt = prompt;
+        this.type = type;
+    }
 
     public QuestionBuilder defaultAnswer(String defaultAnswer) {
         this.defaultAnswer = defaultAnswer;
@@ -46,12 +51,6 @@ public class QuestionBuilder {
     }
 
     public void add() {
-        final Question question = new Question(name, prompt, type);
-        question.setDefaultAnswer(defaultAnswer);
-        question.setSuggestions(suggestions);
-        question.setSkipCondition(skipCondition);
-        question.setCustomValidator(customValidator);
-        question.setAnswerAction(answerAction);
-        questions.add(question);
+        questions.add(new Question(name, prompt, type, defaultAnswer, suggestions, skipCondition, customValidator, answerAction));
     }
 }

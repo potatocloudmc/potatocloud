@@ -53,7 +53,7 @@ public final class ConsoleReader extends Thread {
                 }
 
                 if (currentScreen.type() == ScreenType.SETUP) {
-                    final Setup currentSetup = node.setupManager().getCurrentSetup();
+                    final Setup currentSetup = node.setupManager().currentSetup();
                     if (currentSetup != null) {
                         currentSetup.handleInput(input);
                     }

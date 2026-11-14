@@ -1,8 +1,5 @@
 package net.potatocloud.node.setup.question;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import net.potatocloud.node.setup.answer.AnswerAction;
 import net.potatocloud.node.setup.answer.AnswerResult;
 import net.potatocloud.node.setup.answer.Validator;
@@ -10,20 +7,16 @@ import net.potatocloud.node.setup.answer.Validator;
 import java.util.List;
 import java.util.Map;
 
-@Getter
-@Setter
-@RequiredArgsConstructor
-public class Question {
-
-    private final String name;
-    private final String prompt;
-    private final QuestionType type;
-
-    private String defaultAnswer;
-    private Suggestions suggestions;
-    private SkipCondition skipCondition;
-    private Validator customValidator;
-    private AnswerAction answerAction;
+public record Question(
+        String name,
+        String prompt,
+        QuestionType type,
+        String defaultAnswer,
+        Suggestions suggestions,
+        SkipCondition skipCondition,
+        Validator customValidator,
+        AnswerAction answerAction
+) {
 
     public List<String> getSuggestions() {
         if (type == QuestionType.BOOLEAN) {

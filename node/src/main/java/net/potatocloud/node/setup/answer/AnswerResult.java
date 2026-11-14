@@ -1,8 +1,5 @@
 package net.potatocloud.node.setup.answer;
 
-import lombok.Getter;
-
-@Getter
 public class AnswerResult {
 
     private final boolean success;
@@ -11,6 +8,14 @@ public class AnswerResult {
     private AnswerResult(boolean success, String errorMessage) {
         this.success = success;
         this.errorMessage = errorMessage;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public String errorMessage() {
+        return errorMessage;
     }
 
     public static AnswerResult success() {
