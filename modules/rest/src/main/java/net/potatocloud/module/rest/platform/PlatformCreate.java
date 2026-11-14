@@ -5,7 +5,7 @@ import java.util.List;
 public record PlatformCreate(
         String name,
         String downloadUrl,
-        Boolean proxy,
+        boolean proxy,
         String base,
         String preCacheBuilder,
         String parser,

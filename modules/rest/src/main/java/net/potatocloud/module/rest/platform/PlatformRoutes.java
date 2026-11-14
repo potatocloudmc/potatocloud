@@ -60,11 +60,9 @@ public final class PlatformRoutes {
                 .base(base(request.base()))
                 .preCacheBuilder(request.preCacheBuilder())
                 .parser(request.parser())
-                .hashType(request.hashType());
+                .hashType(request.hashType())
+                .proxy(request.proxy());
 
-        if (request.proxy() != null) {
-            builder.proxy(request.proxy());
-        }
         if (request.prepareSteps() != null) {
             builder.prepareSteps(request.prepareSteps());
         }
@@ -101,10 +99,10 @@ public final class PlatformRoutes {
         final PlatformVersion version = new PlatformVersionImpl(
                 platform.name(),
                 request.name(),
-                request.local() != null && request.local(),
+                request.local(),
                 request.downloadUrl(),
                 request.fileHash(),
-                request.legacy() != null && request.legacy()
+                request.legacy()
         );
 
         platform.addVersion(version);
