@@ -25,7 +25,7 @@ public record RestConfig(
     public static RestConfig load(Path path) throws IOException {
         if (!Files.exists(path)) {
             Files.createDirectories(path.getParent());
-            ResourceFileUtils.copyResourceFile(RestConfig.class.getClassLoader(), "rest-config.yml", path);
+            ResourceFileUtils.copyResourceFile(RestConfig.class.getClassLoader(), "config.yml", path);
 
             final String key = UUID.randomUUID().toString().replace("-", "");
             Files.writeString(path, Files.readString(path).replace("%key%", key));
