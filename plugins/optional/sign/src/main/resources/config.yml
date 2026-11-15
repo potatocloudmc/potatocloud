@@ -1,0 +1,40 @@
+permission: "potatocloud.sign"
+
+update-interval: 10
+
+layouts:
+  online:
+    '1':
+      - "<dark_gray>» <dark_green><bold>%name%</bold> <dark_gray>«"
+      - "<gray>%state%"
+      - "<dark_green>%online_players% <dark_gray>/ <gray>%max_players%"
+      - "<dark_gray>▸ <dark_green>Click to join"
+
+  full:
+    '1':
+      - "<dark_gray>» <dark_red><bold>%name%</bold> <dark_gray>«"
+      - "<gray>%state%"
+      - "<dark_red>%online_players% <dark_gray>/ <gray>%max_players%"
+      - "<dark_gray>▸ <dark_red>Full"
+
+  searching:
+    '1':
+      - "<dark_gray>» <gray><bold>%group%</bold> <dark_gray>«"
+      - "<gray>Waiting for"
+      - "<gray>a server"
+      - "<dark_green>■ <dark_gray>■ ■"
+    '2':
+      - "<dark_gray>» <gray><bold>%group%</bold> <dark_gray>«"
+      - "<gray>Waiting for"
+      - "<gray>a server"
+      - "<dark_gray>■ <dark_green>■ <dark_gray>■"
+    '3':
+      - "<dark_gray>» <gray><bold>%group%</bold> <dark_gray>«"
+      - "<gray>Waiting for"
+      - "<gray>a server"
+      - "<dark_gray>■ ■ <dark_green>■"
+    '4':
+      - "<dark_gray>» <gray><bold>%group%</bold> <dark_gray>«"
+      - "<gray>Waiting for"
+      - "<gray>a server"
+      - "<dark_gray>■ <dark_green>■ <dark_gray>■"

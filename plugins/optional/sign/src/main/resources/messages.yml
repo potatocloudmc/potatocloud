@@ -1,0 +1,31 @@
+prefix: "<dark_gray>» <gradient:#55FF55:#DAF3DA>potatocloud</gradient> <dark_gray>• <reset>"
+only-players: "<red>Only players can use this command"
+
+no-group: "<red>No service group found with the name <green>%name%"
+no-target: "<red>You have to look at a sign"
+sign-exists: "<red>This sign is already a cloud sign"
+sign-not-found: "<red>You are not looking at a cloud sign"
+sign-protected: "<red>Remove this sign with <green>/sign remove <red>first"
+
+created: "<gray>Created a sign for <green>%group%"
+removed: "<gray>Removed the sign of <green>%group%"
+reloaded: "<gray>The config and all signs were reloaded"
+
+connecting: "<gray>Connecting to <green>%service%<gray>..."
+already-connected: "<red>You are already connected to <green>%service%"
+service-not-available: "<red>The service <green>%service% <red>is not available"
+no-service: "<red>There is no free service of <green>%group% <red>online"
+
+list:
+  empty: "<red>There are no signs"
+  header: "<gray>All signs<dark_gray>:"
+  entry: "<dark_gray>» <green>%group% <dark_gray>(<gray>%world% %x% %y% %z%<dark_gray>) <gray>%service%"
+
+help:
+  create: "<dark_gray> » <green>/sign create <dark_gray>[<green>group<dark_gray>] <dark_gray>- <gray>Turn the sign you look at into a cloud sign"
+  remove: "<dark_gray> » <green>/sign remove <dark_gray>- <gray>Remove the cloud sign you look at"
+  list: "<dark_gray> » <green>/sign list <dark_gray>- <gray>Show all signs"
+  reload: "<dark_gray> » <green>/sign reload <dark_gray>- <gray>Reload the config and all signs"
+
+usage:
+  create: "<red>Usage<dark_gray>: <gray>/sign create [<green>group<dark_gray>]"
