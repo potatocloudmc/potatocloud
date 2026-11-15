@@ -2,6 +2,10 @@ permission: "potatocloud.sign"
 
 update-interval: 10
 
+# Services with one of these game states are not shown on signs
+hidden-states:
+  - "INGAME"
+
 layouts:
   online:
     '1':

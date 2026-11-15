@@ -25,6 +25,7 @@ public final class SignService {
     private final Map<SignLocation, CloudSign> signs = new LinkedHashMap<>();
     private final Map<SignLocation, Service> services = new HashMap<>();
     private final Map<String, List<List<String>>> layouts = new HashMap<>();
+    private List<String> hiddenStates = List.of();
     private final SignStorage storage;
     private final Config config;
     private int tick;
@@ -41,6 +42,8 @@ public final class SignService {
         for (CloudSign sign : storage.load()) {
             signs.put(sign.location(), sign);
         }
+
+        hiddenStates = config.get("hidden-states").asStringList();
 
         layouts.clear();
 
@@ -95,6 +98,7 @@ public final class SignService {
                 .orElse(List.of())
                 .stream()
                 .filter(Service::running)
+                .filter(service -> !hiddenStates.contains(service.get(DefaultProperties.GAME_STATE)))
                 .sorted(Comparator.comparingInt(Service::id))
                 .toList();
 
