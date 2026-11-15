@@ -5,7 +5,7 @@
   "name": "potatocloud",
   "environment": "server",
   "entrypoints": {
-    "main": ["net.potatocloud.plugins.platform.fabric.v26_1.Fabric26_1Plugin"]
+    "main": ["net.potatocloud.plugins.platform.fabric.FabricPlugin"]
   },
   "mixins": [
     "potatocloud.mixins.json"

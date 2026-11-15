@@ -8,6 +8,10 @@ repositories {
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
 }
 
+sourceSets.main {
+    java.srcDir(project(":plugins:platform:spigot").file("src/main/java"))
+}
+
 dependencies {
     implementation(project(":api"))
     implementation(project(":connector"))

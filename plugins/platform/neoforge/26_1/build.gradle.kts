@@ -22,6 +22,10 @@ neoForge {
     }
 }
 
+sourceSets.main {
+    java.srcDir("../shared/src/main/java")
+}
+
 dependencies {
     shaded(project(":api"))
     shaded(project(":connector"))

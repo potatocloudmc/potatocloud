@@ -1,4 +1,4 @@
 name: potatocloud-plugin
 version: 2.0.0
-main: net.potatocloud.plugins.platform.spigot.legacy.LegacySpigotPlugin
+main: net.potatocloud.plugins.platform.spigot.SpigotPlugin
 author: "jirmjahu"

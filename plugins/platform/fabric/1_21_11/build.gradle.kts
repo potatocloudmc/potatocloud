@@ -10,6 +10,10 @@ configurations.implementation {
     extendsFrom(shaded)
 }
 
+sourceSets.main {
+    java.srcDir("../shared/src/main/java")
+}
+
 dependencies {
     minecraft("com.mojang:minecraft:1.21.11")
     mappings(loom.officialMojangMappings())
