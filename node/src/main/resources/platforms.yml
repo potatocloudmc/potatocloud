@@ -14,6 +14,7 @@ platforms:
       - setup-proxy
     versions:
       - version: latest
+      - version: 26.3
       - version: 26.2
       - version: 26.1.2
       - version: 26.1.1
@@ -39,6 +40,10 @@ platforms:
       - setup-forwarding
     versions:
       - version: latest
+      - version: 4.3.2-SNAPSHOT
+      - version: 4.3.1
+      - version: 3.6.0-SNAPSHOT
+      - version: 3.5.1
       - version: 3.5.0-SNAPSHOT
   fabric:
     base: fabric
@@ -53,6 +58,8 @@ platforms:
       - install-proxyforward
     versions:
       - version: latest
+      - version: 26.4-snapshot-8
+      - version: 26.3
       - version: 26.2
       - version: 26.1.2
       - version: 1.21.11
@@ -67,6 +74,7 @@ platforms:
       - install-proxyforward
     versions:
       - version: latest
+      - version: 26.3
       - version: 26.2
       - version: 26.1.2
       - version: 1.21.11
@@ -85,6 +93,8 @@ platforms:
       - setup-proxy
     versions:
       - version: latest
+      - version: 26.3
+      - version: 26.2
       - version: 26.1.2
       - version: 1.21.11
       - version: 1.21.10
@@ -109,6 +119,9 @@ platforms:
       - setup-proxy
     versions:
       - version: latest
+      - version: 26.3
+      - version: 26.2
+      - version: 26.1.2
       - version: 1.21.11
       - version: 1.21.10
       - version: 1.21.9
@@ -134,6 +147,8 @@ platforms:
       - port
       - setup-proxy
     versions:
+      - version: 26.3
+        url: https://ci.loohpjames.com/job/Limbo/76/artifact/target/Limbo-2026.0.3-ALPHA-26.3.jar
       - version: 26.1.2
         url: https://ci.loohpjames.com/job/Limbo/74/artifact/target/Limbo-2026.0.1-ALPHA-26.1.2.jar
       - version: 1.21.11
