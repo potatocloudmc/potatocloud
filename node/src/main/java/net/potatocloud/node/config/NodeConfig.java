@@ -10,5 +10,6 @@ public record NodeConfig(
         ClusterConfig cluster,
         SecurityConfig security,
         @JsonProperty("disable-update-checker") boolean disableUpdateChecker,
+        @JsonProperty("delete-logs-after-days") int deleteLogsAfterDays,
         boolean debug
 ) {}

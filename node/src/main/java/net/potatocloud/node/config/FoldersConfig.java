@@ -10,6 +10,7 @@ public record FoldersConfig(
         String platforms,
         String modules,
         String logs,
+        @JsonProperty("log-archive") String logArchive,
         String data,
         String backups
 ) {}

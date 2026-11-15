@@ -2,6 +2,7 @@ package net.potatocloud.common;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -11,6 +12,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
+import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -115,6 +117,14 @@ public final class FileUtils {
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to unzip " + archive + " to " + targetDirectory, e);
+        }
+    }
+
+    public static void gzip(Path source, Path target) {
+        try (OutputStream output = new GZIPOutputStream(Files.newOutputStream(target))) {
+            Files.copy(source, output);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to gzip " + source + " to " + target, e);
         }
     }
 

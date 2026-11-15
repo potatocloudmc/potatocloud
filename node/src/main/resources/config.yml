@@ -46,6 +46,7 @@ folders:
   platforms: platforms
   modules: modules
   logs: logs
+  log-archive: logs/archive
   data: data
 
 node:
@@ -81,5 +82,9 @@ security:
   require-client-auth: true
 
 disable-update-checker: false
+
+# Delete old logs after this many days (-1 = never)
+delete-logs-after-days: 30
+
 debug: false
 

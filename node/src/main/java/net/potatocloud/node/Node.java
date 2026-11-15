@@ -99,7 +99,9 @@ public final class Node extends CloudAPI {
         this.commandManager = new CommandManager();
         this.console = new Console(config, commandManager);
         this.screenManager = new ScreenManager(console);
-        this.logger = new NodeLogger(config, console, screenManager, Path.of(config.folders().logs()));
+        this.logger = new NodeLogger(
+                config, console, screenManager, Path.of(config.folders().logs()), Path.of(config.folders().logArchive())
+        );
         this.commandManager.logger(logger);
         this.setupManager = new SetupManager();
         this.updateChecker = new UpdateChecker(logger);
