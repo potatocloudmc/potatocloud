@@ -6,6 +6,15 @@ update-interval: 10
 hidden-states:
   - "INGAME"
 
+# Pushes players without the permission away from signs
+knockback:
+  enabled: true
+  distance: 1.5
+  strength: 0.8
+  sound:
+    enabled: true
+    name: "entity.bat.takeoff"
+
 layouts:
   online:
     '1':

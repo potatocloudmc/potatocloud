@@ -3,6 +3,7 @@ package net.potatocloud.plugins.optional.sign.listener;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.service.Service;
+import net.potatocloud.plugins.optional.sign.SignConfig;
 import net.potatocloud.plugins.optional.sign.sign.CloudSign;
 import net.potatocloud.plugins.optional.sign.sign.SignService;
 import net.potatocloud.plugins.shared.MessagesConfig;
@@ -17,13 +18,13 @@ import org.bukkit.inventory.EquipmentSlot;
 public final class SignListener implements Listener {
 
     private final SignService signService;
+    private final SignConfig config;
     private final MessagesConfig messages;
-    private final String permission;
 
-    public SignListener(SignService signService, MessagesConfig messages, String permission) {
+    public SignListener(SignService signService, SignConfig config, MessagesConfig messages) {
         this.signService = signService;
+        this.config = config;
         this.messages = messages;
-        this.permission = permission;
     }
 
     @EventHandler
@@ -45,7 +46,7 @@ public final class SignListener implements Listener {
         }
 
         event.setCancelled(true);
-        if (event.getPlayer().hasPermission(permission)) {
+        if (event.getPlayer().hasPermission(config.permission())) {
             event.getPlayer().sendMessage(messages.get("sign-protected"));
         }
     }

@@ -3,7 +3,7 @@ package net.potatocloud.plugins.optional.sign.command;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.service.Service;
-import net.potatocloud.common.config.Config;
+import net.potatocloud.plugins.optional.sign.SignConfig;
 import net.potatocloud.plugins.optional.sign.sign.CloudSign;
 import net.potatocloud.plugins.optional.sign.sign.SignLocation;
 import net.potatocloud.plugins.optional.sign.sign.SignService;
@@ -26,10 +26,10 @@ public final class SignCommand implements TabExecutor {
     private static final int TARGET_RANGE = 5;
 
     private final SignService signService;
-    private final Config config;
+    private final SignConfig config;
     private final MessagesConfig messages;
 
-    public SignCommand(SignService signService, Config config, MessagesConfig messages) {
+    public SignCommand(SignService signService, SignConfig config, MessagesConfig messages) {
         this.signService = signService;
         this.config = config;
         this.messages = messages;
@@ -107,7 +107,7 @@ public final class SignCommand implements TabExecutor {
     }
 
     private void reload(Player player) {
-        config.reload();
+        config.load();
         messages.reload();
         signService.load();
         player.sendMessage(messages.get("reloaded"));

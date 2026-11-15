@@ -18,7 +18,7 @@ public final class SignPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        final Config config = new YamlConfig(Path.of(FOLDER, "config.yml"));
+        final SignConfig config = new SignConfig(Path.of(FOLDER, "config.yml"));
         final Config signConfig = new YamlConfig(Path.of(FOLDER, "signs.yml"));
         final MessagesConfig messages = new MessagesConfig(FOLDER);
         config.load();
@@ -28,14 +28,12 @@ public final class SignPlugin extends JavaPlugin {
         final SignService signService = new SignService(new SignStorage(signConfig, getLogger()), config);
         signService.load();
 
-        final String permission = config.get("permission").asString();
-        getServer().getPluginManager().registerEvents(new SignListener(signService, messages, permission), this);
+        getServer().getPluginManager().registerEvents(new SignListener(signService, config, messages), this);
 
         final PluginCommand command = getCommand("sign");
-        command.setPermission(permission);
+        command.setPermission(config.permission());
         command.setExecutor(new SignCommand(signService, config, messages));
 
-        final long interval = Math.max(1, config.get("update-interval").asInt());
-        getServer().getScheduler().runTaskTimer(this, signService::update, 20L, interval);
+        getServer().getScheduler().runTaskTimer(this, signService::update, 20L, config.updateInterval());
     }
 }

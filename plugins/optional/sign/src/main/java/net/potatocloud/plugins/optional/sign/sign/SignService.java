@@ -4,14 +4,19 @@ import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.Group;
 import net.potatocloud.api.property.DefaultProperties;
 import net.potatocloud.api.service.Service;
-import net.potatocloud.common.config.Config;
+import net.potatocloud.plugins.optional.sign.SignConfig;
 import net.potatocloud.plugins.shared.MessageUtils;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.Rotatable;
 import org.bukkit.block.sign.Side;
 import org.bukkit.block.sign.SignSide;
+import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -24,13 +29,11 @@ public final class SignService {
 
     private final Map<SignLocation, CloudSign> signs = new LinkedHashMap<>();
     private final Map<SignLocation, Service> services = new HashMap<>();
-    private final Map<String, List<List<String>>> layouts = new HashMap<>();
-    private List<String> hiddenStates = List.of();
     private final SignStorage storage;
-    private final Config config;
+    private final SignConfig config;
     private int tick;
 
-    public SignService(SignStorage storage, Config config) {
+    public SignService(SignStorage storage, SignConfig config) {
         this.storage = storage;
         this.config = config;
     }
@@ -41,18 +44,6 @@ public final class SignService {
 
         for (CloudSign sign : storage.load()) {
             signs.put(sign.location(), sign);
-        }
-
-        hiddenStates = config.get("hidden-states").asStringList();
-
-        layouts.clear();
-
-        for (String layout : config.get("layouts").keys()) {
-            final List<List<String>> frames = new ArrayList<>();
-            for (String frame : config.get("layouts." + layout).keys()) {
-                frames.add(config.get("layouts." + layout + "." + frame).asStringList());
-            }
-            layouts.put(layout, frames);
         }
     }
 
@@ -88,8 +79,41 @@ public final class SignService {
                 services.put(sign.location(), service);
             }
             render(sign, service);
+            knockback(sign);
         }
         tick++;
+    }
+
+    private void knockback(CloudSign sign) {
+        final Block block = sign.location().block().orElse(null);
+        if (!config.knockbackEnabled() || block == null) {
+            return;
+        }
+
+        // push players straight from the front of the sign
+        final BlockFace facing = switch (block.getBlockData()) {
+            case Directional directional -> directional.getFacing();
+            case Rotatable rotatable -> rotatable.getRotation();
+            default -> null;
+        };
+
+        if (facing == null) {
+            return;
+        }
+
+        final Vector velocity = facing.getDirection().setY(0).normalize().multiply(config.knockbackStrength()).setY(0.2);
+        final Location center = block.getLocation().toCenterLocation();
+        for (Player player : center.getNearbyPlayers(config.knockbackDistance())) {
+            if (player.hasPermission(config.permission())) {
+                continue;
+            }
+
+            player.setVelocity(velocity);
+
+            if (config.knockbackSoundEnabled()) {
+                player.playSound(player.getLocation(), config.knockbackSound(), 1, 1);
+            }
+        }
     }
 
     private Service findService(CloudSign sign) {
@@ -98,7 +122,7 @@ public final class SignService {
                 .orElse(List.of())
                 .stream()
                 .filter(Service::running)
-                .filter(service -> !hiddenStates.contains(service.get(DefaultProperties.GAME_STATE)))
+                .filter(service -> !config.hiddenStates().contains(service.get(DefaultProperties.GAME_STATE)))
                 .sorted(Comparator.comparingInt(Service::id))
                 .toList();
 
@@ -120,7 +144,7 @@ public final class SignService {
         }
 
         final String layout = service == null ? "searching" : service.full() ? "full" : "online";
-        final List<List<String>> frames = layouts.getOrDefault(layout, List.of());
+        final List<List<String>> frames = config.layout(layout);
         final List<String> lines = frames.isEmpty() ? List.of() : frames.get(tick % frames.size());
 
         final SignSide side = state.getSide(Side.FRONT);
