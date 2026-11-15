@@ -118,10 +118,9 @@ public final class JvmServiceRuntime implements ServiceRuntime {
         copyPlatformLibraries(platform, version);
 
         try {
-            Files.copy(
+            FileUtils.linkOrCopy(
                     PlatformUtils.getPlatformJarPath(platform, version),
-                    directory.resolve("server.jar"),
-                    StandardCopyOption.REPLACE_EXISTING
+                    directory.resolve("server.jar")
             );
         } catch (IOException e) {
             throw new RuntimeException("Failed to copy server jar for service " + service.name(), e);
@@ -316,7 +315,7 @@ public final class JvmServiceRuntime implements ServiceRuntime {
 
         final Path libraries = PlatformUtils.getDirectoryOfPlatform(platform, version).resolve("libraries");
         if (Files.exists(libraries)) {
-            FileUtils.copyDirectory(libraries, directory.resolve("libraries"));
+            FileUtils.linkDirectory(libraries, directory.resolve("libraries"));
         }
     }
 

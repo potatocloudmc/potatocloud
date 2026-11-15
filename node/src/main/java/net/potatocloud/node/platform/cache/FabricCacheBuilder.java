@@ -46,7 +46,7 @@ public final class FabricCacheBuilder implements CacheBuilder {
                     throw new RuntimeException("Failed to build Fabric platform cache for group: " + group.name() + " (exit code: " + exitCode + ")");
                 }
 
-                copyGeneratedFiles(tempDirectory, cacheFolder);
+                copyGeneratedFiles(tempDirectory, cacheFolder, false);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to build Fabric cache", e);
             } finally {
@@ -57,10 +57,10 @@ public final class FabricCacheBuilder implements CacheBuilder {
 
     @Override
     public void copyToService(Path cacheFolder, Path serviceDir) {
-        copyGeneratedFiles(cacheFolder, serviceDir);
+        copyGeneratedFiles(cacheFolder, serviceDir, true);
     }
 
-    private void copyGeneratedFiles(Path source, Path target) {
+    private void copyGeneratedFiles(Path source, Path target, boolean link) {
         for (String directory : COPY_DIRECTORIES) {
             final Path sourceDirectory = source.resolve(directory);
 
@@ -68,7 +68,11 @@ public final class FabricCacheBuilder implements CacheBuilder {
                 continue;
             }
 
-            FileUtils.copyDirectory(sourceDirectory, target.resolve(directory));
+            if (link) {
+                FileUtils.linkDirectory(sourceDirectory, target.resolve(directory));
+            } else {
+                FileUtils.copyDirectory(sourceDirectory, target.resolve(directory));
+            }
         }
     }
 

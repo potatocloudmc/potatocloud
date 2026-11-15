@@ -73,6 +73,42 @@ public final class FileUtils {
         }
     }
 
+    public static void linkDirectory(Path source, Path target) {
+        if (!Files.exists(source)) {
+            throw new RuntimeException("Source directory does not exist: " + source);
+        }
+
+        for (Path sourcePath : list(source, true)) {
+            try {
+                final Path targetPath = target.resolve(source.relativize(sourcePath));
+
+                if (Files.isDirectory(sourcePath)) {
+                    Files.createDirectories(targetPath);
+                } else {
+                    Files.createDirectories(targetPath.getParent());
+                    linkOrCopy(sourcePath, targetPath);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to link " + sourcePath + " to " + target, e);
+            }
+        }
+    }
+
+    public static void linkOrCopy(Path source, Path target) throws IOException {
+        if (Files.exists(target)) {
+            if (Files.isSameFile(source, target)) {
+                return;
+            }
+            Files.delete(target);
+        }
+
+        try {
+            Files.createLink(target, source);
+        } catch (IOException | UnsupportedOperationException e) {
+            Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
     public static void downloadFile(String url, Path targetPath) {
         try {
             final Path parent = targetPath.getParent();
