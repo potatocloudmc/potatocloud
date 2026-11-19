@@ -34,9 +34,8 @@ import java.net.InetSocketAddress;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
-public class VelocityPlugin implements PlatformPlugin {
+public final class VelocityPlugin implements PlatformPlugin {
 
     private final ConnectorAPI api;
     private final ProxyServer server;
@@ -193,11 +192,6 @@ public class VelocityPlugin implements PlatformPlugin {
 
         server.getServer(fallback.get().name())
                 .ifPresent(fallbackServer -> event.setResult(KickedFromServerEvent.RedirectPlayer.create(fallbackServer)));
-    }
-
-    @Override
-    public void runTaskLater(Runnable task, int delaySeconds) {
-        server.getScheduler().buildTask(this, task).delay(delaySeconds, TimeUnit.SECONDS).schedule();
     }
 
     @Subscribe

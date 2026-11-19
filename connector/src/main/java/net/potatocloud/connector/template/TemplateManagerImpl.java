@@ -9,6 +9,7 @@ import net.potatocloud.network.packets.template.TemplateDeletePacket;
 import net.potatocloud.network.packets.template.TemplatesResponsePacket;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class TemplateManagerImpl implements TemplateManager {
@@ -21,8 +22,10 @@ public final class TemplateManagerImpl implements TemplateManager {
 
         client.on(TemplateCreatePacket.class, ctx -> templates.addIfAbsent(ctx.packet().template()));
         client.on(TemplateDeletePacket.class, ctx -> templates.remove(ctx.packet().template()));
+    }
 
-        client.request(new RequestTemplatesPacket(), TemplatesResponsePacket.class).thenAccept(response -> templates.addAll(response.templates()));
+    public CompletableFuture<Void> load() {
+        return client.request(new RequestTemplatesPacket(), TemplatesResponsePacket.class).thenAccept(response -> response.templates().forEach(templates::addIfAbsent));
     }
 
     @Override

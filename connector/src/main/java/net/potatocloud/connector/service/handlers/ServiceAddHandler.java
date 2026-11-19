@@ -1,6 +1,5 @@
 package net.potatocloud.connector.service.handlers;
 
-import net.potatocloud.api.service.Service;
 import net.potatocloud.connector.service.ServiceManagerImpl;
 import net.potatocloud.network.protocol.PacketContext;
 import net.potatocloud.network.protocol.PacketHandler;
@@ -16,10 +15,6 @@ public final class ServiceAddHandler implements PacketHandler<ServiceAddPacket> 
 
     @Override
     public void handle(PacketContext<ServiceAddPacket> ctx) {
-        final Service service = ctx.packet().service();
-
-        if (serviceManager.find(service.name()).isEmpty()) {
-            serviceManager.addService(service);
-        }
+        serviceManager.addService(ctx.packet().service());
     }
 }

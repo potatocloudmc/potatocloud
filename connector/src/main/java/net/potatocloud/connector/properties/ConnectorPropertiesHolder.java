@@ -3,6 +3,7 @@ package net.potatocloud.connector.properties;
 import net.potatocloud.api.property.PropertyHolder;
 import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.network.NetworkClient;
+import net.potatocloud.network.packets.property.PropertiesResponsePacket;
 import net.potatocloud.network.packets.property.PropertyAddPacket;
 import net.potatocloud.network.packets.property.PropertyUpdatePacket;
 import net.potatocloud.network.packets.property.PropertyRemovePacket;
@@ -10,6 +11,7 @@ import net.potatocloud.network.packets.property.RequestPropertiesPacket;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class ConnectorPropertiesHolder implements PropertyHolder {
 
@@ -19,8 +21,6 @@ public class ConnectorPropertiesHolder implements PropertyHolder {
 
     public ConnectorPropertiesHolder(NetworkClient client) {
         this.client = client;
-
-        client.send(new RequestPropertiesPacket());
 
         client.on(PropertyAddPacket.class, ctx -> {
             final PropertyAddPacket packet = ctx.packet();
@@ -34,6 +34,10 @@ public class ConnectorPropertiesHolder implements PropertyHolder {
 
         client.on(PropertyRemovePacket.class, ctx -> propertyMap.keySet()
                 .removeIf(key -> key.name().equals(ctx.packet().propertyName())));
+    }
+
+    public CompletableFuture<Void> load() {
+        return client.request(new RequestPropertiesPacket(), PropertiesResponsePacket.class).thenAccept(response -> propertyMap.putAll(response.properties()));
     }
 
     @Override

@@ -1,6 +1,5 @@
 package net.potatocloud.plugins.platform.neoforge;
 
-import net.minecraft.server.MinecraftServer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
@@ -9,26 +8,19 @@ import net.potatocloud.api.service.Service;
 import net.potatocloud.connector.ConnectorAPI;
 import net.potatocloud.connector.utils.PlatformPlugin;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-
 @Mod("potatocloud")
 public final class NeoForgePlugin implements PlatformPlugin {
 
     private static NeoForgePlugin instance;
 
     private final ConnectorAPI api;
-    private MinecraftServer server;
     private Service currentService;
 
     public NeoForgePlugin() {
         instance = this;
         this.api = new ConnectorAPI();
 
-        NeoForge.EVENT_BUS.addListener(ServerStartedEvent.class, event -> {
-            server = event.getServer();
-            initCurrentService();
-        });
+        NeoForge.EVENT_BUS.addListener(ServerStartedEvent.class, _ -> initCurrentService());
 
         NeoForge.EVENT_BUS.addListener(ServerStoppedEvent.class, _ -> api.shutdown());
     }
@@ -44,10 +36,5 @@ public final class NeoForgePlugin implements PlatformPlugin {
 
     public Integer maxPlayers() {
         return currentService == null ? null : currentService.maxPlayers();
-    }
-
-    @Override
-    public void runTaskLater(Runnable task, int delaySeconds) {
-        CompletableFuture.delayedExecutor(delaySeconds, TimeUnit.SECONDS).execute(() -> server.execute(task));
     }
 }

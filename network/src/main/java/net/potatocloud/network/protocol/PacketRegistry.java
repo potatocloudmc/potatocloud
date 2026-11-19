@@ -14,6 +14,7 @@ import net.potatocloud.network.packets.platform.PlatformUpdatePacket;
 import net.potatocloud.network.packets.platform.RequestPlatformsPacket;
 import net.potatocloud.network.packets.platform.PlatformsResponsePacket;
 import net.potatocloud.network.packets.player.*;
+import net.potatocloud.network.packets.property.PropertiesResponsePacket;
 import net.potatocloud.network.packets.property.PropertyAddPacket;
 import net.potatocloud.network.packets.property.PropertyRemovePacket;
 import net.potatocloud.network.packets.property.PropertyUpdatePacket;
@@ -76,6 +77,7 @@ public final class PacketRegistry {
         manager.register(501, PropertyUpdatePacket.class, PropertyUpdatePacket.CODEC);
         manager.register(502, PropertyRemovePacket.class, PropertyRemovePacket.CODEC);
         manager.register(503, PropertyAddPacket.class, PropertyAddPacket.CODEC);
+        manager.register(504, PropertiesResponsePacket.class, PropertiesResponsePacket.CODEC);
 
         manager.register(600, LogMessagePacket.class, LogMessagePacket.CODEC);
 

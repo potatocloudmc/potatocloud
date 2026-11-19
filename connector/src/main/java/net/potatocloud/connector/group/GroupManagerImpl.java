@@ -11,6 +11,7 @@ import net.potatocloud.network.packets.group.GroupUpdatePacket;
 import net.potatocloud.network.packets.group.RequestGroupsPacket;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class GroupManagerImpl implements GroupManager {
 
@@ -28,8 +29,10 @@ public class GroupManagerImpl implements GroupManager {
 
         client.on(GroupDeletePacket.class, ctx -> deleteLocal(ctx.packet().groupName()));
         client.on(GroupUpdatePacket.class, new GroupUpdateHandler(this));
+    }
 
-        client.request(new RequestGroupsPacket(), GroupsResponsePacket.class).thenAccept(response -> response.groups().forEach(this::addGroup));
+    public CompletableFuture<Void> load() {
+        return client.request(new RequestGroupsPacket(), GroupsResponsePacket.class).thenAccept(response -> response.groups().forEach(this::addGroup));
     }
 
     public void addGroup(Group group) {

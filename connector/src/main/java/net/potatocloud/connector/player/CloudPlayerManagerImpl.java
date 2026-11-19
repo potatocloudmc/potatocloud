@@ -17,6 +17,7 @@ import net.potatocloud.network.packets.player.CloudPlayersResponsePacket;
 import net.potatocloud.network.packets.player.RequestCloudPlayersPacket;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class CloudPlayerManagerImpl implements CloudPlayerManager {
 
@@ -29,8 +30,10 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
         client.on(CloudPlayerAddPacket.class, ctx -> registerPlayerLocal(ctx.packet().player()));
         client.on(CloudPlayerRemovePacket.class, ctx -> find(ctx.packet().playerUniqueId()).ifPresent(this::unregisterPlayerLocal));
         client.on(CloudPlayerUpdatePacket.class, new CloudPlayerUpdateHandler(this));
+    }
 
-        client.request(new RequestCloudPlayersPacket(), CloudPlayersResponsePacket.class).thenAccept(response -> response.players().forEach(this::registerPlayerLocal));
+    public CompletableFuture<Void> load() {
+        return client.request(new RequestCloudPlayersPacket(), CloudPlayersResponsePacket.class).thenAccept(response -> response.players().forEach(this::registerPlayerLocal));
     }
 
     public void registerPlayer(CloudPlayer player) {

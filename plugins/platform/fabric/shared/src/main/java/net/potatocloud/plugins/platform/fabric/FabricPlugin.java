@@ -6,15 +6,11 @@ import net.potatocloud.api.service.Service;
 import net.potatocloud.connector.ConnectorAPI;
 import net.potatocloud.connector.utils.PlatformPlugin;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-
 public final class FabricPlugin implements ModInitializer, PlatformPlugin {
 
     private static FabricPlugin instance;
 
     private ConnectorAPI api;
-    private MinecraftServer server;
     private Service currentService;
 
     @Override
@@ -28,7 +24,6 @@ public final class FabricPlugin implements ModInitializer, PlatformPlugin {
     }
 
     public void serverStarted(MinecraftServer server) {
-        this.server = server;
         initCurrentService();
     }
 
@@ -43,10 +38,5 @@ public final class FabricPlugin implements ModInitializer, PlatformPlugin {
 
     public Integer maxPlayers() {
         return currentService == null ? null : currentService.maxPlayers();
-    }
-
-    @Override
-    public void runTaskLater(Runnable task, int delaySeconds) {
-        CompletableFuture.delayedExecutor(delaySeconds, TimeUnit.SECONDS).execute(() -> server.execute(task));
     }
 }

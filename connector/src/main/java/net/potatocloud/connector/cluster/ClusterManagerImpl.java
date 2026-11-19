@@ -9,19 +9,25 @@ import net.potatocloud.network.packets.cluster.ClusterNodesResponsePacket;
 import net.potatocloud.network.packets.cluster.RequestClusterNodesPacket;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ClusterManagerImpl implements ClusterManager {
 
     private volatile ClusterNode localNode;
     private final Map<String, ClusterNode> nodes = new ConcurrentHashMap<>();
+    private final NetworkClient client;
 
     public ClusterManagerImpl(NetworkClient client) {
+        this.client = client;
+
         client.on(ClusterNodeAddPacket.class, ctx -> nodes.put(ctx.packet().node().name(), ctx.packet().node()));
 
         client.on(ClusterNodeRemovePacket.class, ctx -> nodes.remove(ctx.packet().nodeName()));
+    }
 
-        client.request(new RequestClusterNodesPacket(), ClusterNodesResponsePacket.class)
+    public CompletableFuture<Void> load() {
+        return client.request(new RequestClusterNodesPacket(), ClusterNodesResponsePacket.class)
                 .thenAccept(response -> {
                     localNode = response.localNode();
                     response.remoteNodes().forEach(node -> nodes.put(node.name(), node));

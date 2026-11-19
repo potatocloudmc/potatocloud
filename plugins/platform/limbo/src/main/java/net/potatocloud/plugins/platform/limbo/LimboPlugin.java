@@ -9,7 +9,7 @@ import net.potatocloud.api.service.Service;
 import net.potatocloud.connector.ConnectorAPI;
 import net.potatocloud.connector.utils.PlatformPlugin;
 
-public class LimboPlugin extends com.loohp.limbo.plugins.LimboPlugin implements Listener, PlatformPlugin {
+public final class LimboPlugin extends com.loohp.limbo.plugins.LimboPlugin implements Listener, PlatformPlugin {
 
     private ConnectorAPI api;
     private Service currentService;
@@ -51,11 +51,6 @@ public class LimboPlugin extends com.loohp.limbo.plugins.LimboPlugin implements 
         }
         event.setCancelReason(Component.text("§cThe server has reached its maximum players!"));
         event.setCancelled(true);
-    }
-
-    @Override
-    public void runTaskLater(Runnable task, int delaySeconds) {
-        getServer().getScheduler().runTaskLater(this, task::run, delaySeconds * 20L);
     }
 
     @Override

@@ -23,6 +23,9 @@ import net.potatocloud.network.NetworkClient;
 import net.potatocloud.network.netty.NettyNetworkClient;
 import net.potatocloud.network.security.SecurityConfig;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+
 /**
  * The Connector connects a node to this instance and provides API methods for running services.
  */
@@ -33,14 +36,14 @@ public class ConnectorAPI extends CloudAPI {
 
     private final NetworkClient client;
     private ConnectorLogger logger;
-    private ClusterManager clusterManager;
+    private ClusterManagerImpl clusterManager;
     private ClientEventBus eventBus;
     private ConnectorPropertiesHolder propertiesHolder;
-    private GroupManager groupManager;
-    private ServiceManager serviceManager;
-    private PlatformManager platformManager;
-    private CloudPlayerManager playerManager;
-    private TemplateManager templateManager;
+    private GroupManagerImpl groupManager;
+    private ServiceManagerImpl serviceManager;
+    private PlatformManagerImpl platformManager;
+    private CloudPlayerManagerImpl playerManager;
+    private TemplateManagerImpl templateManager;
 
     public ConnectorAPI() {
         this.client = new NettyNetworkClient(SecurityConfig.fromProperties());
@@ -58,6 +61,20 @@ public class ConnectorAPI extends CloudAPI {
         });
 
         client.connect(NODE_HOST, NODE_PORT);
+
+        try {
+            CompletableFuture.allOf(
+                    clusterManager.load(),
+                    propertiesHolder.load(),
+                    platformManager.load(),
+                    groupManager.load(),
+                    serviceManager.load(),
+                    playerManager.load(),
+                    templateManager.load()
+            ).join();
+        } catch (CompletionException e) {
+            throw new IllegalStateException("Failed to load data from node", e.getCause());
+        }
     }
 
     @Override

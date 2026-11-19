@@ -4,6 +4,7 @@ import net.potatocloud.api.property.PropertyHolder;
 import net.potatocloud.api.property.PropertyKey;
 import net.potatocloud.network.ConnectionType;
 import net.potatocloud.network.NetworkServer;
+import net.potatocloud.network.packets.property.PropertiesResponsePacket;
 import net.potatocloud.network.packets.property.PropertyAddPacket;
 import net.potatocloud.network.packets.property.PropertyUpdatePacket;
 import net.potatocloud.network.packets.property.PropertyRemovePacket;
@@ -24,8 +25,7 @@ public final class NodePropertiesHolder implements PropertyHolder {
         this.server = server;
         this.clusterManager = clusterManager;
 
-        server.on(RequestPropertiesPacket.class, ctx ->
-                propertyMap.forEach((key, value) -> ctx.connection().send(new PropertyAddPacket(key.name(), key.defaultValue(), value))));
+        server.on(RequestPropertiesPacket.class, ctx -> ctx.reply(new PropertiesResponsePacket(propertyMap)));
 
         server.on(PropertyAddPacket.class, ctx -> {
             final PropertyAddPacket packet = ctx.packet();

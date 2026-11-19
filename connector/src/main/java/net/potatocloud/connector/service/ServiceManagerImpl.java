@@ -40,11 +40,16 @@ public class ServiceManagerImpl implements ServiceManager {
         }));
 
         client.on(ServiceScreenLogPacket.class, ctx -> notifyLogListeners(ctx.packet().serviceName(), ctx.packet().line()));
+    }
 
-        client.request(new RequestServicesPacket(), ServicesResponsePacket.class).thenAccept(response -> response.services().forEach(this::addService));
+    public CompletableFuture<Void> load() {
+        return client.request(new RequestServicesPacket(), ServicesResponsePacket.class).thenAccept(response -> response.services().forEach(this::addService));
     }
 
     public void addService(Service service) {
+        if (find(service.name()).isPresent()) {
+            return;
+        }
         services.add(service);
     }
 
@@ -78,7 +83,7 @@ public class ServiceManagerImpl implements ServiceManager {
 
     @Override
     public CompletableFuture<Void> stop(Service service) {
-        return client.request(new StopServicePacket(service.name()), StopServiceResponsePacket.class).thenApply(response -> null);
+        return client.request(new StopServicePacket(service.name()), StopServiceResponsePacket.class).thenApply(_ -> null);
     }
 
     @Override
@@ -94,7 +99,7 @@ public class ServiceManagerImpl implements ServiceManager {
 
     @Override
     public void addLogListener(Service service, LogListener listener) {
-        final Set<LogListener> listeners = logListeners.computeIfAbsent(service.name(), name -> ConcurrentHashMap.newKeySet());
+        final Set<LogListener> listeners = logListeners.computeIfAbsent(service.name(), _ -> ConcurrentHashMap.newKeySet());
         if (listeners.isEmpty()) {
             client.send(new ServiceScreenSubscribePacket(service.name()));
         }

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class PlatformManagerImpl implements PlatformManager {
 
@@ -22,14 +23,23 @@ public class PlatformManagerImpl implements PlatformManager {
     public PlatformManagerImpl(NetworkClient client) {
         this.client = client;
 
-        client.on(PlatformAddPacket.class, ctx -> platforms.add(ctx.packet().platform()));
+        client.on(PlatformAddPacket.class, ctx -> addPlatform(ctx.packet().platform()));
 
         client.on(PlatformRemovePacket.class, ctx -> find(ctx.packet().platformName()).ifPresent(platforms::remove));
 
         client.on(PlatformUpdatePacket.class, ctx ->
                 find(ctx.packet().platform().name()).ifPresent(platform -> platform.versions(ctx.packet().platform().versions())));
+    }
 
-        client.request(new RequestPlatformsPacket(), PlatformsResponsePacket.class).thenAccept(response -> platforms.addAll(response.platforms()));
+    public CompletableFuture<Void> load() {
+        return client.request(new RequestPlatformsPacket(), PlatformsResponsePacket.class).thenAccept(response -> response.platforms().forEach(this::addPlatform));
+    }
+
+    private void addPlatform(Platform platform) {
+        if (find(platform.name()).isPresent()) {
+            return;
+        }
+        platforms.add(platform);
     }
 
     @Override

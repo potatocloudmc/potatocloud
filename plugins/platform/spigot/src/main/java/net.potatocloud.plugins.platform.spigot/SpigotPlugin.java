@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class SpigotPlugin extends JavaPlugin implements Listener, PlatformPlugin {
+public final class SpigotPlugin extends JavaPlugin implements Listener, PlatformPlugin {
 
     private ConnectorAPI api;
     private Service currentService;
@@ -50,11 +50,6 @@ public class SpigotPlugin extends JavaPlugin implements Listener, PlatformPlugin
             return;
         }
         event.disallow(PlayerLoginEvent.Result.KICK_FULL, "§cThe server has reached its maximum players!");
-    }
-
-    @Override
-    public void runTaskLater(Runnable task, int delaySeconds) {
-        getServer().getScheduler().runTaskLater(this, task, delaySeconds * 20L);
     }
 
     @Override
