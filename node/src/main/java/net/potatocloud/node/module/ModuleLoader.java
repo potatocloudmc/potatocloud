@@ -1,5 +1,6 @@
 package net.potatocloud.node.module;
 
+import net.potatocloud.api.logging.Logger;
 import net.potatocloud.api.module.AbstractModule;
 import net.potatocloud.api.module.Module;
 import net.potatocloud.api.version.Version;
@@ -14,9 +15,11 @@ import java.nio.file.Path;
 public final class ModuleLoader {
 
     private final ModuleManager moduleManager;
+    private final Logger logger;
 
-    public ModuleLoader(ModuleManager moduleManager) {
+    public ModuleLoader(ModuleManager moduleManager, Logger logger) {
         this.moduleManager = moduleManager;
+        this.logger = logger;
     }
 
     public void load(Path modulesPath) {
@@ -30,7 +33,7 @@ public final class ModuleLoader {
                     .filter(Files::isRegularFile).filter(path -> path.toString().endsWith(".jar"))
                     .forEach(this::loadJar);
         } catch (Exception e) {
-            throw new RuntimeException("Error loading modules: " + e);
+            throw new RuntimeException("Error loading modules", e);
         }
     }
 
@@ -67,7 +70,7 @@ public final class ModuleLoader {
                 } catch (Exception ignored) {
                 }
             }
-            throw new RuntimeException("Error loading module " + jar.getFileName() + ": " + e.getMessage(), e);
+            logger.error("Failed to load module " + jar.getFileName() + ": " + e.getMessage());
         }
     }
 }

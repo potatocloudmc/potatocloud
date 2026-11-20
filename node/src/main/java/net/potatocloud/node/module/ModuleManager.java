@@ -17,7 +17,7 @@ public final class ModuleManager {
 
     public ModuleManager(Logger logger) {
         this.logger = logger;
-        this.loader = new ModuleLoader(this);
+        this.loader = new ModuleLoader(this, logger);
     }
 
     public void load(Path modulesPath) {
