@@ -8,4 +8,4 @@ if ! command -v "$JAVA" >/dev/null 2>&1; then
     exit 1
 fi
 
-exec "$JAVA" -Xms256M -Xmx1G --enable-native-access=ALL-UNNAMED -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -jar potatocloud.jar
+exec "$JAVA" -Xms256M -Xmx1G -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -jar potatocloud.jar

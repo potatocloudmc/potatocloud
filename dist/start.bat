@@ -11,5 +11,5 @@ if defined JAVA_HOME set "JAVA=%JAVA_HOME%\bin\java"
     exit /b 1
 )
 
-"%JAVA%" -Xms256M -Xmx1G --enable-native-access=ALL-UNNAMED -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -jar potatocloud.jar
+"%JAVA%" -Xms256M -Xmx1G -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -jar potatocloud.jar
 pause

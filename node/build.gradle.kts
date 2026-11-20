@@ -34,6 +34,7 @@ tasks.named<ShadowJar>("shadowJar") {
 
     manifest {
         attributes["Main-Class"] = "net.potatocloud.node.NodeMain"
+        attributes["Enable-Native-Access"] = "ALL-UNNAMED"
     }
 
     from(project(":plugins:platform:spigot").tasks.named("shadowJar")) {
