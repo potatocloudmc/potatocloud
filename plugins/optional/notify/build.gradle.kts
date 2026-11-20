@@ -17,8 +17,8 @@ dependencies {
 }
 
 tasks.named<ShadowJar>("shadowJar") {
-    archiveBaseName.set("potatocloud-plugin-notify")
-    archiveVersion.set("${rootProject.version}")
+    archiveBaseName.set("potatocloud-notify")
+    archiveVersion.set("")
     archiveClassifier.set("")
 }
 

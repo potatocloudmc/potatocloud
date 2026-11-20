@@ -19,7 +19,7 @@ dependencies {
 }
 
 tasks.named<ShadowJar>("shadowJar") {
-    archiveBaseName.set("potatocloud-module-rest")
+    archiveBaseName.set("potatocloud-rest")
     archiveVersion.set("")
     archiveClassifier.set("")
     mergeServiceFiles()

@@ -20,8 +20,8 @@ dependencies {
 }
 
 tasks.named<ShadowJar>("shadowJar") {
-    archiveBaseName.set("potatocloud-plugin-labymod")
-    archiveVersion.set("${rootProject.version}")
+    archiveBaseName.set("potatocloud-labymod")
+    archiveVersion.set("")
     archiveClassifier.set("")
 }
 

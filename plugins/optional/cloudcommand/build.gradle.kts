@@ -18,8 +18,8 @@ dependencies {
 }
 
 tasks.named<ShadowJar>("shadowJar") {
-    archiveBaseName.set("potatocloud-plugin-cloudcommand")
-    archiveVersion.set("${rootProject.version}")
+    archiveBaseName.set("potatocloud-cloudcommand")
+    archiveVersion.set("")
     archiveClassifier.set("")
 }
 

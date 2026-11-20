@@ -17,7 +17,7 @@ dependencies {
 }
 
 tasks.named<ShadowJar>("shadowJar") {
-    archiveBaseName.set("potatocloud-plugin-npc")
-    archiveVersion.set("${rootProject.version}")
+    archiveBaseName.set("potatocloud-npc")
+    archiveVersion.set("")
     archiveClassifier.set("")
 }
