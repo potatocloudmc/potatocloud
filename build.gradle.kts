@@ -39,12 +39,12 @@ val distribution = tasks.register<Zip>("distribution") {
         rename { "potatocloud.jar" }
     }
 
-    from("dist") {
+    from("start-scripts") {
         include("start.bat")
         filter<FixCrLfFilter>("eol" to FixCrLfFilter.CrLf.newInstance("crlf"))
     }
 
-    from("dist") {
+    from("start-scripts") {
         include("start.sh")
         filePermissions { unix("rwxr-xr-x") }
         filter<FixCrLfFilter>("eol" to FixCrLfFilter.CrLf.newInstance("lf"))
