@@ -20,6 +20,7 @@ import net.potatocloud.network.packets.service.ServiceRemovePacket;
 import net.potatocloud.network.packets.service.ServiceStartedPacket;
 import net.potatocloud.plugins.platform.velocity.listener.CloudPlayerListener;
 import net.potatocloud.plugins.platform.velocity.listener.FallbackListener;
+import net.potatocloud.plugins.platform.velocity.listener.MaintenanceListener;
 import net.potatocloud.plugins.platform.velocity.listener.MaxPlayersListener;
 
 import java.net.InetSocketAddress;
@@ -44,6 +45,7 @@ public final class VelocityPlugin {
 
         final EventManager eventManager = server.getEventManager();
         eventManager.register(this, new MaxPlayersListener(server, connector));
+        eventManager.register(this, new MaintenanceListener(connector));
         eventManager.register(this, new CloudPlayerListener(connector));
         eventManager.register(this, new FallbackListener(server, api));
 

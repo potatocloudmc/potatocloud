@@ -460,6 +460,7 @@ components:
         maxPlayers: { type: integer }
         maxMemory: { type: integer }
         fallback: { type: boolean }
+        maintenance: { type: boolean }
         startPriority: { type: integer }
         startPercentage: { type: integer }
         javaCommand: { type: string }

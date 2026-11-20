@@ -13,6 +13,7 @@ public record GroupPatch(
         Integer maxPlayers,
         Integer maxMemory,
         Boolean fallback,
+        Boolean maintenance,
         Integer startPriority,
         Integer startPercentage,
         String javaCommand,

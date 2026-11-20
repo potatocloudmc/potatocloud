@@ -1,6 +1,7 @@
 package net.potatocloud.plugins.platform.limbo;
 
 import net.potatocloud.connector.utils.ServiceConnector;
+import net.potatocloud.plugins.platform.limbo.listener.MaintenanceListener;
 import net.potatocloud.plugins.platform.limbo.listener.MaxPlayersListener;
 
 public final class LimboPlugin extends com.loohp.limbo.plugins.LimboPlugin {
@@ -16,6 +17,7 @@ public final class LimboPlugin extends com.loohp.limbo.plugins.LimboPlugin {
     public void onEnable() {
         connector.initCurrentService();
         getServer().getEventsManager().registerEvents(this, new MaxPlayersListener(connector));
+        getServer().getEventsManager().registerEvents(this, new MaintenanceListener(connector));
     }
 
     @Override

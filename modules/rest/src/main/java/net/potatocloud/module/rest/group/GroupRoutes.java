@@ -80,6 +80,9 @@ public final class GroupRoutes {
         if (request.fallback() != null) {
             builder.fallback(request.fallback());
         }
+        if (request.maintenance() != null) {
+            builder.maintenance(request.maintenance());
+        }
         if (request.staticServices() != null) {
             builder.staticServices(request.staticServices());
         }
@@ -146,6 +149,9 @@ public final class GroupRoutes {
         }
         if (request.fallback() != null) {
             group.fallback(request.fallback());
+        }
+        if (request.maintenance() != null) {
+            group.maintenance(request.maintenance());
         }
         if (request.startPriority() != null) {
             group.startPriority(request.startPriority());

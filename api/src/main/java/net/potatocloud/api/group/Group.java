@@ -154,6 +154,20 @@ public interface Group extends PropertyHolder {
     void fallback(boolean fallback);
 
     /**
+     * Gets whether the group is in maintenance.
+     *
+     * @return {@code true} if the group is in maintenance, otherwise {@code false}
+     */
+    boolean maintenance();
+
+    /**
+     * Sets whether the group is in maintenance.
+     *
+     * @param maintenance {@code true} to put the group in maintenance, otherwise {@code false}
+     */
+    void maintenance(boolean maintenance);
+
+    /**
      * Gets whether the group is static.
      *
      * @return {@code true} if the group is static, otherwise {@code false}

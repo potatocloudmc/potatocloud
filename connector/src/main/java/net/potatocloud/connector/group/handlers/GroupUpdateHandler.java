@@ -30,6 +30,7 @@ public final class GroupUpdateHandler implements PacketHandler<GroupUpdatePacket
             group.maxPlayers(packet.maxPlayers());
             group.maxMemory(packet.maxMemory());
             group.fallback(packet.fallback());
+            group.maintenance(packet.maintenance());
             group.startPriority(packet.startPriority());
             group.startPercentage(packet.startPercentage());
 

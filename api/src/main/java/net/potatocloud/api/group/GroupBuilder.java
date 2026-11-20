@@ -27,6 +27,7 @@ public final class GroupBuilder {
     private int maxPlayers = 100;
     private int maxMemory = 2048;
     private boolean fallback = false;
+    private boolean maintenance = false;
     private boolean staticServices = false;
     private int startPriority = 1;
     private int startPercentage = 80;
@@ -127,6 +128,17 @@ public final class GroupBuilder {
      */
     public GroupBuilder fallback(boolean fallback) {
         this.fallback = fallback;
+        return this;
+    }
+
+    /**
+     * Sets whether this group is in maintenance.
+     *
+     * @param maintenance whether the group is in maintenance
+     * @return this builder
+     */
+    public GroupBuilder maintenance(boolean maintenance) {
+        this.maintenance = maintenance;
         return this;
     }
 
@@ -262,6 +274,7 @@ public final class GroupBuilder {
                 maxServices,
                 staticServices,
                 fallback,
+                maintenance,
                 startPriority,
                 startPercentage,
                 properties

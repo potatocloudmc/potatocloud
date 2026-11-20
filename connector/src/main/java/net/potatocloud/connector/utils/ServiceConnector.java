@@ -10,6 +10,8 @@ public final class ServiceConnector {
 
     public static final String MAX_PLAYERS_BYPASS_PERMISSION = "potatocloud.maxplayers.bypass";
     public static final String SERVER_FULL_MESSAGE = "The server has reached its maximum players!";
+    public static final String MAINTENANCE_BYPASS_PERMISSION = "potatocloud.group.maintenance.bypass";
+    public static final String MAINTENANCE_MESSAGE = "This server is currently in maintenance!";
 
     private final ConnectorAPI api;
     private Service currentService;

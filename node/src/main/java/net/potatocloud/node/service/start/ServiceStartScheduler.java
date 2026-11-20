@@ -12,6 +12,7 @@ import net.potatocloud.node.service.start.condition.MinOnlineCondition;
 import net.potatocloud.node.service.start.condition.PlayerUsageCondition;
 import net.potatocloud.node.service.start.condition.ServiceStartCondition;
 import net.potatocloud.node.service.start.rule.GroupMaxOnlineRule;
+import net.potatocloud.node.service.start.rule.MaintenanceRule;
 import net.potatocloud.node.service.start.rule.MaxServicesRule;
 import net.potatocloud.node.service.start.rule.MaxStartingRule;
 import net.potatocloud.node.service.start.rule.ServiceStartRule;
@@ -45,6 +46,7 @@ public final class ServiceStartScheduler {
         this.serviceManager = serviceManager;
 
         this.rules = List.of(
+                new MaintenanceRule(),
                 new GroupMaxOnlineRule(),
                 new MaxServicesRule(config, serviceManager),
                 new MaxStartingRule(config, serviceManager)

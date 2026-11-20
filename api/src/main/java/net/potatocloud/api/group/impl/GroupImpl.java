@@ -25,6 +25,7 @@ public class GroupImpl implements Group {
     private int maxServices;
     private final boolean staticServices;
     private boolean fallback;
+    private boolean maintenance;
     private int startPriority;
     private int startPercentage;
     private final List<Template> templates;
@@ -43,12 +44,13 @@ public class GroupImpl implements Group {
             int maxServices,
             boolean staticServices,
             boolean fallback,
+            boolean maintenance,
             int startPriority,
             int startPercentage,
             Map<PropertyKey<?>, Object> properties
     ) {
         this(name, nodeName, platformName, platformVersionName, javaCommand, customJvmFlags, maxPlayers, maxMemory,
-                minServices, maxServices, staticServices, fallback, startPriority, startPercentage, new ArrayList<>(), properties);
+                minServices, maxServices, staticServices, fallback, maintenance, startPriority, startPercentage, new ArrayList<>(), properties);
 
         addTemplate(Template.of("every"));
 
@@ -73,6 +75,7 @@ public class GroupImpl implements Group {
             int maxServices,
             boolean staticServices,
             boolean fallback,
+            boolean maintenance,
             int startPriority,
             int startPercentage,
             List<Template> templates,
@@ -90,6 +93,7 @@ public class GroupImpl implements Group {
         this.maxServices = maxServices;
         this.staticServices = staticServices;
         this.fallback = fallback;
+        this.maintenance = maintenance;
         this.startPriority = startPriority;
         this.startPercentage = startPercentage;
         this.templates = new ArrayList<>(templates);
@@ -197,6 +201,16 @@ public class GroupImpl implements Group {
     @Override
     public void fallback(boolean fallback) {
         this.fallback = fallback;
+    }
+
+    @Override
+    public boolean maintenance() {
+        return maintenance;
+    }
+
+    @Override
+    public void maintenance(boolean maintenance) {
+        this.maintenance = maintenance;
     }
 
     @Override

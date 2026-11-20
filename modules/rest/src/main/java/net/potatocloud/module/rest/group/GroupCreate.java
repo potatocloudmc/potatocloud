@@ -15,6 +15,7 @@ public record GroupCreate(
         Integer maxPlayers,
         Integer maxMemory,
         Boolean fallback,
+        Boolean maintenance,
         Boolean staticServices,
         Integer startPriority,
         Integer startPercentage,

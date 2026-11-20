@@ -24,6 +24,7 @@ public record GroupUpdatePacket(
         int minOnlineCount,
         int maxOnlineCount,
         boolean fallback,
+        boolean maintenance,
         int startPriority,
         int startPercentage,
         List<Template> templates,
@@ -43,6 +44,7 @@ public record GroupUpdatePacket(
                 group.minServices(),
                 group.maxServices(),
                 group.fallback(),
+                group.maintenance(),
                 group.startPriority(),
                 group.startPercentage(),
                 group.templates(),
@@ -65,6 +67,7 @@ public record GroupUpdatePacket(
             buf.writeVarInt(packet.minOnlineCount());
             buf.writeVarInt(packet.maxOnlineCount());
             buf.writeBoolean(packet.fallback());
+            buf.writeBoolean(packet.maintenance());
             buf.writeInt(packet.startPriority());
             buf.writeVarInt(packet.startPercentage());
             buf.write(packet.templates(), CollectionSerializers.list(Template.class));
@@ -84,6 +87,7 @@ public record GroupUpdatePacket(
                     buf.readVarInt(),
                     buf.readVarInt(),
                     buf.readVarInt(),
+                    buf.readBoolean(),
                     buf.readBoolean(),
                     buf.readInt(),
                     buf.readVarInt(),

@@ -34,6 +34,7 @@ group:
     max-players: "<gray>Max Players: <green>%maxPlayers%"
     max-memory: "<gray>Max Memory: <green>%maxMemory%MB"
     fallback: "<gray>Fallback: %fallback%"
+    maintenance: "<gray>Maintenance: %maintenance%"
     static: "<gray>Static: %static%"
   shutdown:
     usage: "<red>Usage<dark_gray>: <gray>/cloud group shutdown [<green>name<dark_gray>]"

@@ -24,6 +24,7 @@ public final class GroupSerializer implements TypeSerializer<Group> {
         buffer.writeVarInt(group.maxServices());
         buffer.writeBoolean(group.staticServices());
         buffer.writeBoolean(group.fallback());
+        buffer.writeBoolean(group.maintenance());
         buffer.writeInt(group.startPriority());
         buffer.writeVarInt(group.startPercentage());
         buffer.write(group.templates(), CollectionSerializers.list(Template.class));
@@ -43,6 +44,7 @@ public final class GroupSerializer implements TypeSerializer<Group> {
                 buffer.readVarInt(),
                 buffer.readVarInt(),
                 buffer.readVarInt(),
+                buffer.readBoolean(),
                 buffer.readBoolean(),
                 buffer.readBoolean(),
                 buffer.readInt(),

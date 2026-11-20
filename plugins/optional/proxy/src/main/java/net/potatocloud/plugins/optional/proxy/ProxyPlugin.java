@@ -81,5 +81,14 @@ public class ProxyPlugin {
     public void setMaintenance(boolean maintenance) {
         config.set("maintenance", maintenance);
         config.save();
+
+        if (!maintenance) {
+            return;
+        }
+
+        final String bypassPermission = config.get("maintenance-bypass-permission").asString();
+        server.getAllPlayers().stream()
+                .filter(player -> !getWhitelist().contains(player.getUsername()) && !player.hasPermission(bypassPermission))
+                .forEach(player -> player.disconnect(messagesConfig.get("notWhitelist", false)));
     }
 }
