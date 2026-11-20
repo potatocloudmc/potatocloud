@@ -7,7 +7,6 @@ import net.potatocloud.common.FileUtils;
 import net.potatocloud.common.JacksonUtils;
 
 import java.io.InputStream;
-import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,7 +38,7 @@ public final class ModuleLoader {
         URLClassLoader loader = null;
 
         try {
-            loader = new URLClassLoader(new URL[]{jar.toUri().toURL()}, getClass().getClassLoader());
+            loader = new ModuleClassLoader(jar.toUri().toURL(), getClass().getClassLoader());
 
             try (InputStream stream = loader.getResourceAsStream("module.yml")) {
                 if (stream == null) {
