@@ -47,7 +47,13 @@ public final class ModuleManager {
     }
 
     public void enableAll() {
-        modules.values().forEach(module -> module.module().onEnable());
+        for (LoadedModule module : modules.values()) {
+            try {
+                module.module().onEnable();
+            } catch (Exception e) {
+                logger.error("Failed to enable module " + module.module().name() + ": " + e.getMessage());
+            }
+        }
     }
 
     public void disableAll() {
