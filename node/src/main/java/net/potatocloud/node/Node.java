@@ -13,6 +13,7 @@ import net.potatocloud.api.property.PropertyHolder;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.ServiceState;
+import net.potatocloud.api.version.Version;
 import net.potatocloud.common.FileUtils;
 import net.potatocloud.eventbus.ServerEventBus;
 import net.potatocloud.network.NetworkServer;
@@ -40,6 +41,7 @@ import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.service.NodeServiceManager;
 import net.potatocloud.node.service.start.ServiceStartScheduler;
 import net.potatocloud.node.setup.SetupManager;
+import net.potatocloud.node.setup.setups.FirstStartSetup;
 import net.potatocloud.node.template.TemplateManagerImpl;
 import net.potatocloud.node.utils.NetworkUtils;
 import net.potatocloud.node.utils.SystemUtils;
@@ -54,6 +56,7 @@ import java.util.concurrent.CompletableFuture;
 public final class Node extends CloudAPI {
 
     private final long startupTime;
+    private final boolean firstStart;
     private final NodeConfigLoader configLoader;
     private final MigrationManager migrationManager;
     private final NodeConfig config;
@@ -90,7 +93,10 @@ public final class Node extends CloudAPI {
         this.startupTime = startupTime;
         this.configLoader = new NodeConfigLoader();
 
-        this.migrationManager = new MigrationManager(VersionFile.read());
+        final Version previousVersion = VersionFile.read();
+        this.firstStart = previousVersion == null;
+
+        this.migrationManager = new MigrationManager(previousVersion);
         configLoader.load();
         migrationManager.migrate();
         VersionFile.write(CloudAPI.VERSION);
@@ -198,6 +204,12 @@ public final class Node extends CloudAPI {
 
         serviceStartScheduler.start();
         ready = true;
+
+        if (firstStart && groups.isEmpty()) {
+            setupManager.startSetup(new FirstStartSetup(
+                    console, screenManager, groupManager, logger, config.cluster().name(), config.folders().groups()
+            ));
+        }
     }
 
     private void registerCommands() {
