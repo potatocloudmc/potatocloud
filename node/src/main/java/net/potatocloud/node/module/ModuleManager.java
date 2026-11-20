@@ -51,13 +51,19 @@ public final class ModuleManager {
     }
 
     public void disableAll() {
-        modules.values().forEach(module -> module.module().onDisable());
+        for (LoadedModule module : modules.values()) {
+            try {
+                module.module().onDisable();
+            } catch (Exception e) {
+                logger.error("Failed to disable module " + module.module().name() + ": " + e.getMessage());
+            }
+        }
 
         for (LoadedModule module : modules.values()) {
             try {
                 module.classLoader().close();
             } catch (IOException e) {
-                throw new RuntimeException("Failed to close class loader of module: " + module.module().name(), e);
+                logger.error("Failed to close class loader of module " + module.module().name() + ": " + e.getMessage());
             }
         }
 
