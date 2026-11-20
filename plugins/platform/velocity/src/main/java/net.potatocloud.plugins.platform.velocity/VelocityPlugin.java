@@ -1,60 +1,51 @@
 package net.potatocloud.plugins.platform.velocity;
 
 import com.google.inject.Inject;
+import com.velocitypowered.api.event.EventManager;
 import com.velocitypowered.api.event.Subscribe;
-import com.velocitypowered.api.event.connection.DisconnectEvent;
-import com.velocitypowered.api.event.connection.LoginEvent;
-import com.velocitypowered.api.event.connection.PostLoginEvent;
-import com.velocitypowered.api.event.player.KickedFromServerEvent;
-import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent;
-import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
-import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.potatocloud.api.CloudAPI;
-import net.potatocloud.api.event.events.player.CloudPlayerDisconnectEvent;
-import net.potatocloud.api.event.events.player.CloudPlayerJoinEvent;
-import net.potatocloud.api.player.impl.CloudPlayerImpl;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.connector.ConnectorAPI;
 import net.potatocloud.connector.event.ConnectPlayerWithServiceEvent;
-import net.potatocloud.connector.player.CloudPlayerManagerImpl;
-import net.potatocloud.connector.utils.PlatformPlugin;
+import net.potatocloud.connector.utils.ServiceConnector;
 import net.potatocloud.network.packets.player.CloudPlayerConnectPacket;
 import net.potatocloud.network.packets.player.CloudPlayerKickPacket;
 import net.potatocloud.network.packets.service.ServiceRemovePacket;
 import net.potatocloud.network.packets.service.ServiceStartedPacket;
+import net.potatocloud.plugins.platform.velocity.listener.CloudPlayerListener;
+import net.potatocloud.plugins.platform.velocity.listener.FallbackListener;
+import net.potatocloud.plugins.platform.velocity.listener.MaxPlayersListener;
 
 import java.net.InetSocketAddress;
-import java.util.Comparator;
 import java.util.Optional;
-import java.util.UUID;
 
-public final class VelocityPlugin implements PlatformPlugin {
+public final class VelocityPlugin {
 
-    private final ConnectorAPI api;
     private final ProxyServer server;
-    private Service currentService;
+    private final ServiceConnector connector;
+    private final ConnectorAPI api;
 
     @Inject
     public VelocityPlugin(ProxyServer server) {
         this.server = server;
-        api = new ConnectorAPI();
+        this.connector = new ServiceConnector();
+        this.api = connector.api();
     }
 
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
-        initCurrentService();
-    }
+        connector.initCurrentService();
 
-    @Override
-    public void onServiceReady(Service service) {
-        currentService = service;
+        final EventManager eventManager = server.getEventManager();
+        eventManager.register(this, new MaxPlayersListener(server, connector));
+        eventManager.register(this, new CloudPlayerListener(connector));
+        eventManager.register(this, new FallbackListener(server, api));
 
         // register services that are already running
         api.serviceManager().services().forEach(this::registerServer);
@@ -76,20 +67,6 @@ public final class VelocityPlugin implements PlatformPlugin {
                 server.unregisterServer(new ServerInfo(ctx.packet().serviceName(), new InetSocketAddress(ctx.packet().serviceHost(), ctx.packet().servicePort()))));
     }
 
-    private void connectPlayer(String username, String serviceName) {
-        final Optional<Player> player = server.getPlayer(username);
-        if (player.isEmpty()) {
-            return;
-        }
-
-        final Optional<RegisteredServer> serverToConnectTo = server.getServer(serviceName);
-        if (serverToConnectTo.isEmpty()) {
-            return;
-        }
-
-        player.get().createConnectionRequest(serverToConnectTo.get()).fireAndForget();
-    }
-
     private void registerServer(Service service) {
         if (service == null) {
             return;
@@ -106,96 +83,22 @@ public final class VelocityPlugin implements PlatformPlugin {
         server.registerServer(new ServerInfo(service.name(), new InetSocketAddress(service.host(), service.port())));
     }
 
-    @Subscribe
-    public void onPlayerChooseInitialServer(PlayerChooseInitialServerEvent event) {
-        final Optional<Service> fallback = api.serviceManager().findBestFallback();
-        if (fallback.isEmpty()) {
+    private void connectPlayer(String username, String serviceName) {
+        final Optional<Player> player = server.getPlayer(username);
+        if (player.isEmpty()) {
             return;
         }
 
-        server.getServer(fallback.get().name()).ifPresent(event::setInitialServer);
-    }
-
-    @Subscribe
-    public void onProxyPing(ProxyPingEvent event) {
-        if (currentService == null) {
-            return;
-        }
-        event.setPing(event.getPing().asBuilder()
-                .onlinePlayers(server.getPlayerCount())
-                .maximumPlayers(currentService.maxPlayers())
-                .build());
-    }
-
-    @Subscribe
-    public void onLogin(LoginEvent event) {
-        if (currentService == null) {
+        final Optional<RegisteredServer> serverToConnectTo = server.getServer(serviceName);
+        if (serverToConnectTo.isEmpty()) {
             return;
         }
 
-        if (server.getPlayerCount() >= currentService.maxPlayers()) {
-            if (event.getPlayer().hasPermission("potatocloud.maxplayers.bypass")) {
-                return;
-            }
-            event.getPlayer().disconnect(MiniMessage.miniMessage().deserialize("<red>The server has reached its maximum players!"));
-        }
-    }
-
-    @Subscribe
-    public void onPostLogin(PostLoginEvent event) {
-        if (currentService != null) {
-            final CloudPlayerManagerImpl playerManager = (CloudPlayerManagerImpl) api.playerManager();
-
-            playerManager.registerPlayer(new CloudPlayerImpl(event.getPlayer().getUsername(), event.getPlayer().getUniqueId(), currentService.name()));
-
-            api.eventBus().publish(new CloudPlayerJoinEvent(event.getPlayer().getUniqueId(), event.getPlayer().getUsername()));
-        }
-
-        if (event.getPlayer().getUniqueId().equals(UUID.fromString("74eb9589-198f-465b-8d59-c452436ca99b"))
-                || event.getPlayer().getUniqueId().equals(UUID.fromString("b44abeab-480e-438c-8109-e870feea3121"))) {
-            event.getPlayer().sendMessage(MiniMessage.miniMessage().deserialize("<green>This network uses potatocloud v" + CloudAPI.VERSION));
-        }
-    }
-
-    @Subscribe
-    public void onServerConnect(ServerConnectedEvent event) {
-        api.playerManager().find(event.getPlayer().getUniqueId()).ifPresent(player -> {
-            if (player instanceof CloudPlayerImpl playerImpl) {
-                playerImpl.serviceName(event.getServer().getServerInfo().getName());
-                api.playerManager().update(player);
-            }
-        });
-    }
-
-    @Subscribe
-    public void onDisconnect(DisconnectEvent event) {
-        final CloudPlayerManagerImpl playerManager = (CloudPlayerManagerImpl) api.playerManager();
-
-        playerManager.find(event.getPlayer().getUniqueId()).ifPresent(player -> {
-            playerManager.unregisterPlayer(player);
-            api.eventBus().publish(new CloudPlayerDisconnectEvent(event.getPlayer().getUniqueId(), event.getPlayer().getUsername()));
-        });
-    }
-
-    @Subscribe
-    public void onKicked(KickedFromServerEvent event) {
-        final String kickedServiceName = event.getServer().getServerInfo().getName();
-        final Optional<Service> fallback = api.serviceManager().fallbackServices().stream()
-                .filter(service -> !service.name().equalsIgnoreCase(kickedServiceName))
-                .filter(Service::running)
-                .filter(service -> !service.full())
-                .min(Comparator.comparingInt(Service::playerCount));
-
-        if (fallback.isEmpty()) {
-            return;
-        }
-
-        server.getServer(fallback.get().name())
-                .ifPresent(fallbackServer -> event.setResult(KickedFromServerEvent.RedirectPlayer.create(fallbackServer)));
+        player.get().createConnectionRequest(serverToConnectTo.get()).fireAndForget();
     }
 
     @Subscribe
     public void onShutdown(ProxyShutdownEvent event) {
-        api.shutdown();
+        connector.shutdown();
     }
 }

@@ -17,9 +17,6 @@ public abstract class PlayerListMixin {
             return;
         }
 
-        final Integer maxPlayers = plugin.maxPlayers();
-        if (maxPlayers != null) {
-            cir.setReturnValue(maxPlayers);
-        }
+        plugin.connector().currentService().ifPresent(service -> cir.setReturnValue(service.maxPlayers()));
     }
 }
